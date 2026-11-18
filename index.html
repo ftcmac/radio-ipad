@@ -250,6 +250,70 @@ html[data-theme="light"] .modal-actions button,html[data-theme="light"] .modal-a
   .power {min-height:0;flex:1 1 auto;}
 }
 
+
+/* V12 : météo heure par heure, minuterie, veille douce.
+   Compatibilité Safari 15 : pas de dvh obligatoire, pas de CSS récent critique. */
+.forecasts{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.forecast{min-width:0;padding:8px 2px;font-size:12px}
+.forecast .icon{height:28px;width:28px;margin:3px auto}
+.forecast .temp{font-size:15px}
+.forecast .chance{font-size:11px;color:#8dd7fc;margin-top:3px;white-space:nowrap}
+html[data-theme="light"] .forecast .chance{color:#276a95}
+.smallbutton{white-space:nowrap}
+.alertbar{gap:6px}
+.alertbuttons{flex-wrap:nowrap;gap:7px}
+.alertname{white-space:nowrap}
+.soft-dim{position:fixed;inset:0;background:rgba(0,0,0,.67);opacity:0;visibility:hidden;pointer-events:none;z-index:10;transition:opacity 1.2s ease}
+.soft-dim.is-on{opacity:1;visibility:visible}
+.tools-modal{position:fixed;inset:0;background:rgba(4,11,21,.76);z-index:30;display:none;align-items:center;justify-content:center;padding:22px}
+.tools-modal.open{display:flex}
+.tools-window{width:min(780px,100%);max-height:90vh;overflow:hidden;display:flex;flex-direction:column;background:#182b43;color:#f4faff;border:1px solid rgba(200,221,245,.2);border-radius:22px;box-shadow:0 26px 70px rgba(0,0,0,.34)}
+.tools-heading{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid rgba(200,221,245,.17)}
+.tools-heading strong{font-size:20px}
+.tools-close{background:#304860;color:inherit;border:1px solid #536c82;border-radius:12px;width:40px;height:40px;display:grid;place-items:center}
+.tools-body{padding:18px 21px 24px;overflow-y:auto;max-height:70vh}
+.hourly-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.hourly-item{background:#263950;border-radius:14px;padding:12px 8px;text-align:center}
+.hourly-item .icon{width:38px;height:38px;margin:5px auto}
+.hourly-item .icon svg{width:100%;height:100%}
+.hourly-item .hour{font-weight:750;font-size:15px}
+.hourly-item .temp{font-size:21px;font-weight:800;margin:5px 0}
+.hourly-item .rain{font-size:13px;color:#a5dafa}
+.timer-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.timer-option{border:1px solid #5d7791;background:#29465f;color:#fff;border-radius:14px;padding:19px 8px;font-size:20px;font-weight:750}
+.timer-option.cancel{grid-column:span 3;background:#423d4f;color:#fff3ef}
+.timer-detail{font-size:15px;color:#c4d3e2;margin-bottom:17px;line-height:1.5}
+.timer-option:disabled{opacity:.5;cursor:default}
+html[data-theme="light"] .tools-window{background:#fff;color:#1c344d;border-color:#c5d6e4}
+html[data-theme="light"] .tools-heading{border-color:#d2e0ec}
+html[data-theme="light"] .tools-close{background:#edf4fa;color:#213c55;border-color:#c4d4e3}
+html[data-theme="light"] .hourly-item{background:#edf4fa}
+html[data-theme="light"] .hourly-item .rain{color:#256f9e}
+html[data-theme="light"] .timer-detail{color:#526a80}
+@media (max-width:1100px) and (min-width:761px){
+  .alertbar{padding-left:14px;padding-right:14px}
+  .alertname{font-size:15px}
+  .smallbutton{padding:10px 11px;font-size:13px}
+  .smallbutton .ui-icon{margin-right:5px}
+}
+@media (max-width:760px){
+  .alertbar{flex-wrap:wrap}
+  .alertname{font-size:14px}
+  .alertbuttons{width:100%;justify-content:space-between}
+  .smallbutton{font-size:12px;padding:8px 7px;flex:1}
+  .smallbutton .ui-icon{width:13px;height:13px;margin-right:4px}
+  .forecasts{gap:5px}
+  .forecast .temp{font-size:13px}
+  .hourly-list{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tools-modal{padding:10px}
+  .tools-body{padding:14px}
+}
+@media (max-width:410px){
+  .alertbuttons{gap:5px}
+  .smallbutton .ui-icon{display:none}
+  .smallbutton{font-size:11px}
+  .hourly-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 </style>
 </head>
 <body>
@@ -272,14 +336,15 @@ html[data-theme="light"] .modal-actions button,html[data-theme="light"] .modal-a
       </div>
       <div class="weather-current"><span class="weather-icon" id="weatherIcon" aria-hidden="true"></span><div><div class="temperature" id="currentTemp">--°</div><div class="weather-desc" id="weatherDesc">Chargement…</div></div></div>
       <div class="facts" id="weatherFacts">Mise à jour de la météo…</div>
-      <div class="forecasts" id="forecasts"><div class="forecast">Aujourd'hui</div><div class="forecast">Demain</div><div class="forecast">Après-demain</div></div>
+      <div class="forecasts" id="forecasts" aria-label="Prévisions des prochaines heures"><div class="forecast">Prévisions…</div></div>
     </section>
   </main>
-  <section class="card alertbar" aria-label="Accès à mes équipements connectés">
-    <div class="alertname"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5.5 9v11h13V9"></path><path d="M10 20v-6h4v6"></path></svg></span> Mes équipements</div>
+  <section class="card alertbar" aria-label="Météo et outils radio">
+    <div class="alertname"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8M8 21h8M12 8v4l3 2"></path><circle cx="12" cy="12" r="9"></circle></svg></span> Météo &amp; radio</div>
     <div class="alertbuttons">
-      <button class="smallbutton" id="tado" type="button"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14.3V5a2 2 0 0 1 4 0v9.3a4.5 4.5 0 1 1-4 0z"></path><path d="M12 10v7"></path></svg></span>Tado</button>
-      <button class="smallbutton" id="netatmo" type="button"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17a4 4 0 0 1 0-8 5.7 5.7 0 0 1 10.8 1.4A3.4 3.4 0 0 1 17 17H7z"></path><path d="M9 20v1M13 19v2M17 20v1"></path></svg></span>Netatmo</button>
+      <button class="smallbutton" id="hourlyButton" type="button" aria-label="Voir les prévisions météo heure par heure"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3.5 2"></path></svg></span>Prévisions</button>
+      <button class="smallbutton" id="timerButton" type="button" aria-label="Régler la minuterie d'arrêt radio"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l3 2M9 2h6M18 5l2 2"></path></svg></span><span id="timerButtonLabel">Minuterie</span></button>
+      <button class="smallbutton" id="dimButton" type="button" aria-pressed="true" aria-label="Désactiver la veille douce"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.2A7.9 7.9 0 0 1 9.8 4a8.9 8.9 0 1 0 10.2 10.2z"></path></svg></span><span id="dimButtonLabel">Veille douce : oui</span></button>
     </div>
   </section>
     <section class="card radio-layout" aria-label="Lecteur radio">
@@ -298,14 +363,14 @@ html[data-theme="light"] .modal-actions button,html[data-theme="light"] .modal-a
     </div>
   </section>
 </div>
-<audio id="audio" preload="none" playsinline></audio>
-<div class="modal" id="modal" aria-hidden="true">
-  <section class="modal-window" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-bar"><strong id="modalTitle">Informations</strong><div class="modal-actions"><a id="modalExternal" href="#" target="_blank" rel="noopener noreferrer">Ouvrir le site</a><button id="modalClose" type="button">Fermer <span class="modal-close-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></button></div></div>
-    <div class="modal-hint">Connexion via le site officiel. Si la fenêtre est vide ou refuse l’accès, utilise « Ouvrir le site ». Rien n’est enregistré dans ce tableau de bord.</div>
-    <iframe id="modalFrame" title="Site du fournisseur" loading="eager" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<div class="soft-dim" id="softDim" aria-hidden="true"></div>
+<div class="tools-modal" id="toolsModal" aria-hidden="true">
+  <section class="tools-window" role="dialog" aria-modal="true" aria-labelledby="toolsTitle">
+    <div class="tools-heading"><strong id="toolsTitle">Prévisions</strong><button type="button" id="toolsClose" class="tools-close" aria-label="Fermer la fenêtre"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>
+    <div class="tools-body" id="toolsBody"></div>
   </section>
 </div>
+<audio id="audio" preload="none" playsinline></audio>
 <script>
 (function(){
   'use strict';
@@ -415,15 +480,15 @@ html[data-theme="light"] .modal-actions button,html[data-theme="light"] .modal-a
   function start(){
     var s=current(),call=++serial;
     audio.pause();audio.removeAttribute('src');audio.load();el('radioLink').style.display='none';
-    audio.src=s.url;playing=true;powerUI();set('playStatus','Connexion au direct…');
-    try{var p=audio.play();if(p&&p.catch)p.catch(function(){if(call===serial){playing=false;powerUI();set('playStatus','Lecture indisponible.');fallback();}});}
-    catch(e){if(call===serial){playing=false;powerUI();set('playStatus','Lecture impossible.');fallback();}}
+    audio.src=s.url;playing=true;clearDim();powerUI();set('playStatus','Connexion au direct…');
+    try{var p=audio.play();if(p&&p.catch)p.catch(function(){if(call===serial){playing=false;powerUI();set('playStatus','Lecture indisponible.');fallback();scheduleDim(20000);}});}
+    catch(e){if(call===serial){playing=false;powerUI();set('playStatus','Lecture impossible.');fallback();scheduleDim(20000);}}
   }
-  function stop(){++serial;audio.pause();audio.removeAttribute('src');audio.load();playing=false;powerUI();set('playStatus','Radio éteinte');el('radioLink').style.display='none';}
+  function stop(){++serial;audio.pause();audio.removeAttribute('src');audio.load();playing=false;if(timerDeadline){timerDeadline=0;updateTimerLabel();}powerUI();set('playStatus','Radio éteinte');el('radioLink').style.display='none';scheduleDim(10000);}
   el('power').addEventListener('click',function(){if(playing)stop();else start();});
   audio.addEventListener('playing',function(){playing=true;powerUI();set('playStatus','● En direct');});
   audio.addEventListener('waiting',function(){if(playing)set('playStatus','Connexion au direct…');});
-  audio.addEventListener('error',function(){if(audio.getAttribute('src')){playing=false;powerUI();set('playStatus','Flux indisponible.');fallback();}});
+  audio.addEventListener('error',function(){if(audio.getAttribute('src')){playing=false;powerUI();set('playStatus','Flux indisponible.');fallback();scheduleDim(20000);}});
   render();powerUI();
 
   // Icônes météo SVG : tracés légers et palette douce, utilisables en clair comme en sombre.
@@ -463,6 +528,7 @@ html[data-theme="light"] .modal-actions button,html[data-theme="light"] .modal-a
   el('weatherIcon').innerHTML=weatherSVG('cloud');
   var places={mons:{name:'Mons',country:'BE'},bruxelles:{name:'Bruxelles',country:'BE'},conchil:{name:'Conchil-le-Temple',country:'FR'}};
   var city=el('city'),lastCity=read('radio.city','mons');city.value=places[lastCity]?lastCity:'mons';
+  var hourlyForecast=[];
   function updateWeather(){
     var selectedCity=city.value,p=places[selectedCity];set('weatherDesc','Actualisation…');
     fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(p.name)+'&count=10&language=fr&format=json')
@@ -470,31 +536,140 @@ html[data-theme="light"] .modal-actions button,html[data-theme="light"] .modal-a
     .then(function(g){var loc=(g.results||[]).filter(function(x){return x.country_code===p.country;})[0];
       if(!loc && selectedCity==='conchil') loc={latitude:50.37093,longitude:1.66575};
       if(!loc)throw Error('ville introuvable');
-      var qs='latitude='+loc.latitude+'&longitude='+loc.longitude+'&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,apparent_temperature&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=3';
+      var qs='latitude='+loc.latitude+'&longitude='+loc.longitude+'&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,apparent_temperature&hourly=temperature_2m,precipitation_probability,weather_code&timezone=auto&forecast_days=2';
       return fetch('https://api.open-meteo.com/v1/forecast?'+qs);})
     .then(function(r){if(!r.ok)throw Error('météo');return r.json();})
     .then(function(data){if(city.value!==selectedCity)return;
-      var c=data.current,d=data.daily,v=icon(c.weather_code);el('weatherIcon').innerHTML=weatherSVG(v[0]);set('weatherDesc',v[1]);set('currentTemp',Math.round(c.temperature_2m)+'°');
+      var c=data.current,v=icon(c.weather_code);
+      el('weatherIcon').innerHTML=weatherSVG(v[0]);
+      set('weatherDesc',v[1]);set('currentTemp',Math.round(c.temperature_2m)+'°');
       set('weatherFacts','Ressenti '+Math.round(c.apparent_temperature)+'° · Humidité '+Math.round(c.relative_humidity_2m)+' % · Vent '+Math.round(c.wind_speed_10m)+' km/h');
-      var box=el('forecasts');box.textContent='';for(var i=0;i<3;i++){
-        var x=document.createElement('div');x.className='forecast';var labels=["Aujourd'hui",'Demain','Après-demain'];
-        var condition=icon(d.weather_code[i]);
-        x.innerHTML='<div>'+labels[i]+'</div><div class="icon">'+weatherSVG(condition[0])+'</div><div class="temp">'+Math.round(d.temperature_2m_max[i])+'° <span class="low">'+Math.round(d.temperature_2m_min[i])+'°</span></div>';box.appendChild(x);
+      var h=data.hourly,nowHour=(c.time||'').slice(0,13),startIndex=0;
+      while(startIndex<h.time.length && h.time[startIndex].slice(0,13)<nowHour)startIndex++;
+      hourlyForecast=[];
+      for(var i=startIndex;i<Math.min(startIndex+16,h.time.length);i++){
+        hourlyForecast.push({time:h.time[i],temp:h.temperature_2m[i],rain:h.precipitation_probability[i],code:h.weather_code[i]});
       }
+      var box=el('forecasts');box.textContent='';
+      hourlyForecast.slice(0,4).forEach(function(hour){
+        var x=document.createElement('div');x.className='forecast';
+        var status=icon(hour.code);
+        var hh=hour.time.slice(11,13);
+        var pop=hour.rain==null?'—':Math.round(hour.rain)+' %';
+        x.innerHTML='<div>'+hh+' h</div><div class="icon">'+weatherSVG(status[0])+'</div><div class="temp">'+Math.round(hour.temp)+'°</div><div class="chance">☂ '+pop+'</div>';
+        box.appendChild(x);
+      });
+      if(!hourlyForecast.length){box.textContent='Prévisions horaires indisponibles';}
+      if(el('toolsModal').classList.contains('open')&&activeTool==='hourly')renderHourlyTool();
     }).catch(function(){if(city.value===selectedCity){set('weatherDesc','Météo indisponible');set('weatherFacts','Vérifier la connexion Internet');}});
   }
   city.addEventListener('change',function(){store('radio.city',city.value);updateWeather();});
   updateWeather();setInterval(updateWeather,20*60*1000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden){clock();updateWeather();}});
 
-  var modal=el('modal');
-  function openModal(title,url){set('modalTitle',title);el('modalExternal').href=url;el('modalFrame').src=url;modal.classList.add('open');modal.setAttribute('aria-hidden','false');}
-  function closeModal(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');el('modalFrame').src='about:blank';}
-  el('tado').addEventListener('click',function(){openModal('Tado · chauffage','https://app.tado.com/fr/main/home');});
-  el('netatmo').addEventListener('click',function(){openModal('Netatmo · météo et capteurs','https://home.netatmo.com/control/dashboard');});
-  el('modalClose').addEventListener('click',closeModal);
-  modal.addEventListener('click',function(e){if(e.target===modal)closeModal();});
-  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.classList.contains('open'))closeModal();});
+  // Modales créées dans la page : indépendantes des sites tiers.
+  var toolsModal=el('toolsModal'),activeTool='';
+  var timerDeadline=0, timerTick=null;
+  var dimEnabled=read('radio.dim','yes')!=='no';
+  var dimTimeout=null,dimIsOn=false;
+  function clearDim(){
+    if(dimTimeout){clearTimeout(dimTimeout);dimTimeout=null;}
+    el('softDim').classList.remove('is-on');dimIsOn=false;
+  }
+  function scheduleDim(delay){
+    clearDim();
+    if(!dimEnabled||playing||toolsModal.classList.contains('open'))return;
+    dimTimeout=setTimeout(function(){
+      if(!playing&&dimEnabled&&!toolsModal.classList.contains('open')){
+        el('softDim').classList.add('is-on');dimIsOn=true;
+      }
+    },delay);
+  }
+  function wake(){
+    if(dimIsOn){clearDim();scheduleDim(25000);}
+  }
+  document.addEventListener('touchstart',wake,{passive:true});
+  document.addEventListener('mousedown',wake);
+  el('dimButton').addEventListener('click',function(){
+    dimEnabled=!dimEnabled;store('radio.dim',dimEnabled?'yes':'no');updateDimButton();
+    if(dimEnabled)scheduleDim(10000);else clearDim();
+  });
+  function updateDimButton(){
+    set('dimButtonLabel','Veille douce : '+(dimEnabled?'oui':'non'));
+    el('dimButton').setAttribute('aria-pressed',String(dimEnabled));
+    el('dimButton').setAttribute('aria-label',dimEnabled?'Désactiver la veille douce':'Activer la veille douce');
+  }
+  updateDimButton();
+  function openTools(tool){
+    activeTool=tool;clearDim();toolsModal.classList.add('open');toolsModal.setAttribute('aria-hidden','false');
+    if(tool==='hourly'){set('toolsTitle','Prévisions · '+places[city.value].name);renderHourlyTool();}
+    else{set('toolsTitle','Minuterie radio');renderTimerTool();}
+  }
+  function closeTools(){
+    toolsModal.classList.remove('open');toolsModal.setAttribute('aria-hidden','true');
+    activeTool='';scheduleDim(25000);
+  }
+  function renderHourlyTool(){
+    var box=el('toolsBody');box.textContent='';
+    var lead=document.createElement('div');lead.className='timer-detail';
+    lead.textContent='16 prochaines heures · température et probabilité de précipitations (prévisions, pas observations).';
+    box.appendChild(lead);
+    if(!hourlyForecast.length){lead.textContent='Prévisions indisponibles. Vérifie la connexion Internet.';return;}
+    var grid=document.createElement('div');grid.className='hourly-list';
+    hourlyForecast.forEach(function(hour){
+      var item=document.createElement('div');item.className='hourly-item';
+      var kind=icon(hour.code)[0],precip=hour.rain==null?'—':Math.round(hour.rain)+' %';
+      var day=hour.time.slice(8,10)+'/'+hour.time.slice(5,7);
+      item.innerHTML='<div class="hour">'+day+' · '+hour.time.slice(11,13)+' h</div><div class="icon">'+weatherSVG(kind)+'</div><div class="temp">'+Math.round(hour.temp)+'°</div><div class="rain">☂ '+precip+'</div>';
+      grid.appendChild(item);
+    });
+    box.appendChild(grid);
+  }
+  function timerRemaining(){return timerDeadline?Math.max(0,Math.ceil((timerDeadline-Date.now())/60000)):0;}
+  function updateTimerLabel(){
+    var mins=timerRemaining();
+    set('timerButtonLabel',timerDeadline?(mins+' min restantes'):'Minuterie');
+    if(timerDeadline&&Date.now()>=timerDeadline){
+      timerDeadline=0;set('timerButtonLabel','Minuterie');
+      if(playing)stop();
+      if(activeTool==='timer')renderTimerTool();
+      return;
+    }
+    if(activeTool==='timer'){
+      var details=el('timerDetail');if(details)details.textContent=timerDeadline?'Arrêt automatique dans '+mins+' minute'+(mins>1?'s':'')+'.':'Choisis dans combien de temps arrêter la radio.';
+    }
+  }
+  function startTimer(minutes){
+    if(!minutes){timerDeadline=0;}
+    else{timerDeadline=Date.now()+minutes*60000;}
+    updateTimerLabel();renderTimerTool();
+  }
+  function renderTimerTool(){
+    var box=el('toolsBody');box.textContent='';
+    var info=document.createElement('div');info.className='timer-detail';info.id='timerDetail';
+    info.textContent=timerDeadline?'Arrêt automatique dans '+timerRemaining()+' minutes.':'Choisis dans combien de temps arrêter la radio.';
+    box.appendChild(info);
+    var group=document.createElement('div');group.className='timer-options';
+    [15,30,45,60,90].forEach(function(minutes){
+      var b=document.createElement('button');b.type='button';b.className='timer-option';b.textContent=minutes+' min';
+      b.addEventListener('click',function(){startTimer(minutes);closeTools();});group.appendChild(b);
+    });
+    var cancel=document.createElement('button');cancel.type='button';cancel.className='timer-option cancel';cancel.textContent='Annuler la minuterie';cancel.disabled=!timerDeadline;
+    cancel.addEventListener('click',function(){startTimer(0);closeTools();});group.appendChild(cancel);
+    box.appendChild(group);
+    var note=document.createElement('div');note.className='timer-detail';note.style.marginTop='16px';
+    note.textContent='La minuterie fonctionne tant que la page reste active. iPadOS peut suspendre le décompte lorsque Safari passe en arrière-plan ou que l’écran est verrouillé.';
+    box.appendChild(note);
+  }
+  el('hourlyButton').addEventListener('click',function(){openTools('hourly');});
+  el('timerButton').addEventListener('click',function(){openTools('timer');});
+  el('toolsClose').addEventListener('click',closeTools);
+  toolsModal.addEventListener('click',function(e){if(e.target===toolsModal)closeTools();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&toolsModal.classList.contains('open'))closeTools();});
+  timerTick=setInterval(function(){if(timerDeadline)updateTimerLabel();},1000);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)updateTimerLabel();});
+  scheduleDim(40000);
+
 })();
 </script>
 </body>
