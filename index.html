@@ -546,13 +546,64 @@ html[data-theme="light"] .concept-credit{color:#536d84}
   .shell{padding-top:calc(24px + env(safe-area-inset-top,0px));}
 }
 
+
+/* V19 : fonctionnalités légères, préservant l'ancienne mise en page. */
+.connection-state{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:650;color:#b7cadb;letter-spacing:0;white-space:nowrap}
+.connection-state:before{content:"";display:block;width:8px;height:8px;border-radius:50%;background:#92abc1;box-shadow:0 0 0 2px rgba(146,171,193,.1)}
+.connection-state.is-online:before{background:#7edfb5}.connection-state.is-offline:before{background:#f4ad8e}
+.connection-state.is-uncertain:before{background:#e6cc7a}
+.tool-menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tool-choice{min-height:85px;background:#263f5a;border:1px solid #577a98;color:#eff8ff;text-align:left;border-radius:14px;padding:14px 15px;display:flex;flex-direction:column;gap:6px;cursor:pointer}
+.tool-choice strong{font-size:16px}.tool-choice span{font-size:12px;color:#bfd1e0;line-height:1.35}
+.mini-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
+.mini-stat{background:#263f59;padding:14px;border-radius:13px;border:1px solid rgba(200,221,245,.12)}
+.mini-stat .mini-title{display:block;color:#bcd4ea;font-size:12px;margin-bottom:7px}
+.mini-stat strong{display:block;font-size:19px;line-height:1.25}
+.insight-headline{background:#28465d;border-radius:13px;padding:14px 16px;line-height:1.45;font-size:15px;margin:12px 0}
+.extras-choice-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.extra-status{font-size:14px;color:#bdcfe0;line-height:1.5;margin:7px 0 0}
+.mini-back{border:1px solid #62839e;background:#294c68;color:#ecf8ff;border-radius:10px;font-size:13px;font-weight:700;padding:9px 12px;margin-bottom:12px}
+html[data-theme="light"] .tool-choice,html[data-theme="light"] .mini-stat{background:#edf5fc;color:#1e3c53;border-color:#c5daeb}
+html[data-theme="light"] .tool-choice span,html[data-theme="light"] .mini-stat .mini-title,html[data-theme="light"] .extra-status{color:#53728a}
+html[data-theme="light"] .insight-headline{background:#e7f2fb}
+html[data-theme="light"] .mini-back{background:#e5f1fa;color:#1e4765;border-color:#bdd3e6}
+.big-clock-overlay{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;flex-direction:column;background:#071421;color:#f9fcff;padding:50px 20px 40px;overflow:hidden}
+.big-clock-overlay.open{display:flex}
+.big-clock-display{font-family:"Arial Rounded MT Bold","Arial Black",-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;font-weight:800;letter-spacing:-.06em;line-height:1;white-space:nowrap;max-width:100%;font-variant-numeric:tabular-nums}
+.big-clock-date{font-size:clamp(20px,3vw,31px);font-weight:600;text-align:center;margin-top:16px;text-transform:capitalize}
+.big-clock-exit{position:absolute;right:22px;top:calc(25px + env(safe-area-inset-top, 0px));background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.4);color:inherit;padding:10px 13px;border-radius:11px;font-weight:700}
+html[data-theme="light"] .big-clock-overlay{background:#eaf2fa;color:#20354a}
+html[data-theme="light"] .big-clock-exit{border-color:#bfd3e2;background:#fff}
+.clock#clockDisplay{cursor:pointer;touch-action:manipulation}
+.clock#clockDisplay:focus-visible{outline:2px solid #93d6ff;outline-offset:6px;border-radius:9px}
+.timer-toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#b5e8ff;border:1px solid #e7f9ff;border-radius:15px;padding:15px 20px;color:#133247;font-size:16px;font-weight:750;z-index:80;box-shadow:0 18px 40px rgba(0,0,0,.3);display:none;max-width:90vw;text-align:center}
+.timer-toast.open{display:block}
+.manager-btn.timer-option{font-size:20px;padding:17px 8px;min-height:56px;border-radius:14px}.manager-btn.timer-option.cancel{grid-column:1/-1}
+/* Priorité à la signature et à l'absence de petits défilements du tableau de bord. */
+.concept-credit{position:relative;top:-6px;opacity:.96}
+.shell{padding-bottom:calc(11px + env(safe-area-inset-bottom,0px))}
+@media (orientation:landscape) and (min-width:761px) and (max-width:1100px) and (max-height:820px){
+  html,body{height:100%;overflow:hidden}
+  .shell{height:var(--app-height,100vh);min-height:0;max-height:100%;overflow:hidden;gap:10px;padding-bottom:6px}
+  .dashboard{flex:1 1 auto;min-height:0}
+  .clock-panel,.weather-panel{min-height:0}
+  .alertbar{flex:0 0 70px;min-height:0}
+  .radio-layout{flex:0 0 282px;height:282px;min-height:0}
+  .concept-credit{flex:0 0 14px;line-height:14px;top:-5px}
+}
+@media (orientation:portrait) and (min-width:600px) and (max-width:1100px) and (min-height:900px){
+  .shell{height:var(--app-height,100vh);min-height:0;overflow:hidden;padding-bottom:7px}
+}
+@media(max-width:760px){.tool-menu{grid-template-columns:1fr}.connection-state{font-size:10px}.tool-choice{min-height:66px}}
+@media(min-width:761px) and (max-width:1100px){.alertbuttons .smallbutton{padding:9px 9px;font-size:12px}.alertbuttons{gap:5px}.alertname{gap:6px}.connection-state{font-size:10px}}
+
 </style>
 </head>
 <body>
 <div class="shell">
   <main class="dashboard">
     <section class="card clock-panel" aria-label="Horloge et date">
-      <div class="clock" id="clockDisplay"><span id="hour">--</span><span class="colon">:</span><span id="minute">--</span></div>
+      <div class="clock" id="clockDisplay" role="button" tabindex="0" aria-label="Afficher l’horloge en grand"><span id="hour">--</span><span class="colon">:</span><span id="minute">--</span></div>
       <div class="date-row">
         <div class="date" id="date">Chargement…</div>
         <button id="themeToggle" class="theme-toggle" type="button" aria-label="Activer le mode clair" title="Passer en mode clair"><span id="themeSymbol" class="theme-icon" aria-hidden="true"></span></button>
@@ -574,11 +625,12 @@ html[data-theme="light"] .concept-credit{color:#536d84}
     </section>
   </main>
   <section class="card alertbar" aria-label="Météo et outils radio">
-    <div class="alertname"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8M8 21h8M12 8v4l3 2"></path><circle cx="12" cy="12" r="9"></circle></svg></span> Météo &amp; radio</div>
+    <div class="alertname"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8M8 21h8M12 8v4l3 2"></path><circle cx="12" cy="12" r="9"></circle></svg></span> Météo &amp; radio <span class="connection-state" id="connectionState" role="status" title="Vérification de la connexion" aria-label="Connexion en cours de vérification"></span></div>
     <div class="alertbuttons">
       <button class="smallbutton" id="hourlyButton" type="button" aria-label="Voir les prévisions météo heure par heure"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3.5 2"></path></svg></span>Prévisions</button>
       <button class="smallbutton" id="timerButton" type="button" aria-label="Régler la minuterie d'arrêt radio"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l3 2M9 2h6M18 5l2 2"></path></svg></span><span id="timerButtonLabel">Minuterie</span></button>
       <button class="smallbutton" id="dimButton" type="button" aria-pressed="true" aria-label="Désactiver la veille douce"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.2A7.9 7.9 0 0 1 9.8 4a8.9 8.9 0 1 0 10.2 10.2z"></path></svg></span><span id="dimButtonLabel">Veille douce : oui</span></button>
+      <button class="smallbutton" id="extrasButton" type="button" aria-label="Ouvrir les outils supplémentaires"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg></span><span id="extrasLabel">Outils</span></button>
     </div>
   </section>
     <section class="card radio-layout" aria-label="Lecteur radio">
@@ -598,6 +650,8 @@ html[data-theme="light"] .concept-credit{color:#536d84}
   </section>
   <footer class="concept-credit" aria-label="Origine du projet">Une idée de Vince <span aria-hidden="true">·</span> novembre 2026</footer>
 </div>
+<div class="big-clock-overlay" id="bigClockOverlay" role="dialog" aria-modal="true" aria-label="Horloge en plein écran" aria-hidden="true"><button class="big-clock-exit" id="bigClockClose" type="button">Fermer</button><div class="big-clock-display" id="bigClockDisplay">--:--</div><div class="big-clock-date" id="bigClockDate"></div></div>
+<div class="timer-toast" id="timerToast" role="alert" aria-live="assertive"></div>
 <div class="soft-dim" id="softDim" aria-hidden="true"></div>
 <div class="tools-modal" id="toolsModal" aria-hidden="true">
   <section class="tools-window" role="dialog" aria-modal="true" aria-labelledby="toolsTitle">
@@ -675,6 +729,9 @@ html[data-theme="light"] .concept-credit{color:#536d84}
   }
   /* Thème mémorisé entre deux ouvertures, sombre par défaut. */
   var activeTheme=read('radio.theme','dark')==='light'?'light':'dark';
+  var autoTheme=read('radio.theme.mode','manual')==='auto';
+  var solarData=null,airData=null,airState='wait',activeWeatherCoords=null,airRequestKey='',airLastTime=0;
+  var connectivity='checking';
   function setTheme(theme){
     activeTheme=theme;
     document.documentElement.setAttribute('data-theme',theme);
@@ -689,13 +746,15 @@ html[data-theme="light"] .concept-credit{color:#536d84}
   setTheme(activeTheme);
   el('themeToggle').addEventListener('click',function(){
     var next=activeTheme==='dark'?'light':'dark';
+    autoTheme=false;store('radio.theme.mode','manual');
     store('radio.theme',next);
     setTheme(next);
   });
   var audio=el('audio'),selected=read('radio.st','viva'),playing=false,serial=0,previewStation=null;
   if(!all.some(function(s){return s.id===selected;}))selected=all.length?all[0].id:'';
   var current=function(){return previewStation||storedRadioById(selected)||all[0]||{name:'Aucune station',region:'',url:'',home:'https://www.radio-browser.info/'};};
-  function clock(){var d=new Date();set('hour',String(d.getHours()).padStart(2,'0'));set('minute',String(d.getMinutes()).padStart(2,'0'));set('date',new Intl.DateTimeFormat('fr-BE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d));}
+  function clock(){var d=new Date();set('hour',String(d.getHours()).padStart(2,'0'));set('minute',String(d.getMinutes()).padStart(2,'0'));set('date',new Intl.DateTimeFormat('fr-BE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d));
+    var huge=el('bigClockDisplay');if(huge){huge.textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');el('bigClockDate').textContent=el('date').textContent;}}
   clock();setInterval(clock,1000);
   function fitClock(){
     var c=el('clockDisplay'),panel=c.parentElement;
@@ -975,12 +1034,16 @@ html[data-theme="light"] .concept-credit{color:#536d84}
       });
     }
     locationPromise.then(function(loc){
-      var qs='latitude='+loc.latitude+'&longitude='+loc.longitude+'&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,apparent_temperature&hourly=temperature_2m,precipitation_probability,weather_code&timezone=auto&forecast_days=2';
+      activeWeatherCoords={latitude:loc.latitude,longitude:loc.longitude,city:selectedCity};
+      var qs='latitude='+loc.latitude+'&longitude='+loc.longitude+'&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,apparent_temperature,is_day&hourly=temperature_2m,precipitation_probability,weather_code&daily=sunrise,sunset&timezone=auto&forecast_days=2';
       return fetch('https://api.open-meteo.com/v1/forecast?'+qs);
     })
     .then(function(r){if(!r.ok)throw Error('météo');return r.json();})
     .then(function(data){if(activeCity!==selectedCity)return;
       var c=data.current,v=icon(c.weather_code);
+      solarData={daily:data.daily,utcOffset:data.utc_offset_seconds||0,localTime:c.time||'',isDay:c.is_day};
+      applyAutoTheme();setConnection('online');
+      if(activeWeatherCoords&&activeWeatherCoords.city===selectedCity)loadAirQuality(activeWeatherCoords);
       el('weatherIcon').innerHTML=weatherSVG(v[0]);
       set('weatherDesc',v[1]);set('currentTemp',Math.round(c.temperature_2m)+'°');
       set('weatherFacts','Ressenti '+Math.round(c.apparent_temperature)+'° · Humidité '+Math.round(c.relative_humidity_2m)+' % · Vent '+Math.round(c.wind_speed_10m)+' km/h');
@@ -1001,7 +1064,7 @@ html[data-theme="light"] .concept-credit{color:#536d84}
       });
       if(!hourlyForecast.length){box.textContent='Prévisions horaires indisponibles';}
       if(el('toolsModal').classList.contains('open')&&activeTool==='hourly')renderHourlyTool();
-    }).catch(function(){if(activeCity===selectedCity){set('weatherDesc',selectedCity==='local'?'Position indisponible':'Météo indisponible');set('weatherFacts',selectedCity==='local'?'Autorise la localisation ou choisis une ville.':'Vérifie la connexion Internet.');}});
+    }).catch(function(){if(activeCity===selectedCity){setConnection(navigator.onLine===false?'offline':'uncertain');set('weatherDesc',selectedCity==='local'?'Position indisponible':'Météo indisponible');set('weatherFacts',selectedCity==='local'?'Autorise la localisation ou choisis une ville.':'Vérifie la connexion Internet.');}});
   }
 
   el('cityManage').addEventListener('click',function(){openTools('cities');});
@@ -1047,6 +1110,9 @@ html[data-theme="light"] .concept-credit{color:#536d84}
     else if(tool==='timer'){set('toolsTitle','Minuterie radio');renderTimerTool();}
     else if(tool==='cities'){set('toolsTitle','Mes villes météo');renderCitiesTool();}
     else if(tool==='radios'){set('toolsTitle','Mes stations radio');renderRadiosTool();}
+    else if(tool==='extras'){set('toolsTitle','Mes outils');renderExtrasTool();}
+    else if(tool==='insights'){set('toolsTitle','Météo, soleil & air');renderInsightsTool();}
+    else if(tool==='shower'){set('toolsTitle','Minuteur pratique');renderShowerTool();}
   }
   function closeTools(){
     toolsModal.classList.remove('open');toolsModal.setAttribute('aria-hidden','true');
@@ -1105,6 +1171,190 @@ html[data-theme="light"] .concept-credit{color:#536d84}
     box.appendChild(note);
   }
 
+
+  // Connectivité : un navigateur peut signaler "en ligne" sans que l'Internet réponde.
+  function setConnection(value){
+    connectivity=value;
+    var badge=el('connectionState');if(!badge)return;
+    badge.className='connection-state'+(value==='online'?' is-online':value==='offline'?' is-offline':value==='uncertain'?' is-uncertain':'');
+    var label=value==='online'?'Données météo reçues':value==='offline'?'Appareil hors ligne':value==='uncertain'?'Connexion ou service météo indisponible':'Vérification des données';
+    badge.title=label;badge.setAttribute('aria-label',label);
+  }
+  setConnection(navigator.onLine===false?'offline':'checking');
+  window.addEventListener('offline',function(){setConnection('offline');});
+  window.addEventListener('online',function(){setConnection('checking');updateWeather();});
+
+  function solarTime(ts){return ts&&ts.indexOf('T')>=0?ts.split('T')[1].slice(0,5):'—';}
+  function getSolarDay(){
+    if(!solarData||!solarData.daily)return null;
+    var localStamp=new Date(Date.now()+(solarData.utcOffset||0)*1000).toISOString().slice(0,10);
+    var index=(solarData.daily.time||[]).indexOf(localStamp);
+    if(index<0)index=0;
+    return {rise:solarData.daily.sunrise&&solarData.daily.sunrise[index],set:solarData.daily.sunset&&solarData.daily.sunset[index]};
+  }
+  function applyAutoTheme(){
+    if(!autoTheme)return;
+    var pair=getSolarDay();if(!pair||!pair.rise||!pair.set)return;
+    var clockAtLocation=Date.now()+(solarData.utcOffset||0)*1000;
+    var rise=Date.parse(pair.rise+'Z'),setAt=Date.parse(pair.set+'Z');
+    if(!isFinite(rise)||!isFinite(setAt))return;
+    var next=clockAtLocation>=rise&&clockAtLocation<setAt?'light':'dark';
+    if(next!==activeTheme){setTheme(next);store('radio.theme',next);}
+  }
+  setInterval(applyAutoTheme,60000);
+
+  function loadAirQuality(loc){
+    var key=loc.city+'|'+Number(loc.latitude).toFixed(2)+'|'+Number(loc.longitude).toFixed(2);
+    if(airRequestKey===key&&Date.now()-airLastTime<50*60*1000)return;
+    airRequestKey=key;airLastTime=Date.now();airData=null;airState='loading';
+    var url='https://air-quality-api.open-meteo.com/v1/air-quality?latitude='+encodeURIComponent(loc.latitude)+'&longitude='+encodeURIComponent(loc.longitude)+'&current=european_aqi,birch_pollen,grass_pollen&timezone=auto';
+    fetch(url).then(function(r){if(!r.ok)throw Error('air');return r.json();}).then(function(data){
+      if(airRequestKey!==key)return;
+      airData=data.current||null;airState=airData?'ready':'error';
+      if(activeTool==='insights')renderInsightsTool();
+    }).catch(function(){if(airRequestKey===key){airData=null;airState='error';if(activeTool==='insights')renderInsightsTool();}});
+  }
+  function aqiLabel(value){
+    if(value<=20)return 'Bonne';if(value<=40)return 'Correcte';if(value<=60)return 'Moyenne';
+    if(value<=80)return 'Mauvaise';if(value<=100)return 'Très mauvaise';return 'Extrêmement mauvaise';
+  }
+  function rainHeadline(){
+    if(!hourlyForecast.length)return 'Prévisions de pluie momentanément indisponibles.';
+    var hours=hourlyForecast.slice(0,6),hits=hours.filter(function(h){return h.rain!=null&&Number(h.rain)>=60;});
+    if(hits.length){var first=hits[0];return 'Précipitations probables vers '+first.time.slice(11,13)+' h ('+Math.round(first.rain)+' %).';}
+    var max=0,seen=false;
+    hours.forEach(function(h){if(h.rain!=null){seen=true;max=Math.max(max,Number(h.rain));}});
+    if(!seen)return 'Probabilités de précipitations indisponibles.';
+    if(max<30)return 'Faible probabilité de précipitations sur les six prochaines heures.';
+    return 'Risque variable de précipitations dans les six prochaines heures (jusqu’à '+Math.round(max)+' %).';
+  }
+  function renderInsightsTool(){
+    var box=el('toolsBody');box.textContent='';
+    box.appendChild(actionButton('← Tous les outils',function(){openTools('extras');},'mini-back'));
+    var loc=activeCity==='local'?(localCityName||'Météo locale'):currentPlace().name;
+    box.appendChild(make('p','manager-lead','Prévisions pour '+loc+'. Les probabilités ne garantissent pas qu’il pleuvra à un endroit précis.'));
+    box.appendChild(make('div','insight-headline',rainHeadline()));
+    var grid=make('div','mini-stat-grid'),solar=getSolarDay();
+    function tile(label,value){var card=make('div','mini-stat');card.appendChild(make('span','mini-title',label));card.appendChild(make('strong','',value));grid.appendChild(card);}
+    tile('Lever du soleil',solar?solarTime(solar.rise):'Indisponible');
+    tile('Coucher du soleil',solar?solarTime(solar.set):'Indisponible');
+    var air=airData&&airData.european_aqi!=null&&isFinite(Number(airData.european_aqi))?Math.round(airData.european_aqi):null;
+    tile('Qualité de l’air · AQI européen',air!==null?air+' · '+aqiLabel(air):airState==='loading'?'Actualisation…':'Données indisponibles');
+    var pollenValue=function(v){return v!=null&&isFinite(Number(v))?Math.round(v)+' grains/m³':'Hors saison / indisponible';};
+    tile('Pollen de bouleau',pollenValue(airData&&airData.birch_pollen));
+    tile('Pollen de graminées',pollenValue(airData&&airData.grass_pollen));
+    box.appendChild(grid);
+    box.appendChild(make('p','manager-note','Lever/coucher : horaires prévus pour la localité choisie. Air et pollens : estimations modélisées, non des mesures dans la salle de bain. Pollens disponibles en Europe seulement en saison. Source : Open-Meteo et CAMS ENSEMBLE.'));
+    var link=make('a','smalllink','Détails des données Open-Meteo');link.href='https://open-meteo.com/en/docs/air-quality-api';link.target='_blank';link.rel='noopener noreferrer';box.appendChild(link);
+  }
+
+  // Minuteur indépendant de l'arrêt radio : l'alerte visuelle reste visible.
+  var showerDeadline=0,showerToneContext=null,showerNoticeTimeout=null;
+  function readyShowerTone(){
+    var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+    try{if(!showerToneContext)showerToneContext=new AC();
+      if(showerToneContext.state==='suspended')showerToneContext.resume().catch(function(){});
+    }catch(e){}
+  }
+  function playShowerTone(){
+    if(!showerToneContext)return;
+    try{
+      if(showerToneContext.state==='suspended')showerToneContext.resume().catch(function(){});
+      var now=showerToneContext.currentTime;
+      [0,.3,.6].forEach(function(delay){
+        var o=showerToneContext.createOscillator(),g=showerToneContext.createGain();
+        o.type='sine';o.frequency.value=740;
+        g.gain.setValueAtTime(.0001,now+delay);g.gain.exponentialRampToValueAtTime(.12,now+delay+.025);
+        g.gain.exponentialRampToValueAtTime(.0001,now+delay+.19);
+        o.connect(g);g.connect(showerToneContext.destination);
+        o.start(now+delay);o.stop(now+delay+.2);
+      });
+    }catch(e){}
+  }
+  function showToast(message,duration){
+    var toast=el('timerToast');toast.textContent=message;toast.classList.add('open');
+    if(showerNoticeTimeout)clearTimeout(showerNoticeTimeout);
+    showerNoticeTimeout=setTimeout(function(){toast.classList.remove('open');},duration||15000);
+  }
+  el('timerToast').addEventListener('click',function(){this.classList.remove('open');});
+  function showerLeft(){return Math.max(0,Math.ceil((showerDeadline-Date.now())/1000));}
+  function showerLabel(){
+    var seconds=showerLeft();if(!seconds)return '';
+    return String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
+  }
+  function updateShowerTimer(){
+    if(showerDeadline&&Date.now()>=showerDeadline){
+      showerDeadline=0;playShowerTone();showToast('Minuteur terminé !');
+      if(activeTool==='shower')renderShowerTool();
+    }
+    set('extrasLabel',showerDeadline?'Outils · '+showerLabel():'Outils');
+    if(activeTool==='shower'&&el('showerCount'))set('showerCount',showerDeadline?'Temps restant : '+showerLabel():'Aucun minuteur actif.');
+  }
+  function startShower(minutes){
+    readyShowerTone();showerDeadline=minutes?Date.now()+minutes*60000:0;
+    updateShowerTimer();
+    if(minutes){closeTools();showToast('Minuteur de '+minutes+' min lancé.',4500);}
+    else renderShowerTool();
+  }
+  function renderShowerTool(){
+    var box=el('toolsBody');box.textContent='';
+    box.appendChild(actionButton('← Tous les outils',function(){openTools('extras');},'mini-back'));
+    box.appendChild(make('p','timer-detail','Un minuteur pour la douche ou autre chose, sans couper la radio. Un signal sonore est tenté à la fin si l’application reste active.'));
+    box.appendChild(make('div','insight-headline',showerDeadline?'Temps restant : '+showerLabel():'Aucun minuteur actif.')).id='showerCount';
+    var options=make('div','timer-options');
+    [3,5,10,15,20].forEach(function(minutes){options.appendChild(actionButton(minutes+' min',function(){startShower(minutes);},'timer-option'));});
+    var cancel=actionButton('Annuler',function(){startShower(0);},'timer-option cancel');cancel.disabled=!showerDeadline;options.appendChild(cancel);box.appendChild(options);
+    box.appendChild(make('p','manager-note','Sur iPadOS, un verrouillage ou une mise en arrière-plan peut suspendre le son et le minuteur. À la reprise, le temps écoulé est vérifié, mais le signal sonore n’est pas garanti.'));
+  }
+
+  var bigClockOpen=false;
+  function fitBigClock(){
+    var big=el('bigClockDisplay');if(!big||!bigClockOpen)return;
+    var maxWidth=window.innerWidth-50,target=Math.min(340,Math.floor(window.innerWidth*.29));
+    big.style.fontSize=target+'px';if(big.scrollWidth>maxWidth)big.style.fontSize=Math.floor(target*maxWidth/big.scrollWidth)+'px';
+  }
+  function openBigClock(){
+    closeTools();clearDim();bigClockOpen=true;clock();el('bigClockOverlay').classList.add('open');el('bigClockOverlay').setAttribute('aria-hidden','false');fitBigClock();
+  }
+  function closeBigClock(){
+    if(!bigClockOpen)return;
+    bigClockOpen=false;el('bigClockOverlay').classList.remove('open');el('bigClockOverlay').setAttribute('aria-hidden','true');
+    scheduleDim(25000);
+  }
+  el('clockDisplay').addEventListener('click',openBigClock);
+  el('clockDisplay').addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openBigClock();}});
+  el('bigClockClose').addEventListener('click',closeBigClock);
+  el('bigClockOverlay').addEventListener('click',function(){closeBigClock();});
+  window.addEventListener('resize',fitBigClock);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&bigClockOpen)closeBigClock();});
+
+  function renderExtrasTool(){
+    var box=el('toolsBody');box.textContent='';
+    box.appendChild(make('p','manager-lead','Toutes ces fonctions restent locales à l’iPad, sauf les données météo et qualité de l’air.'));
+    var group=make('div','tool-menu');
+    function item(title,summary,action){var b=make('button','tool-choice');b.type='button';b.appendChild(make('strong','',title));b.appendChild(make('span','',summary));b.addEventListener('click',action);group.appendChild(b);}
+    item('Météo & qualité de l’air','Soleil, pluie à venir, pollution et pollens',function(){openTools('insights');});
+    item('Minuteur pratique','Un décompte avec alerte, sans couper la radio',function(){openTools('shower');});
+    item('Horloge XXL','Un grand affichage sur tout l’écran',openBigClock);
+    item('Thème automatique',autoTheme?'Activé · clair au lever du soleil, sombre au coucher':'Désactivé · mode manuel conservé',function(){
+      autoTheme=!autoTheme;store('radio.theme.mode',autoTheme?'auto':'manual');
+      if(autoTheme)applyAutoTheme();renderExtrasTool();
+    });
+    box.appendChild(group);
+    var status=connectivity==='online'?'Dernière météo actualisée avec succès':connectivity==='offline'?'L’iPad indique être hors ligne':'Actualisation non confirmée';
+    box.appendChild(make('p','extra-status','Connexion : '+status+'. L’horloge reste disponible même hors ligne.'));
+    box.appendChild(make('p','manager-note','Appuyer sur le soleil ou la lune à côté de la date repasse en mode manuel. Le changement automatique suit le lever et le coucher du soleil de la ville sélectionnée.'));
+  }
+  el('extrasButton').addEventListener('click',function(){openTools('extras');});
+  setInterval(updateShowerTimer,1000);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden){updateShowerTimer();applyAutoTheme();}});
+  updateShowerTimer();
+
+  // Safari 15 peut attribuer à 100vh une hauteur différente de la web app.
+  function updateViewHeight(){document.documentElement.style.setProperty('--app-height',window.innerHeight+'px');}
+  updateViewHeight();window.addEventListener('resize',updateViewHeight);
+  window.addEventListener('orientationchange',function(){setTimeout(updateViewHeight,250);});
+
   // Constructeurs DOM sûrs : les textes viennent de l'utilisateur et des annuaires.
   function make(tag,cls,textValue){
     var e=document.createElement(tag);if(cls)e.className=cls;
@@ -1145,7 +1395,7 @@ html[data-theme="light"] .concept-credit{color:#536d84}
     group.appendChild(actionButton('Exporter mes favoris',function(){
       var exportedWeather=weatherPlaces.filter(function(p){return p.id!=='local';});
       var exportDefault=weatherDefault; // garde le choix « local », jamais les coordonnées GPS
-      var payload={format:'radio-ipad-sauvegarde',version:1,exportedAt:new Date().toISOString(),radios:{favorites:fav,others:other,selected:selected},weather:{places:exportedWeather,defaultCity:exportDefault},settings:{theme:activeTheme,dimEnabled:dimEnabled}};
+      var payload={format:'radio-ipad-sauvegarde',version:1,exportedAt:new Date().toISOString(),radios:{favorites:fav,others:other,selected:selected},weather:{places:exportedWeather,defaultCity:exportDefault},settings:{theme:activeTheme,dimEnabled:dimEnabled,autoTheme:autoTheme}};
       var blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});
       var objectURL=URL.createObjectURL(blob);var a=document.createElement('a');a.href=objectURL;a.download='radio-ipad-favoris.json';document.body.appendChild(a);a.click();document.body.removeChild(a);
       setTimeout(function(){URL.revokeObjectURL(objectURL);},60000);
@@ -1172,6 +1422,7 @@ html[data-theme="light"] .concept-credit{color:#536d84}
         activeCity=weatherDefault;store('radio.city',activeCity);displayWeatherCities();updateWeather();
         if(data.settings&&data.settings.theme){store('radio.theme',data.settings.theme==='light'?'light':'dark');setTheme(data.settings.theme==='light'?'light':'dark');}
         if(data.settings&&typeof data.settings.dimEnabled==='boolean'){dimEnabled=data.settings.dimEnabled;store('radio.dim',dimEnabled?'yes':'no');updateDimButton();}
+        if(data.settings&&typeof data.settings.autoTheme==='boolean'){autoTheme=data.settings.autoTheme;store('radio.theme.mode',autoTheme?'auto':'manual');applyAutoTheme();}
         render();powerUI();set('playStatus','Radio éteinte');
         if(activeTool==='cities')renderCitiesTool();else if(activeTool==='radios')renderRadiosTool();
       };reader.onerror=function(){feedback('Impossible de lire le fichier.');};reader.readAsText(file);chooser.value='';
