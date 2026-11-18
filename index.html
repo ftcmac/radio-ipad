@@ -386,6 +386,27 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
 .weather-title-actions .city-manage{width:39px;min-width:39px;flex:0 0 39px;padding:0}
 .weather-place{color:#a9dbff;font-weight:650;margin-left:5px}
 html[data-theme="light"] .weather-place{color:#2e729f}
+
+/* Menu météo personnalisé : alternative fiable au <select> natif de Safari 15
+   lorsqu'une PWA tourne en mode écran d'accueil et utilise la géolocalisation. */
+.weather-title-actions{position:relative}
+.weather-panel.city-list-open{position:relative;z-index:12}
+.city-trigger{appearance:none;-webkit-appearance:none;display:flex;align-items:center;justify-content:space-between;gap:6px;text-align:left;cursor:pointer;touch-action:manipulation}
+.city-trigger #cityLabel{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.city-trigger svg{flex:0 0 16px}
+.city-choices{display:none;position:absolute;top:calc(100% + 8px);right:46px;width:min(285px,calc(100vw - 38px));max-height:min(48vh,310px);overflow-y:auto;-webkit-overflow-scrolling:touch;background:#243b56;border:1px solid #597b9c;border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.36);z-index:20;padding:6px}
+.city-choices.open{display:block}
+.city-choice{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:46px;border:0;background:transparent;color:#f0f8ff;text-align:left;padding:9px 12px;border-radius:9px;font-size:15px;cursor:pointer}
+.city-choice + .city-choice{border-top:1px solid rgba(200,221,245,.1)}
+.city-choice.active{background:#365776;color:#fff;font-weight:750}
+.city-choice small{color:#bcd8f0;font-size:12px;flex:none}
+.city-choice:focus-visible{outline:2px solid #a8dfff;outline-offset:-2px}
+html[data-theme="light"] .city-choices{background:#fff;border-color:#b9cede;box-shadow:0 12px 30px rgba(41,76,105,.25)}
+html[data-theme="light"] .city-choice{color:#1e3c55}
+html[data-theme="light"] .city-choice.active{background:#dcedfa;color:#16466c}
+html[data-theme="light"] .city-choice small{color:#426b8a}
+@media(max-width:760px){.city-choices{right:46px}}
+
 </style>
 </head>
 <body>
@@ -398,10 +419,11 @@ html[data-theme="light"] .weather-place{color:#2e729f}
         <button id="themeToggle" class="theme-toggle" type="button" aria-label="Activer le mode clair" title="Passer en mode clair"><span id="themeSymbol" class="theme-icon" aria-hidden="true"></span></button>
       </div>
     </section>
-    <section class="card weather-panel" aria-label="Météo">
+    <section class="card weather-panel" id="weatherPanel" aria-label="Météo">
       <div class="weather-title"><span class="eyebrow">La météo</span>
-        <div class="weather-title-actions">
-          <select class="city" id="city" aria-label="Choisir la ville"></select>
+        <div class="weather-title-actions" id="weatherActions">
+          <button class="city city-trigger" id="city" type="button" aria-label="Choisir la localité météo" aria-expanded="false" aria-controls="cityChoices" aria-haspopup="true"><span id="cityLabel">Météo locale</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+          <div class="city-choices" id="cityChoices" role="group" aria-label="Localités météo favorites"></div>
           <button class="city-manage" type="button" id="cityManage" aria-label="Rechercher et gérer mes villes météo" title="Mes villes favorites">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.2.9-4.5 4.4 1 6.1-5.4-2.8-5.5 2.8 1.1-6.1L3 9.5l6.2-.9L12 3z"/></svg>
           </button>
@@ -719,18 +741,52 @@ html[data-theme="light"] .weather-place{color:#2e729f}
       }).catch(function(){}).then(function(){localCityLookupPending=false;});
     },function(){localCityLookupPending=false;},{enableHighAccuracy:false,timeout:12000,maximumAge:0});
   }
-  function displayWeatherCities(){
-    city.textContent='';
-    var localOption=document.createElement('option');localOption.value='local';
-    localOption.textContent='Météo locale'+(weatherDefault==='local'?' ★':'');city.appendChild(localOption);
-    weatherPlaces.forEach(function(p){
-      var option=document.createElement('option');option.value=p.id;
-      option.textContent=p.name+(p.id===weatherDefault?' ★':'');city.appendChild(option);
-    });
-    if(!placeById(activeCity))activeCity=weatherDefault;
-    city.value=activeCity;
-    city.title=currentPlace().name;
+  // Afficher les villes dans une liste de boutons personnalisée :
+  // évite le sélecteur natif qui peut ne plus s'ouvrir après le GPS en PWA iPadOS 15.
+  var cityChoices=el('cityChoices');
+  var cityListOpen=false;
+  function closeCityOptions(){
+    cityListOpen=false;
+    cityChoices.classList.remove('open');
+    city.setAttribute('aria-expanded','false');
+    el('weatherPanel').classList.remove('city-list-open');
   }
+  function displayWeatherCities(){
+    if(!placeById(activeCity))activeCity=weatherDefault;
+    var shown=currentPlace();
+    set('cityLabel',shown.name+(activeCity===weatherDefault?' ★':''));
+    city.title='Choisir une localité météo (actuellement : '+shown.name+')';
+    cityChoices.textContent='';
+    var available=[{id:'local',name:'Météo locale'}].concat(weatherPlaces);
+    available.forEach(function(p){
+      var option=document.createElement('button');option.type='button';option.className='city-choice'+(activeCity===p.id?' active':'');
+      var name=document.createElement('span');name.textContent=p.name;
+      var meta=document.createElement('small');meta.textContent=activeCity===p.id?'✓':p.id===weatherDefault?'★':'';
+      option.appendChild(name);option.appendChild(meta);
+      option.setAttribute('aria-label','Afficher la météo : '+p.name);
+      option.addEventListener('click',function(){
+        closeCityOptions();
+        if(p.id==='local'){
+          requestLocalWeather(function(message){
+            if(/indisponible|Autorise|refusée|refusé/.test(message)){displayWeatherCities();set('weatherFacts',message);}
+          });
+        }else chooseCity(p.id);
+      });
+      cityChoices.appendChild(option);
+    });
+  }
+  city.addEventListener('click',function(){
+    if(cityListOpen){closeCityOptions();return;}
+    displayWeatherCities();
+    cityListOpen=true;
+    cityChoices.classList.add('open');
+    city.setAttribute('aria-expanded','true');
+    el('weatherPanel').classList.add('city-list-open');
+  });
+  document.addEventListener('click',function(e){
+    if(cityListOpen&&!el('weatherActions').contains(e.target))closeCityOptions();
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&cityListOpen)closeCityOptions();});
   function currentPlace(){return placeById(activeCity)||weatherPlaces[0];}
   displayWeatherCities();
   showWeatherPlace();
@@ -806,14 +862,7 @@ html[data-theme="light"] .weather-place{color:#2e729f}
       if(el('toolsModal').classList.contains('open')&&activeTool==='hourly')renderHourlyTool();
     }).catch(function(){if(activeCity===selectedCity){set('weatherDesc',selectedCity==='local'?'Position indisponible':'Météo indisponible');set('weatherFacts',selectedCity==='local'?'Autorise la localisation ou choisis une ville.':'Vérifie la connexion Internet.');}});
   }
-  city.addEventListener('change',function(){
-    var target=city.value;
-    if(target==='local'){
-      requestLocalWeather(function(message){
-        if(/indisponible|Autorise|refusée|refusé/.test(message)){displayWeatherCities();set('weatherFacts',message);}
-      });
-    }else chooseCity(target);
-  });
+
   el('cityManage').addEventListener('click',function(){openTools('cities');});
   updateWeather();setInterval(updateWeather,20*60*1000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden){clock();updateWeather();}});
