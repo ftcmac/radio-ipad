@@ -146,6 +146,66 @@ button:active{transform:scale(.98)}
   .shell{padding-top:calc(26px + env(safe-area-inset-top, 0px));}
 }
 
+
+/* V7 — horloge et date mieux proportionnées, sans changer la hauteur des panneaux. */
+@media (min-width:761px) {
+  .clock-panel {padding-left:27px;padding-right:27px;}
+  .clock {font-size:clamp(98px,12.9vw,173px);letter-spacing:-.078em;}
+  .date {font-size:clamp(24px,2.9vw,34px);font-weight:550;margin-top:13px;}
+}
+@media (max-width:760px) {
+  .clock {font-size:clamp(73px,17.7vw,124px);}
+  .date {font-size:clamp(19px,4vw,24px);}
+}
+.clock-panel .theme-toggle {margin-left:1px;flex:0 0 42px;width:42px;height:42px;border-radius:12px;border:1px solid var(--border);background:#263b54;color:#ffe3a1;display:grid;place-items:center;padding:0;line-height:1}
+.ui-icon,.theme-icon{display:inline-flex;align-items:center;justify-content:center;width:1.1em;height:1.1em}
+.ui-icon svg,.theme-icon svg{width:100%;height:100%;display:block}
+.alertname .ui-icon{width:20px;height:20px;color:#ffd26a}
+.smallbutton .ui-icon{width:15px;height:15px;margin-right:8px;vertical-align:-2px}
+.more-icon{flex:none;color:#bde5ff;display:flex;align-items:center;justify-content:center;width:30px;height:30px}
+.more-icon svg{width:26px;height:26px;display:block}
+.power-symbol{display:flex;align-items:center;justify-content:center;width:70px;height:70px;line-height:1.12}
+.power-symbol svg{width:62px;height:62px;display:block}
+.modal-close-icon{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;margin-left:6px;vertical-align:-2px}
+.modal-close-icon svg{width:14px;height:14px;display:block}
+.weather-title .city {margin-left:auto;min-width:0;max-width:180px}
+/* Commande du thème à côté de la date dans le panneau horloge. */
+.date-row {width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:13px}
+.date-row .date {margin-top:0;min-width:0}
+.clock-panel .theme-toggle {margin-left:auto;flex-shrink:0}
+@media (max-width:760px) {
+  .date-row {margin-top:7px}
+  .date-row .date {font-size:clamp(17px,4vw,24px)}
+}
+/* Les espaces et hauteurs du tableau de bord restent inchangés. */
+
+/* Mode clair : couleurs contrastées sans toucher à la structure et aux radios. */
+html[data-theme="light"] {--bg:#deebf5;--card:#fff;--border:#b4c6d7;--muted:#4b647b;--text:#1d3045;color-scheme:light}
+html[data-theme="light"] body {background:radial-gradient(circle at 75% 0%,#f8fcff 0%,#e9f2fa 58%,#dbe8f3 100%)}
+html[data-theme="light"] .card {background:rgba(255,255,255,.96);border-color:#c4d5e4;box-shadow:0 12px 28px rgba(66,102,134,.12)}
+html[data-theme="light"] .colon {color:#7194b3}
+html[data-theme="light"] .eyebrow {color:#4f657d}
+html[data-theme="light"] .city {background:#eaf2fa;border-color:#c4d4e3;color:#18324b}
+html[data-theme="light"] .weather-desc,html[data-theme="light"] .facts {color:#516980}
+html[data-theme="light"] .forecast {background:#edf4fa;color:#213c55}
+html[data-theme="light"] .forecast .low {color:#607b94}
+html[data-theme="light"] .smallbutton {color:#1d4563;background:#e6f1f9;border-color:#b6cee0}
+html[data-theme="light"] .station,html[data-theme="light"] .more-tile {background:#ecf3fa;border-color:#d2e0ec;color:#1c344d}
+html[data-theme="light"] .station.selected,html[data-theme="light"] .more-tile.selected {background:#d6efff;border-color:#3b91c5}
+html[data-theme="light"] .station-region,html[data-theme="light"] .more-current {color:#536d84}
+html[data-theme="light"] .more-icon {color:#3b83b7}
+html[data-theme="light"] .logo-wrap {border:1px solid #e2e9ef}
+html[data-theme="light"] .now {background:#eaf2f9;border-color:#c7d6e4;color:#1b344b}
+html[data-theme="light"] .now-status {color:#536c82}
+html[data-theme="light"] .now a {color:#126a9b}
+html[data-theme="light"] .clock-panel .theme-toggle {background:#eaf2fa;border-color:#b9cede;color:#315879}
+html[data-theme="light"] .alertname .ui-icon{color:#c58b11}
+html[data-theme="light"] .smallbutton .ui-icon{color:#2f6183}
+html[data-theme="light"] .more-icon{color:#3b83b7}
+html[data-theme="light"] .modal-window {background:#f6fbff;border-color:#b5cadc;color:#19324a}
+html[data-theme="light"] .modal-hint {background:#e6f1fa;color:#395975}
+html[data-theme="light"] .modal-actions button,html[data-theme="light"] .modal-actions a {background:#e5f1fa;border-color:#b4cbdf;color:#1e4765}
+
 </style>
 </head>
 <body>
@@ -153,7 +213,10 @@ button:active{transform:scale(.98)}
   <main class="dashboard">
     <section class="card clock-panel" aria-label="Horloge et date">
       <div class="clock"><span id="hour">--</span><span class="colon">:</span><span id="minute">--</span></div>
-      <div class="date" id="date">Chargement…</div>
+      <div class="date-row">
+        <div class="date" id="date">Chargement…</div>
+        <button id="themeToggle" class="theme-toggle" type="button" aria-label="Activer le mode clair" title="Passer en mode clair"><span id="themeSymbol" class="theme-icon" aria-hidden="true"></span></button>
+      </div>
     </section>
     <section class="card weather-panel" aria-label="Météo">
       <div class="weather-title"><span class="eyebrow">La météo</span>
@@ -169,20 +232,19 @@ button:active{transform:scale(.98)}
     </section>
   </main>
   <section class="card alertbar" aria-label="Avertissements et circulation">
-    <div class="alertname"><span aria-hidden="true">⚠️</span> Vigilance météo et routes</div>
+    <div class="alertname"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l8 14H4L12 4z"></path><path d="M12 9v4"></path><circle cx="12" cy="16" r="1"></circle></svg></span> Vigilance météo et routes</div>
     <div class="alertbuttons">
-      <button class="smallbutton" id="irm" type="button">Alerte IRM</button>
-      <button class="smallbutton" id="routes" type="button">État des routes</button>
+      <button class="smallbutton" id="irm" type="button"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l8 14H4L12 4z"></path><path d="M12 9v4"></path><circle cx="12" cy="16" r="1"></circle></svg></span>Alerte IRM</button>
+      <button class="smallbutton" id="routes" type="button"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L8 10l3 2-3 2 3 2-2 7"></path><path d="M14 3l2 7-3 2 3 2-3 2 2 7"></path></svg></span>État des routes</button>
     </div>
   </section>
-  <h2 class="section-title">Mes radios</h2>
-  <section class="card radio-layout" aria-label="Lecteur radio">
+    <section class="card radio-layout" aria-label="Lecteur radio">
     <div class="station-grid" id="favorites">
       <!-- Généré par JavaScript : 5 favorites et un menu de stations -->
     </div>
     <div class="controls">
       <button class="power" id="power" type="button" aria-pressed="false" aria-label="Allumer la radio">
-        <span class="power-symbol">⏻</span><span id="powerLabel">Allumer</span>
+        <span class="power-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v9"></path><path d="M7.05 5.8a8 8 0 1 0 9.9 0"></path></svg></span><span id="powerLabel">Allumer</span>
       </button>
       <div class="now" role="status">
         <div class="now-name" id="selectedName">VivaCité · Hainaut</div>
@@ -195,7 +257,7 @@ button:active{transform:scale(.98)}
 <audio id="audio" preload="none" playsinline></audio>
 <div class="modal" id="modal" aria-hidden="true">
   <section class="modal-window" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-bar"><strong id="modalTitle">Informations</strong><div class="modal-actions"><a id="modalExternal" href="#" target="_blank" rel="noopener noreferrer">Ouvrir le site</a><button id="modalClose" type="button">Fermer ✕</button></div></div>
+    <div class="modal-bar"><strong id="modalTitle">Informations</strong><div class="modal-actions"><a id="modalExternal" href="#" target="_blank" rel="noopener noreferrer">Ouvrir le site</a><button id="modalClose" type="button">Fermer <span class="modal-close-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></button></div></div>
     <div class="modal-hint">Si le site bloque l’affichage intégré, utilise « Ouvrir le site ».</div>
     <iframe id="modalFrame" title="Informations officielles" loading="lazy" referrerpolicy="no-referrer"></iframe>
   </section>
@@ -225,6 +287,26 @@ button:active{transform:scale(.98)}
   function set(id,value){el(id).textContent=value;}
   function read(k,def){try{return localStorage.getItem(k)||def;}catch(e){return def;}}
   function store(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+  /* Thème mémorisé entre deux ouvertures, sombre par défaut. */
+  var activeTheme=read('radio.theme','dark')==='light'?'light':'dark';
+  function setTheme(theme){
+    activeTheme=theme;
+    document.documentElement.setAttribute('data-theme',theme);
+    var isLight=theme==='light';
+    el('themeSymbol').innerHTML=isLight?icons.moon:icons.sun;
+    el('themeToggle').setAttribute('aria-label',isLight?'Activer le mode sombre':'Activer le mode clair');
+    el('themeToggle').title=isLight?'Passer en mode sombre':'Passer en mode clair';
+    el('themeToggle').setAttribute('aria-pressed',String(isLight));
+    var meta=document.querySelector('meta[name="theme-color"]');
+    if(meta)meta.setAttribute('content',isLight?'#e9f2fa':'#10192a');
+  }
+  setTheme(activeTheme);
+  el('themeToggle').addEventListener('click',function(){
+    var next=activeTheme==='dark'?'light':'dark';
+    store('radio.theme',next);
+    setTheme(next);
+  });
+  var icons={sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"></circle><path d="M12 2.8v2.1M12 19.1v2.1M4.9 4.9l1.5 1.5M17.6 17.6l1.5 1.5M2.8 12h2.1M19.1 12h2.1M4.9 19.1l1.5-1.5M17.6 6.4l1.5-1.5"></path></svg>',moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.2A7.9 7.9 0 0 1 9.8 4a8.9 8.9 0 1 0 10.2 10.2z"></path></svg>',radio:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="11" rx="3"></rect><path d="M7 7l8-4"></path><circle cx="8.5" cy="12.5" r="1.6"></circle><path d="M13 12h4M13 15h4"></path></svg>'};
   var audio=el('audio'),selected=read('radio.st','viva'),playing=false,serial=0;
   if(!all.some(function(s){return s.id===selected;}))selected='viva';
   var current=function(){return all.filter(function(s){return s.id===selected;})[0];};
@@ -249,7 +331,7 @@ button:active{transform:scale(.98)}
     });
     var otherActive=!fav.some(function(s){return s.id===selected;});
     var tile=document.createElement('div');tile.className='more-tile'+(otherActive?' selected':'');
-    var icon=document.createElement('span');icon.className='more-icon';icon.setAttribute('aria-hidden','true');icon.textContent='♫';tile.appendChild(icon);
+    var icon=document.createElement('span');icon.className='more-icon';icon.setAttribute('aria-hidden','true');icon.innerHTML=icons.radio;tile.appendChild(icon);
     var label=document.createElement('span');
     var name=document.createElement('span');name.className='more-label';name.textContent='Autres radios ▾';label.appendChild(name);
     var detail=document.createElement('span');detail.className='more-current';detail.textContent=otherActive?current().name:'Choisir une station';label.appendChild(detail);tile.appendChild(label);
