@@ -230,6 +230,26 @@ html[data-theme="light"] .modal-actions button,html[data-theme="light"] .modal-a
 .clock .colon{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;font-weight:360;}
 
 
+
+/* Compatibilité avec Safari/iPadOS 15 (iPad Air 2, 1024×768 en paysage).
+   Des hauteurs en pourcentage sur les éléments d'une grille imbriquée
+   peuvent se résoudre en boucle et étirer les tuiles indéfiniment.
+   Ici toutes les hauteurs de la zone radio sont déterminées en pixels,
+   sans modifier l'affichage des grands iPad Pro. */
+@media (min-width:761px) and (max-width:1100px) {
+  .radio-layout {height:282px;min-height:0;align-items:start;}
+  .station-grid {
+    height:248px;
+    min-height:0;
+    grid-template-rows:119px 119px;
+    gap:10px;
+    align-content:start;
+  }
+  .station,.more-tile {height:119px;min-height:0;max-height:119px;}
+  .controls {height:248px;min-height:0;}
+  .power {min-height:0;flex:1 1 auto;}
+}
+
 </style>
 </head>
 <body>
