@@ -470,8 +470,8 @@ html[data-theme="light"] .modal-actions button,html[data-theme="light"] .modal-a
   var modal=el('modal');
   function openModal(title,url){set('modalTitle',title);el('modalExternal').href=url;el('modalFrame').src=url;modal.classList.add('open');modal.setAttribute('aria-hidden','false');}
   function closeModal(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');el('modalFrame').src='about:blank';}
-  el('tado').addEventListener('click',function(){openModal('Tado · chauffage','https://app.tado.com/');});
-  el('netatmo').addEventListener('click',function(){openModal('Netatmo · météo et capteurs','https://home.netatmo.com/');});
+  el('tado').addEventListener('click',function(){openModal('Tado · chauffage','https://app.tado.com/fr/main/home');});
+  el('netatmo').addEventListener('click',function(){openModal('Netatmo · météo et capteurs','https://home.netatmo.com/control/dashboard');});
   el('modalClose').addEventListener('click',closeModal);
   modal.addEventListener('click',function(e){if(e.target===modal)closeModal();});
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.classList.contains('open'))closeModal();});
