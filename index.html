@@ -407,6 +407,145 @@ html[data-theme="light"] .city-choice.active{background:#dcedfa;color:#16466c}
 html[data-theme="light"] .city-choice small{color:#426b8a}
 @media(max-width:760px){.city-choices{right:46px}}
 
+
+/* Signature volontairement discrète, valable dans les deux thèmes. */
+.concept-credit{
+  flex:0 0 auto;
+  align-self:center;
+  text-align:center;
+  color:#9bb1c7;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:.035em;
+  line-height:16px;
+  padding:0 8px;
+  opacity:.82;
+}
+html[data-theme="light"] .concept-credit{color:#536d84}
+
+/* iPad vertical : même contenu, disposé sur toute la hauteur utile.
+   Dimensions et grilles explicites pour Safari / iPadOS 15. */
+@media (orientation:portrait) and (min-width:600px) and (max-width:1100px){
+  .shell{
+    max-width:1100px;
+    min-height:100vh;
+    min-height:100dvh;
+    padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(13px + env(safe-area-inset-bottom,0px));
+    gap:10px;
+  }
+  .dashboard{
+    flex:1 1 auto;
+    min-height:0;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:minmax(194px,1fr) minmax(219px,1fr);
+    gap:10px;
+  }
+  .clock-panel{
+    height:auto;min-height:0;
+    padding:18px 32px;
+    text-align:left;
+    align-items:stretch;
+    justify-content:center;
+  }
+  .clock{max-width:100%;}
+  .date-row{margin-top:12px;}
+  .date{font-size:clamp(24px,3.8vw,34px);}
+  .weather-panel{
+    height:auto;min-height:0;
+    padding:15px 22px;
+    gap:8px;
+  }
+  .weather-current{min-height:62px;gap:13px;}
+  .weather-icon{width:58px;height:58px;flex-basis:58px;}
+  .temperature{font-size:56px;}
+  .forecasts{margin-top:auto;}
+  .forecast{padding:8px 4px;}
+  .weather-title-actions .city{width:220px;max-width:220px;flex-basis:220px;}
+  .alertbar{
+    flex:0 0 64px;min-height:0;
+    padding:10px 15px;
+    gap:8px;
+    flex-wrap:nowrap;
+  }
+  .alertbuttons{width:auto;gap:7px;flex-wrap:nowrap;}
+  .alertname{font-size:15px;}
+  .smallbutton{padding:9px 11px;font-size:13px;}
+  .smallbutton .ui-icon{display:inline-flex;width:14px;height:14px;margin-right:5px;}
+  .radio-layout{
+    flex:0 0 300px;
+    height:300px;min-height:0;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 185px;
+    gap:10px;
+    align-items:stretch;
+    padding:12px;
+  }
+  .station-grid{
+    height:274px;min-height:0;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    grid-template-rows:132px 132px;
+    gap:10px;
+    align-content:start;
+  }
+  .station,.more-tile{
+    min-height:0;max-height:132px;height:132px;
+    padding:8px 5px;
+    align-items:center;justify-content:center;
+    flex-direction:column;text-align:center;gap:5px;
+  }
+  .logo-wrap{width:65px;min-width:0;height:58px;min-height:58px;flex:0 0 58px;}
+  .station-info{align-items:center;gap:3px;}
+  .station-name,.more-label{font-size:14px;line-height:1.12;}
+  .station-region,.more-current{font-size:11px;line-height:1.2;}
+  .more-icon{flex:none;}
+  .controls{height:274px;min-height:0;display:flex;flex-direction:column;gap:8px;}
+  .power{min-height:0;flex:1 1 auto;font-size:21px;}
+  .power-symbol{width:65px;height:65px;}
+  .power-symbol svg{width:56px;height:56px;}
+  .now{flex:0 0 63px;min-height:63px;padding:9px 11px;}
+  .concept-credit{font-size:11px;line-height:16px;padding:0;}
+}
+@media (orientation:portrait) and (min-width:600px) and (max-width:1100px) and (display-mode:standalone){
+  .shell{padding-top:calc(27px + env(safe-area-inset-top,0px));}
+}
+/* Quand Safari occupe plus de hauteur que l'app écran d'accueil sur les anciens iPad. */
+@media (orientation:portrait) and (min-width:600px) and (max-width:1100px) and (max-height:890px){
+  .dashboard{grid-template-rows:minmax(165px,1fr) minmax(210px,1fr);}
+  .alertbar{flex-basis:57px;}
+  .radio-layout{height:262px;flex-basis:262px;}
+  .station-grid{height:238px;grid-template-rows:114px 114px;}
+  .station,.more-tile{height:114px;max-height:114px;}
+  .controls{height:238px;}
+}
+
+
+/* Portrait compact : Safari réduit parfois la hauteur visible de l'iPad Air 2. */
+@media (orientation:portrait) and (min-width:600px) and (max-width:1100px) and (max-height:990px){
+  .shell{gap:8px;padding-top:calc(15px + env(safe-area-inset-top,0px));padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));}
+  .dashboard{gap:8px;grid-template-rows:minmax(178px,1fr) minmax(212px,1fr);}
+  .clock-panel{padding:13px 28px;}
+  .date-row{margin-top:7px;}
+  .date{font-size:25px;}
+  .weather-panel{padding:11px 18px;gap:5px;}
+  .weather-current{min-height:53px;}
+  .weather-icon{width:52px;height:52px;flex-basis:52px;}
+  .temperature{font-size:51px;}
+  .weather-panel .forecast{padding:4px 2px;}
+  .weather-panel .forecast .icon{width:25px;height:25px;margin:3px auto;}
+  .alertbar{flex-basis:57px;min-height:0;padding:8px 12px;}
+  .smallbutton{padding:7px 9px;}
+  .radio-layout{height:264px;flex-basis:264px;padding:10px;}
+  .station-grid{height:242px;grid-template-rows:116px 116px;gap:10px;}
+  .station,.more-tile{height:116px;max-height:116px;padding:6px 3px;}
+  .controls{height:242px;}
+  .logo-wrap{width:57px;min-width:0;height:52px;min-height:52px;flex-basis:52px;}
+  .concept-credit{line-height:15px;}
+}
+@media (orientation:portrait) and (min-width:600px) and (max-width:1100px) and (max-height:990px) and (display-mode:standalone){
+  .shell{padding-top:calc(24px + env(safe-area-inset-top,0px));}
+}
+
 </style>
 </head>
 <body>
@@ -457,6 +596,7 @@ html[data-theme="light"] .city-choice small{color:#426b8a}
       </div>
     </div>
   </section>
+  <footer class="concept-credit" aria-label="Origine du projet">Une idée de Vince <span aria-hidden="true">·</span> novembre 2026</footer>
 </div>
 <div class="soft-dim" id="softDim" aria-hidden="true"></div>
 <div class="tools-modal" id="toolsModal" aria-hidden="true">
@@ -561,7 +701,8 @@ html[data-theme="light"] .city-choice small{color:#426b8a}
     var c=el('clockDisplay'),panel=c.parentElement;
     if(!panel)return;
     var mobile=window.innerWidth<=760;
-    var target=mobile?124:194;
+    var shortPortrait=window.innerWidth>=600 && window.innerWidth<=1100 && window.innerHeight<=990 && window.innerHeight>window.innerWidth;
+    var target=shortPortrait?158:(mobile?124:194);
     c.style.fontSize=target+'px';
     var style=getComputedStyle(panel);
     var maxWidth=(panel.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight)-12)/1.07;
