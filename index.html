@@ -597,16 +597,85 @@ html[data-theme="light"] .big-clock-exit{border-color:#bfd3e2;background:#fff}
 @media(max-width:760px){.tool-menu{grid-template-columns:1fr}.connection-state{font-size:10px}.tool-choice{min-height:66px}}
 @media(min-width:761px) and (max-width:1100px){.alertbuttons .smallbutton{padding:9px 9px;font-size:12px}.alertbuttons{gap:5px}.alertname{gap:6px}.connection-state{font-size:10px}}
 
+
+/* V20 — commandes regroupées dans l’horloge et météo accessible sans popup. */
+.clock-actions{position:relative;display:flex;align-items:center;gap:7px;flex:0 0 auto;margin-left:auto}
+.clock-mini-button,.clock-panel .theme-toggle{width:40px;height:40px;min-width:40px;min-height:40px;flex:0 0 40px;margin:0;border-radius:12px;border:1px solid var(--border);background:#263b54;color:#d8eafa;display:flex;align-items:center;justify-content:center;padding:7px;position:relative;touch-action:manipulation}
+.clock-mini-button svg{height:24px;width:24px;display:block}
+.clock-panel .theme-toggle{color:#ffe3a1}
+.theme-auto-indicator{display:none;position:absolute;right:2px;bottom:1px;font-size:10px;font-weight:800;color:#b4ebff;background:#27435f;border-radius:4px;padding:0 2px}
+.theme-toggle.is-auto .theme-auto-indicator{display:inline}
+.clock-timer-badge{position:absolute;right:-3px;top:-5px;min-width:18px;padding:2px 3px;background:#8cd7ff;color:#102e44;font-size:10px;font-weight:800;border-radius:8px;line-height:1.1}
+.clock-timer-badge[hidden]{display:none}
+.clock-panel.theme-menu-open{position:relative;z-index:19}
+.theme-menu{display:none;position:absolute;right:0;top:calc(100% + 8px);z-index:21;min-width:192px;padding:5px;background:#263f5c;border:1px solid #597b9c;border-radius:14px;box-shadow:0 14px 30px rgba(0,0,0,.4)}
+.theme-menu.open{display:block}
+.theme-choice{width:100%;display:flex;align-items:center;gap:10px;text-align:left;color:#f6fbff;background:transparent;border:0;border-radius:9px;padding:11px;font-size:14px;font-weight:650;min-height:43px}
+.theme-choice.active{background:#365b78}
+.theme-menu-icon{width:20px;height:20px;display:flex;flex:0 0 20px;align-items:center;justify-content:center}
+.theme-menu-icon svg{width:20px;height:20px}
+.theme-check{margin-left:auto;color:#a8e4ff;font-weight:800}
+html[data-theme="light"] .clock-mini-button{background:#eaf2fa;color:#315879;border-color:#b9cede}
+html[data-theme="light"] .theme-menu{background:#fff;border-color:#b9cede;box-shadow:0 12px 30px rgba(41,76,105,.25)}
+html[data-theme="light"] .theme-choice{color:#1e3c55}
+html[data-theme="light"] .theme-choice.active{background:#dcedfa}
+html[data-theme="light"] .theme-check{color:#2778ab}
+html[data-theme="light"] .theme-auto-indicator{background:#d9eefa;color:#235779}
+.weather-details{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:3px 8px;font-size:11.5px;line-height:1.22;color:#c2d9ed;margin-top:0}
+.weather-detail{display:inline-flex;align-items:center;gap:5px;white-space:normal;min-width:0}
+.weather-detail .detail-symbol{width:15px;height:15px;flex:0 0 15px;display:inline-flex}
+.weather-detail svg{width:15px;height:15px}
+html[data-theme="light"] .weather-details{color:#416584}
+.forecasts{display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scrollbar-width:none;gap:6px;align-items:stretch;padding-bottom:1px;width:100%;min-width:0}
+.forecasts::-webkit-scrollbar{display:none}
+.forecasts .forecast{flex:0 0 calc((100% - 18px) / 4);min-width:0;scroll-snap-align:start}
+@media (min-width:761px){
+  .clock-panel .date-row .date{font-size:clamp(20px,2.35vw,30px)}
+  .weather-panel{gap:6px;padding-top:16px;padding-bottom:14px}
+  .weather-current{min-height:69px;gap:10px}
+  .weather-icon{width:54px;height:54px;flex-basis:54px}
+  .weather-panel .forecast{padding:5px 2px}
+  .weather-panel .forecast .icon{width:27px;height:27px;margin:3px auto}
+}
+@media (orientation:landscape) and (min-width:761px) and (max-width:1100px) and (max-height:820px){
+  .weather-panel{gap:4px;padding-top:12px;padding-bottom:10px}
+  .weather-current{min-height:54px}
+  .weather-details{font-size:10.5px;gap:2px 8px}
+  .weather-detail .detail-symbol,.weather-detail svg{width:13px;height:13px;flex-basis:13px}
+  .forecast .chance{margin-top:1px}
+  .weather-panel .forecast .icon{width:24px;height:24px;margin:1px auto}
+  .weather-panel .forecast{padding:3px 1px}
+}
+@media (orientation:portrait) and (min-width:600px) and (max-width:1100px){
+  .weather-panel{gap:5px;padding:12px 18px}
+  .weather-current{min-height:55px}
+  .weather-details{font-size:12px}
+}
+@media (max-width:760px){
+  .clock-panel .date-row .date{font-size:clamp(16px,4vw,24px)}
+  .clock-mini-button,.clock-panel .theme-toggle{width:36px;height:36px;min-width:36px;min-height:36px;flex-basis:36px}
+  .weather-details{font-size:11px}
+}
+@media (max-width:500px){.forecasts .forecast{flex-basis:calc((100% - 12px) / 3)}}
+
 </style>
 </head>
 <body>
 <div class="shell">
   <main class="dashboard">
-    <section class="card clock-panel" aria-label="Horloge et date">
+    <section class="card clock-panel" id="clockPanel" aria-label="Horloge et date">
       <div class="clock" id="clockDisplay" role="button" tabindex="0" aria-label="Afficher l’horloge en grand"><span id="hour">--</span><span class="colon">:</span><span id="minute">--</span></div>
       <div class="date-row">
         <div class="date" id="date">Chargement…</div>
-        <button id="themeToggle" class="theme-toggle" type="button" aria-label="Activer le mode clair" title="Passer en mode clair"><span id="themeSymbol" class="theme-icon" aria-hidden="true"></span></button>
+        <div class="clock-actions" id="clockActions">
+          <button id="clockTimerButton" class="clock-mini-button" type="button" aria-label="Ouvrir le minuteur indépendant" title="Minuteur indépendant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l3 2M9 2h6M18 5l2 2"></path></svg><span id="clockTimerBadge" class="clock-timer-badge" hidden></span></button>
+          <button id="themeToggle" class="theme-toggle" type="button" aria-label="Choisir le thème" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="Choisir l'apparence"><span id="themeSymbol" class="theme-icon" aria-hidden="true"></span><span class="theme-auto-indicator" id="themeAutoIndicator" aria-hidden="true">A</span></button>
+          <div class="theme-menu" id="themeMenu" role="group" aria-label="Apparence du tableau de bord">
+            <button type="button" class="theme-choice" data-theme-choice="light"><span class="theme-menu-icon" id="themeMenuSun" aria-hidden="true"></span> Clair <span class="theme-check" aria-hidden="true"></span></button>
+            <button type="button" class="theme-choice" data-theme-choice="dark"><span class="theme-menu-icon" id="themeMenuMoon" aria-hidden="true"></span> Sombre <span class="theme-check" aria-hidden="true"></span></button>
+            <button type="button" class="theme-choice" data-theme-choice="auto"><span class="theme-menu-icon" id="themeMenuAuto" aria-hidden="true"></span> Automatique <span class="theme-check" aria-hidden="true"></span></button>
+          </div>
+        </div>
       </div>
     </section>
     <section class="card weather-panel" id="weatherPanel" aria-label="Météo">
@@ -621,16 +690,19 @@ html[data-theme="light"] .big-clock-exit{border-color:#bfd3e2;background:#fff}
       </div>
       <div class="weather-current"><span class="weather-icon" id="weatherIcon" aria-hidden="true"></span><div><div class="temperature" id="currentTemp">--°</div><div class="weather-desc"><span id="weatherDesc">Chargement…</span><span class="weather-place" id="weatherPlace">· Position actuelle</span></div></div></div>
       <div class="facts" id="weatherFacts">Mise à jour de la météo…</div>
-      <div class="forecasts" id="forecasts" aria-label="Prévisions des prochaines heures"><div class="forecast">Prévisions…</div></div>
+      <div class="weather-details" aria-label="Pluie et soleil">
+        <span class="weather-detail rain-detail"><span class="detail-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a8 8 0 0 1 16 0H4zM12 11v6a2 2 0 0 0 4 0"></path><path d="M7 15l-1 2M11 15l-1 2M16 15l-1 2" stroke="#73ccf8"></path></svg></span><span id="rainInline">Pluie : actualisation…</span></span>
+        <span class="weather-detail sun-detail"><span class="detail-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3"></circle><path d="M3 19h18M4 15l2 2M20 15l-2 2M12 1v2M4 8h2M18 8h2"></path></svg></span><span id="sunInline">Lever et coucher : —</span></span>
+      </div>
+      <div class="forecasts" id="forecasts" aria-label="Prévisions des 12 prochaines heures : faire glisser horizontalement"><div class="forecast">Prévisions…</div></div>
     </section>
   </main>
-  <section class="card alertbar" aria-label="Météo et outils radio">
-    <div class="alertname"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8M8 21h8M12 8v4l3 2"></path><circle cx="12" cy="12" r="9"></circle></svg></span> Météo &amp; radio <span class="connection-state" id="connectionState" role="status" title="Vérification de la connexion" aria-label="Connexion en cours de vérification"></span></div>
+  <section class="card alertbar" aria-label="Sommeil radio et services">
+    <div class="alertname"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="11" rx="3"></rect><path d="M7 7l8-4M13 12h4M13 15h4"></path><circle cx="8.5" cy="12.5" r="1.6"></circle></svg></span> Radio &amp; outils <span class="connection-state" id="connectionState" role="status" title="Vérification de la connexion" aria-label="Connexion en cours de vérification"></span></div>
     <div class="alertbuttons">
-      <button class="smallbutton" id="hourlyButton" type="button" aria-label="Voir les prévisions météo heure par heure"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3.5 2"></path></svg></span>Prévisions</button>
-      <button class="smallbutton" id="timerButton" type="button" aria-label="Régler la minuterie d'arrêt radio"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l3 2M9 2h6M18 5l2 2"></path></svg></span><span id="timerButtonLabel">Minuterie</span></button>
+      <button class="smallbutton" id="timerButton" type="button" aria-label="Programmer l'arrêt automatique de la radio (Sommeil)"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.2A7.9 7.9 0 0 1 9.8 4a8.9 8.9 0 1 0 10.2 10.2z"></path><path d="M17 5v4M15 7h4"></path></svg></span><span id="timerButtonLabel">Sommeil</span></button>
       <button class="smallbutton" id="dimButton" type="button" aria-pressed="true" aria-label="Désactiver la veille douce"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.2A7.9 7.9 0 0 1 9.8 4a8.9 8.9 0 1 0 10.2 10.2z"></path></svg></span><span id="dimButtonLabel">Veille douce : oui</span></button>
-      <button class="smallbutton" id="extrasButton" type="button" aria-label="Ouvrir les outils supplémentaires"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg></span><span id="extrasLabel">Outils</span></button>
+      <button class="smallbutton" id="extrasButton" type="button" aria-label="Consulter la qualité de l'air et les pollens"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4C11 4 5 8 5 15a5 5 0 0 0 5 5c7 0 10-7 10-16Z"></path><path d="M5 20c2-5 6-9 11-12"></path></svg></span><span id="extrasLabel">Air &amp; pollens</span></button>
     </div>
   </section>
     <section class="card radio-layout" aria-label="Lecteur radio">
@@ -737,19 +809,45 @@ html[data-theme="light"] .big-clock-exit{border-color:#bfd3e2;background:#fff}
     document.documentElement.setAttribute('data-theme',theme);
     var isLight=theme==='light';
     el('themeSymbol').innerHTML=isLight?icons.moon:icons.sun;
-    el('themeToggle').setAttribute('aria-label',isLight?'Activer le mode sombre':'Activer le mode clair');
-    el('themeToggle').title=isLight?'Passer en mode sombre':'Passer en mode clair';
-    el('themeToggle').setAttribute('aria-pressed',String(isLight));
+    el('themeToggle').setAttribute('aria-label','Choisir le thème : '+(autoTheme?'automatique':isLight?'clair':'sombre'));
+    el('themeToggle').title='Apparence : '+(autoTheme?'automatique':isLight?'clair':'sombre');
+    el('themeToggle').classList.toggle('is-auto',autoTheme);
+    updateThemeChoices();
     var meta=document.querySelector('meta[name="theme-color"]');
     if(meta)meta.setAttribute('content',isLight?'#e9f2fa':'#10192a');
   }
+  function updateThemeChoices(){
+    var chosen=autoTheme?'auto':activeTheme;
+    var choices=document.querySelectorAll('[data-theme-choice]');
+    for(var j=0;j<choices.length;j++){
+      var active=choices[j].getAttribute('data-theme-choice')===chosen;
+      choices[j].classList.toggle('active',active);
+      choices[j].setAttribute('aria-pressed',String(active));
+      var mark=choices[j].querySelector('.theme-check');if(mark)mark.textContent=active?'✓':'';
+    }
+  }
+  function closeThemeMenu(){
+    el('themeMenu').classList.remove('open');el('themeToggle').setAttribute('aria-expanded','false');
+    el('clockPanel').classList.remove('theme-menu-open');
+  }
   setTheme(activeTheme);
+  el('themeMenuSun').innerHTML=icons.sun;
+  el('themeMenuMoon').innerHTML=icons.moon;
+  el('themeMenuAuto').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>';
   el('themeToggle').addEventListener('click',function(){
-    var next=activeTheme==='dark'?'light':'dark';
-    autoTheme=false;store('radio.theme.mode','manual');
-    store('radio.theme',next);
-    setTheme(next);
+    var opening=!el('themeMenu').classList.contains('open');
+    if(opening){el('themeMenu').classList.add('open');el('themeToggle').setAttribute('aria-expanded','true');el('clockPanel').classList.add('theme-menu-open');updateThemeChoices();}
+    else closeThemeMenu();
   });
+  var themeChoices=document.querySelectorAll('[data-theme-choice]');
+  for(var tc=0;tc<themeChoices.length;tc++)themeChoices[tc].addEventListener('click',function(){
+    var mode=this.getAttribute('data-theme-choice');
+    autoTheme=mode==='auto';store('radio.theme.mode',autoTheme?'auto':'manual');
+    if(autoTheme){applyAutoTheme();setTheme(activeTheme);}else{store('radio.theme',mode);setTheme(mode);}
+    closeThemeMenu();
+  });
+  document.addEventListener('click',function(e){if(!el('clockActions').contains(e.target))closeThemeMenu();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeThemeMenu();});
   var audio=el('audio'),selected=read('radio.st','viva'),playing=false,serial=0,previewStation=null;
   if(!all.some(function(s){return s.id===selected;}))selected=all.length?all[0].id:'';
   var current=function(){return previewStation||storedRadioById(selected)||all[0]||{name:'Aucune station',region:'',url:'',home:'https://www.radio-browser.info/'};};
@@ -1017,7 +1115,7 @@ html[data-theme="light"] .big-clock-exit{border-color:#bfd3e2;background:#fff}
     }).catch(function(){feedback('Position indisponible. Autorise la localisation de Safari ou choisis une ville.');displayWeatherCities();});
   }
   function updateWeather(){
-    var selectedCity=activeCity,p=currentPlace();set('weatherDesc','Actualisation…');showWeatherPlace();
+    var selectedCity=activeCity,p=currentPlace();set('weatherDesc','Actualisation…');set('rainInline','Pluie : actualisation…');set('sunInline','Lever et coucher : —');showWeatherPlace();
     var locationPromise;
     if(selectedCity==='local'){
       locationPromise=locateDevice();
@@ -1054,7 +1152,7 @@ html[data-theme="light"] .big-clock-exit{border-color:#bfd3e2;background:#fff}
         hourlyForecast.push({time:h.time[i],temp:h.temperature_2m[i],rain:h.precipitation_probability[i],code:h.weather_code[i]});
       }
       var box=el('forecasts');box.textContent='';
-      hourlyForecast.slice(0,4).forEach(function(hour){
+      hourlyForecast.forEach(function(hour){
         var x=document.createElement('div');x.className='forecast';
         var status=icon(hour.code);
         var hh=hour.time.slice(11,13);
@@ -1063,6 +1161,7 @@ html[data-theme="light"] .big-clock-exit{border-color:#bfd3e2;background:#fff}
         box.appendChild(x);
       });
       if(!hourlyForecast.length){box.textContent='Prévisions horaires indisponibles';}
+      renderWeatherDetails();
       if(el('toolsModal').classList.contains('open')&&activeTool==='hourly')renderHourlyTool();
     }).catch(function(){if(activeCity===selectedCity){setConnection(navigator.onLine===false?'offline':'uncertain');set('weatherDesc',selectedCity==='local'?'Position indisponible':'Météo indisponible');set('weatherFacts',selectedCity==='local'?'Autorise la localisation ou choisis une ville.':'Vérifie la connexion Internet.');}});
   }
@@ -1107,7 +1206,7 @@ html[data-theme="light"] .big-clock-exit{border-color:#bfd3e2;background:#fff}
   function openTools(tool){
     activeTool=tool;clearDim();toolsModal.classList.add('open');toolsModal.setAttribute('aria-hidden','false');
     if(tool==='hourly'){set('toolsTitle','Prévisions · '+(activeCity==='local'?(localCityName||'Météo locale'):currentPlace().name));renderHourlyTool();}
-    else if(tool==='timer'){set('toolsTitle','Minuterie radio');renderTimerTool();}
+    else if(tool==='timer'){set('toolsTitle','Sommeil · arrêt de la radio');renderTimerTool();}
     else if(tool==='cities'){set('toolsTitle','Mes villes météo');renderCitiesTool();}
     else if(tool==='radios'){set('toolsTitle','Mes stations radio');renderRadiosTool();}
     else if(tool==='extras'){set('toolsTitle','Mes outils');renderExtrasTool();}
@@ -1137,9 +1236,9 @@ html[data-theme="light"] .big-clock-exit{border-color:#bfd3e2;background:#fff}
   function timerRemaining(){return timerDeadline?Math.max(0,Math.ceil((timerDeadline-Date.now())/60000)):0;}
   function updateTimerLabel(){
     var mins=timerRemaining();
-    set('timerButtonLabel',timerDeadline?(mins+' min restantes'):'Minuterie');
+    set('timerButtonLabel',timerDeadline?('Sommeil · '+mins+' min'):'Sommeil');
     if(timerDeadline&&Date.now()>=timerDeadline){
-      timerDeadline=0;set('timerButtonLabel','Minuterie');
+      timerDeadline=0;set('timerButtonLabel','Sommeil');
       if(playing)stop();
       if(activeTool==='timer')renderTimerTool();
       return;
@@ -1228,9 +1327,16 @@ html[data-theme="light"] .big-clock-exit{border-color:#bfd3e2;background:#fff}
     if(max<30)return 'Faible probabilité de précipitations sur les six prochaines heures.';
     return 'Risque variable de précipitations dans les six prochaines heures (jusqu’à '+Math.round(max)+' %).';
   }
+  function renderWeatherDetails(){
+    var hours=hourlyForecast.slice(0,6),hits=[],max=0,seen=false;
+    hours.forEach(function(h){if(h.rain!=null&&isFinite(Number(h.rain))){seen=true;max=Math.max(max,Number(h.rain));if(Number(h.rain)>=60)hits.push(h);}});
+    var label=!seen?'Pluie : données indisponibles':hits.length?'Pluie probable vers '+hits[0].time.slice(11,13)+' h ('+Math.round(hits[0].rain)+' %)':max<30?'Faible risque de pluie (6 h)':'Risque de pluie jusqu’à '+Math.round(max)+' % (6 h)';
+    set('rainInline',label);
+    var solar=getSolarDay();
+    set('sunInline',solar&&solar.rise&&solar.set?'Lever '+solarTime(solar.rise)+' · coucher '+solarTime(solar.set):'Lever et coucher : —');
+  }
   function renderInsightsTool(){
     var box=el('toolsBody');box.textContent='';
-    box.appendChild(actionButton('← Tous les outils',function(){openTools('extras');},'mini-back'));
     var loc=activeCity==='local'?(localCityName||'Météo locale'):currentPlace().name;
     box.appendChild(make('p','manager-lead','Prévisions pour '+loc+'. Les probabilités ne garantissent pas qu’il pleuvra à un endroit précis.'));
     box.appendChild(make('div','insight-headline',rainHeadline()));
@@ -1287,7 +1393,9 @@ html[data-theme="light"] .big-clock-exit{border-color:#bfd3e2;background:#fff}
       showerDeadline=0;playShowerTone();showToast('Minuteur terminé !');
       if(activeTool==='shower')renderShowerTool();
     }
-    set('extrasLabel',showerDeadline?'Outils · '+showerLabel():'Outils');
+    var badge=el('clockTimerBadge');
+    if(badge){badge.textContent=showerDeadline?String(Math.ceil(showerLeft()/60)):'';badge.hidden=!showerDeadline;}
+    el('clockTimerButton').setAttribute('aria-label',showerDeadline?'Minuteur indépendant : '+showerLabel()+' restantes. Ouvrir':'Ouvrir le minuteur indépendant');
     if(activeTool==='shower'&&el('showerCount'))set('showerCount',showerDeadline?'Temps restant : '+showerLabel():'Aucun minuteur actif.');
   }
   function startShower(minutes){
@@ -1298,7 +1406,6 @@ html[data-theme="light"] .big-clock-exit{border-color:#bfd3e2;background:#fff}
   }
   function renderShowerTool(){
     var box=el('toolsBody');box.textContent='';
-    box.appendChild(actionButton('← Tous les outils',function(){openTools('extras');},'mini-back'));
     box.appendChild(make('p','timer-detail','Un minuteur pour la douche ou autre chose, sans couper la radio. Un signal sonore est tenté à la fin si l’application reste active.'));
     box.appendChild(make('div','insight-headline',showerDeadline?'Temps restant : '+showerLabel():'Aucun minuteur actif.')).id='showerCount';
     var options=make('div','timer-options');
@@ -1345,7 +1452,8 @@ html[data-theme="light"] .big-clock-exit{border-color:#bfd3e2;background:#fff}
     box.appendChild(make('p','extra-status','Connexion : '+status+'. L’horloge reste disponible même hors ligne.'));
     box.appendChild(make('p','manager-note','Appuyer sur le soleil ou la lune à côté de la date repasse en mode manuel. Le changement automatique suit le lever et le coucher du soleil de la ville sélectionnée.'));
   }
-  el('extrasButton').addEventListener('click',function(){openTools('extras');});
+  el('extrasButton').addEventListener('click',function(){openTools('insights');});
+  el('clockTimerButton').addEventListener('click',function(){openTools('shower');});
   setInterval(updateShowerTimer,1000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden){updateShowerTimer();applyAutoTheme();}});
   updateShowerTimer();
@@ -1672,7 +1780,6 @@ html[data-theme="light"] .big-clock-exit{border-color:#bfd3e2;background:#fff}
     addBackupSection(box);
   }
 
-  el('hourlyButton').addEventListener('click',function(){openTools('hourly');});
   el('timerButton').addEventListener('click',function(){openTools('timer');});
   el('toolsClose').addEventListener('click',closeTools);
   toolsModal.addEventListener('click',function(e){if(e.target===toolsModal)closeTools();});
