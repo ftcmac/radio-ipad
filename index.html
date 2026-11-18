@@ -353,6 +353,17 @@ html[data-theme="light"] .manager-empty{color:#526b80}
 @media(max-width:1100px) and (min-width:761px){.weather-title-actions .city{width:134px}.city-manage{width:36px;height:36px;flex-basis:36px}}
 @media(max-width:760px){.manager-row{align-items:flex-start;flex-wrap:wrap}.manager-actions{width:100%;justify-content:flex-start}.weather-title-actions .city{width:145px}}
 
+/* V16 — commandes nettes sur Safari 15 et choix météo sans troncature. */
+.tools-close{display:flex;align-items:center;justify-content:center;line-height:0;padding:0;flex:0 0 42px;width:42px;height:42px}
+.tools-close svg{display:block;margin:0;flex:none;width:19px;height:19px}
+.weather-title-actions{min-width:0;flex:1;justify-content:flex-end}
+.weather-title-actions .city{width:218px;max-width:218px;min-width:0;font-size:14px;flex:0 1 218px}
+@media(max-width:1100px) and (min-width:761px){.weather-title-actions .city{width:206px;max-width:206px;flex-basis:206px}}
+@media(max-width:760px){.weather-title-actions .city{width:210px;max-width:210px;flex-basis:210px}}
+@media(max-width:400px){.weather-title-actions .city{width:166px;max-width:166px;flex-basis:166px}}
+.logo-wrap.manager-logo{width:44px;min-width:44px;height:44px;flex:0 0 44px;object-fit:contain;border-radius:10px;background:#fff;padding:3px}
+.manager-local-search{display:flex;gap:9px;flex-wrap:wrap;margin:10px 0 13px}
+.manager-local-search .manager-btn{min-height:40px}
 /* V15 — filtres géographiques, sauvegardes et horloge animée. */
 @keyframes colonPulse { 0%,49% {opacity:1} 50%,99% {opacity:.09} 100% {opacity:1} }
 .clock .colon {display:inline-block;animation:colonPulse 1s steps(1,end) infinite}
@@ -451,10 +462,25 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
   // Les configurations restent dans Safari sur l'appareil : aucune donnée de compte.
   function readJSON(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}}
   function httpsUrl(v){return typeof v==='string' && /^https:\/\/[^\s]+$/i.test(v.trim());}
+  function officialSiteIcon(home){
+    if(!httpsUrl(home))return '';
+    try{
+      var hostname=new URL(home).hostname.toLowerCase();
+      if(!hostname||hostname.indexOf('radio-browser.info')>=0)return '';
+      return 'https://www.google.com/s2/favicons?domain='+encodeURIComponent(hostname)+'&sz=256';
+    }catch(e){return '';}
+  }
+  function imageLink(url){
+    if(httpsUrl(url))return url.trim();
+    // Les annuaires diffusent parfois un favicon en HTTP ; tenter la version HTTPS.
+    if(typeof url==='string' && /^http:\/\/[^\s]+$/i.test(url.trim()))return url.trim().replace(/^http:/i,'https:');
+    return '';
+  }
   function safeStation(s){
     if(!s||typeof s!=='object'||!httpsUrl(s.url)||typeof s.name!=='string'||!s.name.trim())return null;
     var name=s.name.trim().slice(0,85),id=(typeof s.id==='string'?s.id:'').slice(0,120);
-    return {id:id||'saved-'+name,name:name,region:String(s.region||'').slice(0,55),subregion:String(s.subregion||'').slice(0,75),logo:httpsUrl(s.logo)?s.logo:'',mark:String(s.mark||name.slice(0,3)).slice(0,14),url:s.url.trim(),home:httpsUrl(s.home)?s.home:'https://www.radio-browser.info/'};
+    var home=imageLink(s.home)||'https://www.radio-browser.info/';
+    return {id:id||'saved-'+name,name:name,region:String(s.region||'').slice(0,55),subregion:String(s.subregion||'').slice(0,75),logo:imageLink(s.logo),logoBackup:imageLink(s.logoBackup)||officialSiteIcon(home),mark:String(s.mark||name.slice(0,3)).slice(0,14),url:s.url.trim(),home:home};
   }
   var savedRadio=readJSON('radio.library.v1');
   if(savedRadio&&Array.isArray(savedRadio.fav)&&Array.isArray(savedRadio.other)){
@@ -520,14 +546,21 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
 
   function logo(s){
     var box=document.createElement('span');box.className='logo-wrap';
-    var img=document.createElement('img');img.className='logo-img';img.alt='Logo '+s.name;img.loading='lazy';if(s.logo)img.src=s.logo;
-    img.onerror=function(){box.textContent='';var sp=document.createElement('span');sp.className='logo-fallback';sp.textContent=s.mark;box.appendChild(sp);};
-    if(s.logo)box.appendChild(img);else{var label=document.createElement('span');label.className='logo-fallback';label.textContent=s.mark||s.name.slice(0,3);box.appendChild(label);}return box;
+    var img=document.createElement('img');img.className='logo-img';img.alt='Logo '+s.name;img.loading='lazy';
+    var fallbackUrl=s.logoBackup||officialSiteIcon(s.home);
+    var firstUrl=s.logo||fallbackUrl;
+    img.onerror=function(){
+      if(fallbackUrl && img.src!==fallbackUrl && !img.dataset.fallback){img.dataset.fallback='1';img.src=fallbackUrl;return;}
+      box.textContent='';var sp=document.createElement('span');sp.className='logo-fallback';sp.textContent=s.mark||s.name.slice(0,3);box.appendChild(sp);
+    };
+    if(firstUrl){img.src=firstUrl;box.appendChild(img);}
+    else{var label=document.createElement('span');label.className='logo-fallback';label.textContent=s.mark||s.name.slice(0,3);box.appendChild(label);}
+    return box;
   }
   function render(){
     var grid=el('favorites');grid.textContent='';
     fav.forEach(function(s){
-      var b=document.createElement('button');b.className='station'+(selected===s.id?' selected':'');b.type='button';b.setAttribute('aria-pressed',String(selected===s.id));b.setAttribute('aria-label','Choisir '+s.name);
+      var b=document.createElement('button');var isActive=!previewStation&&selected===s.id;b.className='station'+(isActive?' selected':'');b.type='button';b.setAttribute('aria-pressed',String(isActive));b.setAttribute('aria-label','Choisir '+s.name);
       b.appendChild(logo(s));
       var meta=document.createElement('span');meta.className='station-info';
       var name=document.createElement('span');name.className='station-name';name.textContent=s.name;meta.appendChild(name);
@@ -541,26 +574,41 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
       var label=document.createElement('span');label.className='station-name';label.textContent='+ Ajouter une favorite';empty.appendChild(label);
       empty.addEventListener('click',function(){openTools('radios');});grid.appendChild(empty);
     }
-    var otherActive=!fav.some(function(s){return s.id===selected;});
+    var otherActive=!!previewStation||!fav.some(function(s){return s.id===selected;});
     var tile=document.createElement('div');tile.className='more-tile'+(otherActive?' selected':'');
     var icon=document.createElement('span');icon.className='more-icon';icon.setAttribute('aria-hidden','true');icon.innerHTML=icons.radio;tile.appendChild(icon);
     var label=document.createElement('span');
     var name=document.createElement('span');name.className='more-label';name.textContent='Autres radios ▾';label.appendChild(name);
-    var detail=document.createElement('span');detail.className='more-current';detail.textContent=otherActive?current().name:'Rechercher / gérer';label.appendChild(detail);tile.appendChild(label);
+    var detail=document.createElement('span');detail.className='more-current';detail.textContent=previewStation?'Essai : '+previewStation.name:(otherActive?current().name:'Rechercher / gérer');label.appendChild(detail);tile.appendChild(label);
     var select=document.createElement('select');select.className='more-select';select.setAttribute('aria-label','Choisir une autre radio');
     var opt=document.createElement('option');opt.value='';opt.textContent='Autres radios…';select.appendChild(opt);
     other.forEach(function(s){var o=document.createElement('option');o.value=s.id;o.textContent=s.name;select.appendChild(o);});
     var manage=document.createElement('option');manage.value='__manage__';manage.textContent='★ Rechercher et gérer les stations…';select.appendChild(manage);
-    select.value=otherActive?selected:'';
-    select.addEventListener('change',function(){if(this.value==='__manage__'){openTools('radios');this.value=otherActive?selected:'';}else if(this.value)choose(this.value);});tile.appendChild(select);grid.appendChild(tile);
-    set('selectedName',current().name+(current().region?' · '+current().region:''));
+    select.value=previewStation?'':(otherActive?selected:'');
+    select.addEventListener('change',function(){if(this.value==='__manage__'){openTools('radios');this.value=previewStation?'':(otherActive?selected:'');}else if(this.value)choose(this.value);});tile.appendChild(select);grid.appendChild(tile);
+    set('selectedName',current().name+(current().region?' · '+current().region:'')+(previewStation?' · Essai':''));
   }
   function powerUI(){el('power').classList.toggle('on',playing);el('power').setAttribute('aria-pressed',String(playing));el('power').setAttribute('aria-label',playing?'Éteindre la radio':'Allumer la radio');set('powerLabel',playing?'Éteindre':'Allumer');}
   function choose(id){
+    // La station effectivement écoutée et le favori mémorisé peuvent différer
+    // pendant l'essai d'une radio non enregistrée.
+    var target=storedRadioById(id);
+    if(!target)return;
+    var wasPreview=!!previewStation;
+    var hadActiveStream=!!audio.getAttribute('src');
+    var wasPlaying=playing || (hadActiveStream && !audio.paused);
+    var needsTune=wasPreview || (hadActiveStream && audio.getAttribute('src')!==target.url);
     previewStation=null;
-    if(selected===id){if(!playing)start();return;}
-    selected=id;store('radio.st',id);render();
-    if(playing)start();else set('playStatus','Radio éteinte');
+    selected=id;
+    store('radio.st',id);
+    // Un seul appui sur n'importe quel favori quitte l'essai et lance
+    // immédiatement le bon flux, même si ce favori était déjà sélectionné.
+    if(wasPreview || wasPlaying || needsTune){
+      start();
+    }else{
+      set('playStatus','Radio éteinte');
+    }
+    render();
   }
   function fallback(){el('radioLink').href=current().home;el('radioLink').style.display='inline-block';}
   function start(){
@@ -574,9 +622,9 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
   function stop(){++serial;audio.pause();audio.removeAttribute('src');audio.load();playing=false;previewStation=null;render();if(timerDeadline){timerDeadline=0;updateTimerLabel();}powerUI();set('playStatus','Radio éteinte');el('radioLink').style.display='none';scheduleDim(10000);}
   el('power').addEventListener('click',function(){if(playing)stop();else start();});
   function previewRadio(s){
-    previewStation=s;start();render();set('playStatus','Essai du flux · confirme son fonctionnement avant l’ajout');
+    previewStation=s;start();render();set('playStatus','Essai non enregistré · appuie sur un favori pour y revenir');
   }
-  audio.addEventListener('playing',function(){playing=true;powerUI();set('playStatus','● En direct');});
+  audio.addEventListener('playing',function(){playing=true;powerUI();set('playStatus',previewStation?'● En direct · Essai non enregistré':'● En direct');});
   audio.addEventListener('waiting',function(){if(playing)set('playStatus','Connexion au direct…');});
   audio.addEventListener('error',function(){if(audio.getAttribute('src')){playing=false;powerUI();set('playStatus','Flux indisponible.');fallback();scheduleDim(20000);}});
   render();powerUI();
@@ -623,47 +671,68 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
   ];
   var weatherPlaces=readJSON('weather.favorites.v1');
   if(!Array.isArray(weatherPlaces))weatherPlaces=defaultPlaces;
-  weatherPlaces=weatherPlaces.filter(function(p){return p&&typeof p.name==='string'&&typeof p.id==='string'&&p.name.length<120;}).slice(0,35);
+  // « Météo locale » est un choix virtuel, pas une ville ni des coordonnées sauvegardées.
+  weatherPlaces=weatherPlaces.filter(function(p){return p&&p.id!=='local'&&typeof p.name==='string'&&typeof p.id==='string'&&p.name.length<120;}).slice(0,35);
   if(!weatherPlaces.length)weatherPlaces=[defaultPlaces[0]];
   function weatherSave(){store('weather.favorites.v1',JSON.stringify(weatherPlaces));}
-  function placeById(id){return weatherPlaces.filter(function(p){return p.id===id;})[0]||null;}
+  weatherSave(); // purge au besoin les anciennes coordonnées GPS enregistrées.
+  function placeById(id){
+    if(id==='local')return {id:'local',name:'Météo locale',country:'',countryName:'Position actuelle'};
+    return weatherPlaces.filter(function(p){return p.id===id;})[0]||null;
+  }
   var city=el('city');
-  var previousCity=read('radio.city','mons');
+  var previousCity=read('radio.city','local'); // local par défaut pour une nouvelle installation ; ancien choix conservé
   var weatherDefault=read('weather.default.v1',previousCity);
   if(!placeById(weatherDefault))weatherDefault=weatherPlaces[0].id;
   var activeCity=weatherDefault;
   var hourlyForecast=[];
+  var localCoords=null,localCoordsTime=0;
   function displayWeatherCities(){
     city.textContent='';
+    var localOption=document.createElement('option');localOption.value='local';
+    localOption.textContent='Météo locale'+(weatherDefault==='local'?' ★':'');city.appendChild(localOption);
     weatherPlaces.forEach(function(p){
       var option=document.createElement('option');option.value=p.id;
       option.textContent=p.name+(p.id===weatherDefault?' ★':'');city.appendChild(option);
     });
     if(!placeById(activeCity))activeCity=weatherDefault;
     city.value=activeCity;
+    city.title=currentPlace().name;
   }
   function currentPlace(){return placeById(activeCity)||weatherPlaces[0];}
   displayWeatherCities();
   function chooseCity(id){
     if(!placeById(id))return;
-    activeCity=id;displayWeatherCities();updateWeather();
+    activeCity=id;weatherDefault=id;
+    store('weather.default.v1',id);store('radio.city',id);
+    displayWeatherCities();updateWeather();
   }
   function saveWeatherDefault(id){weatherDefault=id;store('weather.default.v1',id);displayWeatherCities();}
+  function locateDevice(){
+    return new Promise(function(resolve,reject){
+      if(!navigator.geolocation){reject(Error('Géolocalisation indisponible'));return;}
+      if(localCoords && Date.now()-localCoordsTime<10*60*1000){resolve(localCoords);return;}
+      navigator.geolocation.getCurrentPosition(function(pos){
+        localCoords={latitude:pos.coords.latitude,longitude:pos.coords.longitude};
+        localCoordsTime=Date.now();resolve(localCoords);
+      },function(){reject(Error('Localisation refusée ou indisponible'));},{enableHighAccuracy:false,timeout:12000,maximumAge:600000});
+    });
+  }
   function requestLocalWeather(feedback){
-    if(!navigator.geolocation){feedback('La localisation n’est pas disponible sur cet appareil.');return;}
-    feedback('Demande de localisation…');
-    navigator.geolocation.getCurrentPosition(function(pos){
-      var p={id:'local',name:'Ma position',country:'',countryName:'',lat:pos.coords.latitude,lon:pos.coords.longitude};
-      var old=placeById('local');if(old){old.lat=p.lat;old.lon=p.lon;}else weatherPlaces.unshift(p);
-      weatherSave();saveWeatherDefault('local');chooseCity('local');
+    feedback=feedback||function(){};
+    feedback('Recherche de la position de l’iPad…');
+    locateDevice().then(function(){
+      chooseCity('local');
       if(activeTool==='cities')renderCitiesTool();
-      feedback('Prévisions locales activées. Les coordonnées restent sur cet appareil.');
-    },function(e){feedback('Localisation refusée ou indisponible. Choisis une ville dans la recherche.');},{enableHighAccuracy:false,timeout:12000,maximumAge:600000});
+      feedback('Météo locale activée : la position se réactualisera régulièrement.');
+    }).catch(function(){feedback('Position indisponible. Autorise la localisation de Safari ou choisis une ville.');displayWeatherCities();});
   }
   function updateWeather(){
     var selectedCity=activeCity,p=currentPlace();set('weatherDesc','Actualisation…');
     var locationPromise;
-    if(Number.isFinite(Number(p.lat))&&Number.isFinite(Number(p.lon))&&p.lat!=null&&p.lon!=null){
+    if(selectedCity==='local'){
+      locationPromise=locateDevice();
+    }else if(Number.isFinite(Number(p.lat))&&Number.isFinite(Number(p.lon))&&p.lat!=null&&p.lon!=null){
       locationPromise=Promise.resolve({latitude:Number(p.lat),longitude:Number(p.lon)});
     }else{
       locationPromise=fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(p.name)+'&count=10&language=fr&format=json')
@@ -687,7 +756,7 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
       var h=data.hourly,nowHour=(c.time||'').slice(0,13),startIndex=0;
       while(startIndex<h.time.length && h.time[startIndex].slice(0,13)<nowHour)startIndex++;
       hourlyForecast=[];
-      for(var i=startIndex;i<Math.min(startIndex+16,h.time.length);i++){
+      for(var i=startIndex;i<Math.min(startIndex+12,h.time.length);i++){
         hourlyForecast.push({time:h.time[i],temp:h.temperature_2m[i],rain:h.precipitation_probability[i],code:h.weather_code[i]});
       }
       var box=el('forecasts');box.textContent='';
@@ -701,17 +770,18 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
       });
       if(!hourlyForecast.length){box.textContent='Prévisions horaires indisponibles';}
       if(el('toolsModal').classList.contains('open')&&activeTool==='hourly')renderHourlyTool();
-    }).catch(function(){if(activeCity===selectedCity){set('weatherDesc','Météo indisponible');set('weatherFacts','Vérifier la connexion Internet');}});
+    }).catch(function(){if(activeCity===selectedCity){set('weatherDesc',selectedCity==='local'?'Position indisponible':'Météo indisponible');set('weatherFacts',selectedCity==='local'?'Autorise la localisation ou choisis une ville.':'Vérifie la connexion Internet.');}});
   }
-  city.addEventListener('change',function(){chooseCity(city.value);});
+  city.addEventListener('change',function(){
+    var target=city.value;
+    if(target==='local'){
+      requestLocalWeather(function(message){
+        if(/indisponible|Autorise|refusée|refusé/.test(message)){displayWeatherCities();set('weatherFacts',message);}
+      });
+    }else chooseCity(target);
+  });
   el('cityManage').addEventListener('click',function(){openTools('cities');});
   updateWeather();setInterval(updateWeather,20*60*1000);
-  if(weatherDefault==='local'&&placeById('local')&&navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(function(pos){
-      var p=placeById('local');if(!p)return;p.lat=pos.coords.latitude;p.lon=pos.coords.longitude;weatherSave();
-      if(activeCity==='local')updateWeather();
-    },function(){},{enableHighAccuracy:false,timeout:10000,maximumAge:600000});
-  }
   document.addEventListener('visibilitychange',function(){if(!document.hidden){clock();updateWeather();}});
 
   // Modales créées dans la page : indépendantes des sites tiers.
@@ -761,7 +831,7 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
   function renderHourlyTool(){
     var box=el('toolsBody');box.textContent='';
     var lead=document.createElement('div');lead.className='timer-detail';
-    lead.textContent='16 prochaines heures · température et probabilité de précipitations (prévisions, pas observations).';
+    lead.textContent='12 prochaines heures · température et probabilité de précipitations (prévisions, pas observations).';
     box.appendChild(lead);
     if(!hourlyForecast.length){lead.textContent='Prévisions indisponibles. Vérifie la connexion Internet.';return;}
     var grid=document.createElement('div');grid.className='hourly-list';
@@ -850,7 +920,7 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
     var group=make('div','manager-backup');
     group.appendChild(actionButton('Exporter mes favoris',function(){
       var exportedWeather=weatherPlaces.filter(function(p){return p.id!=='local';});
-      var exportDefault=weatherDefault==='local'?((exportedWeather[0]||{}).id||'mons'):weatherDefault;
+      var exportDefault=weatherDefault; // garde le choix « local », jamais les coordonnées GPS
       var payload={format:'radio-ipad-sauvegarde',version:1,exportedAt:new Date().toISOString(),radios:{favorites:fav,others:other,selected:selected},weather:{places:exportedWeather,defaultCity:exportDefault},settings:{theme:activeTheme,dimEnabled:dimEnabled}};
       var blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});
       var objectURL=URL.createObjectURL(blob);var a=document.createElement('a');a.href=objectURL;a.download='radio-ipad-favoris.json';document.body.appendChild(a);a.click();document.body.removeChild(a);
@@ -886,8 +956,8 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
   }
   function renderCitiesTool(){
     var box=el('toolsBody');box.textContent='';
-    box.appendChild(make('p','manager-lead','Choisis une localité pour la météo. La ville marquée ★ sera affichée au prochain lancement.'));
-    var position=actionButton('⌖ Ma position · météo locale',function(){requestLocalWeather(function(message){state(message);});},'primary');
+    box.appendChild(make('p','manager-lead','Choisis « Météo locale » ou une ville favorite. Le choix affiché sera aussi mémorisé pour le prochain lancement.'));
+    var position=actionButton('Météo locale · position de cet iPad',function(){requestLocalWeather(function(message){state(message);});},'primary');
     box.appendChild(position);
     var state=feedbackLine(box);
     sectionTitle(box,'Mes villes favorites');
@@ -950,7 +1020,15 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
     var clean=safeStation(s);if(!clean)return false;
     if(all.some(function(x){return x.url===clean.url||x.id===clean.id;}))return false;
     if(all.length>=85)return false;
-    other.push(clean);saveRadios();render();return true;
+    other.push(clean);saveRadios();
+    // Une radio écoutée en essai devient la station sélectionnée si on l'enregistre.
+    // Le son continue sans interruption et les favoris reflètent le bon état.
+    if(previewStation&&previewStation.url===clean.url){
+      previewStation=null;
+      selected=clean.id;store('radio.st',selected);
+      if(playing)set('playStatus','● En direct');
+    }
+    render();return true;
   }
   function promoteStation(id){
     var station=storedRadioById(id);if(!station)return;
@@ -987,7 +1065,32 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
     if(entry.lastcheckok===0||entry.lastcheckok===false)return null;
     var name=String(entry.name||'').trim();if(!name)return null;
     var uuid=String(entry.stationuuid||'').slice(0,100);
-    return safeStation({id:'rb-'+uuid,name:name,region:entry.country||'',subregion:entry.state||'',logo:entry.favicon||'',mark:name.slice(0,3),url:url,home:entry.homepage||'https://www.radio-browser.info/'});
+    return safeStation({id:'rb-'+uuid,name:name,region:entry.country||'',subregion:entry.state||'',logo:entry.favicon||'',logoBackup:officialSiteIcon(entry.homepage||''),mark:name.slice(0,3),url:url,home:entry.homepage||'https://www.radio-browser.info/'});
+  }
+  function editStationLogo(id){
+    var s=storedRadioById(id);if(!s)return;
+    var answer=prompt('Adresse HTTPS d’une image du logo de '+s.name+' (laisse vide pour rechercher le logo du site officiel) :',s.logo||'');
+    if(answer===null)return;
+    answer=answer.trim();
+    if(answer && !httpsUrl(answer)){alert('Utilise une adresse d’image HTTPS.');return;}
+    s.logo=answer;
+    s.logoBackup=officialSiteIcon(s.home);
+    saveRadios();render();renderRadiosTool();
+  }
+  function radioBrowserFetch(params,i){
+    var hosts=['https://de1.api.radio-browser.info','https://nl1.api.radio-browser.info'];
+    i=i||0;
+    return fetch(hosts[i]+'/json/stations/search?'+params,{headers:{'Accept':'application/json'}})
+      .then(function(r){if(!r.ok)throw Error('Annuaire indisponible');return r.json();})
+      .catch(function(err){if(i+1<hosts.length)return radioBrowserFetch(params,i+1);throw err;});
+  }
+  function stationKm(a,b,latitude,longitude){
+    var lat=Number(a),lon=Number(b);
+    if(!isFinite(lat)||!isFinite(lon))return Infinity;
+    var rad=Math.PI/180,phi1=latitude*rad,phi2=lat*rad;
+    var deltaPhi=(lat-latitude)*rad,deltaLambda=(lon-longitude)*rad;
+    var h=Math.sin(deltaPhi/2)*Math.sin(deltaPhi/2)+Math.cos(phi1)*Math.cos(phi2)*Math.sin(deltaLambda/2)*Math.sin(deltaLambda/2);
+    return 12742*Math.atan2(Math.sqrt(h),Math.sqrt(1-h));
   }
   function renderRadiosTool(){
     var box=el('toolsBody');box.textContent='';
@@ -997,8 +1100,10 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
     if(!fav.length)list.appendChild(make('div','manager-empty','Aucune favorite : ajoute une station depuis la liste ou la recherche.'));
     fav.forEach(function(s,i){
       var row=managerRow((i+1)+'. '+s.name,s.region||'Radio favorite');
+      var preview=logo(s);preview.className='logo-wrap manager-logo';row.row.insertBefore(preview,row.row.firstChild);
       var up=actionButton('↑',function(){moveFavorite(s.id,-1);});up.disabled=i===0;row.actions.appendChild(up);
       var down=actionButton('↓',function(){moveFavorite(s.id,1);});down.disabled=i===fav.length-1;row.actions.appendChild(down);
+      row.actions.appendChild(actionButton('Logo',function(){editStationLogo(s.id); }));
       row.actions.appendChild(actionButton('Retirer ★',function(){promoteStation(s.id);},'warn'));
       list.appendChild(row.row);
     });
@@ -1007,8 +1112,10 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
     if(!other.length)extras.appendChild(make('div','manager-empty','Aucune autre station enregistrée.'));
     other.forEach(function(s){
       var item=managerRow(s.name,s.region||'Station enregistrée');
+      var preview=logo(s);preview.className='logo-wrap manager-logo';item.row.insertBefore(preview,item.row.firstChild);
       item.actions.appendChild(actionButton('▶ Écouter',function(){closeTools();choose(s.id);start();}));
       item.actions.appendChild(actionButton('★ Favorite',function(){promoteStation(s.id);},'primary'));
+      item.actions.appendChild(actionButton('Logo',function(){editStationLogo(s.id);}));
       item.actions.appendChild(actionButton('Supprimer',function(){removeStation(s.id);},'warn'));
       extras.appendChild(item.row);
     });
@@ -1023,48 +1130,67 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
     var results=make('div','manager-list');box.appendChild(results);
     var state=feedbackLine(box);
     box.appendChild(make('p','manager-note','Tu peux chercher par nom, par pays, par région/province, ou combiner ces critères. Les régions dépendent des informations publiées par les radios.'));
+    function showStations(data,near,position){
+      results.textContent='';var used={};
+      var matches=data.filter(function(entry){
+        if(!near)return true;
+        // L’annuaire ne géolocalise pas toutes les radios.
+        return stationKm(entry.geo_lat,entry.geo_long,position.latitude,position.longitude)<=60;
+      }).sort(function(a,b){return near?stationKm(a.geo_lat,a.geo_long,position.latitude,position.longitude)-stationKm(b.geo_lat,b.geo_long,position.latitude,position.longitude):0;})
+      .map(radioSearchResult).filter(function(st){if(!st||used[st.url])return false;used[st.url]=true;return true;}).slice(0,22);
+      state(matches.length?(near?'Stations répertoriées à moins de 60 km (selon les positions déclarées) :':'Stations recensées :')+' teste les flux avant de les ajouter.':(near?'Aucune radio géolocalisée à proximité dans cet annuaire. Essaie une recherche par province.':'Aucun flux HTTPS MP3/AAC compatible trouvé pour cette recherche.'));
+      matches.forEach(function(st){
+        var exists=all.some(function(x){return x.url===st.url||x.id===st.id;});
+        var item=managerRow(st.name,([st.region,st.subregion].filter(Boolean).join(' · ')||'Radio')+' · Flux à confirmer sur iPad');
+        var img=logo(st);img.className='logo-wrap manager-logo';item.row.insertBefore(img,item.row.firstChild);
+        item.actions.appendChild(actionButton('▶ Tester',function(){previewRadio(st);state('Essai : '+st.name+' · utilise Power pour arrêter.');}));
+        var add=actionButton(exists?'Enregistrée':'+ Enregistrer',function(){
+          if(addStation(st)){add.textContent='Enregistrée';add.disabled=true;state(st.name+' ajoutée aux autres stations. Tu peux la promouvoir en favorite.');}
+          else state('Cette station est déjà enregistrée ou la limite est atteinte.');
+        },exists?'':'primary');add.disabled=exists;item.actions.appendChild(add);
+        results.appendChild(item.row);
+      });
+    }
+    var localTools=make('div','manager-local-search');
+    var nearby=actionButton('Stations près de moi · 60 km',function(){
+      results.textContent='';state('Recherche de la position de cet iPad…');nearby.disabled=true;
+      if(!navigator.geolocation){nearby.disabled=false;state('La géolocalisation n’est pas disponible. Utilise le filtre pays/région.');return;}
+      navigator.geolocation.getCurrentPosition(function(pos){
+        state('Recherche des radios géolocalisées dans l’annuaire…');
+        var latitude=pos.coords.latitude,longitude=pos.coords.longitude;
+        var params='limit=250&hidebroken=true&order=votes&reverse=true&is_https=true&geo_lat='+latitude+'&geo_long='+longitude+'&geo_distance=60000';
+        radioBrowserFetch(params).then(function(data){
+          nearby.disabled=false;showStations(data,true,{latitude:latitude,longitude:longitude});
+        }).catch(function(){nearby.disabled=false;state('Recherche locale indisponible. Essaie par pays/région.');});
+      },function(){nearby.disabled=false;state('Position non autorisée. Choisis un pays et une province ci-dessous.');},{enableHighAccuracy:false,timeout:12000,maximumAge:600000});
+    },'primary');
+    localTools.appendChild(nearby);box.insertBefore(localTools,form);
+    box.appendChild(make('p','manager-note','La recherche locale utilise la position de l’iPad uniquement pour interroger l’annuaire. Les stations non géolocalisées peuvent manquer : utilise aussi le filtre pays/province.'));
     form.addEventListener('submit',function(e){
-      e.preventDefault();var q=input.value.trim();var rgn=region.value.trim();
+      e.preventDefault();var q=input.value.trim(),rgn=region.value.trim();
       if(q.length===1){state('Saisis au moins deux caractères du nom, ou laisse ce champ vide.');return;}
       if(!q&&!rgn&&!country.value){state('Choisis au moins un pays, une région ou un nom de radio.');return;}
       results.textContent='';submit.disabled=true;state('Recherche des stations…');
-      var params='limit=80&hidebroken=true&order=votes&reverse=true';
+      var params='limit=80&hidebroken=true&order=votes&reverse=true&is_https=true';
       if(q)params+='&name='+encodeURIComponent(q);
       if(country.value)params+='&countrycode='+encodeURIComponent(country.value);
       if(rgn)params+='&state='+encodeURIComponent(rgn);
-      var hosts=['https://de1.api.radio-browser.info','https://nl1.api.radio-browser.info'];
-      function request(i){
-        return fetch(hosts[i]+'/json/stations/search?'+params,{headers:{'Accept':'application/json'}})
-        .then(function(r){if(!r.ok)throw Error('Annuaire indisponible');return r.json();})
-        .catch(function(err){if(i+1<hosts.length)return request(i+1);throw err;});
-      }
-      request(0).then(function(data){
-        submit.disabled=false;var used={};
-        var matches=data.map(radioSearchResult).filter(function(s){if(!s||used[s.url])return false;used[s.url]=true;return true;}).slice(0,18);
-        state(matches.length?'Stations recensées : teste la lecture avant de les ajouter.':'Aucun flux HTTPS MP3/AAC compatible trouvé pour cette recherche.');
-        matches.forEach(function(s){
-          var exists=all.some(function(x){return x.url===s.url||x.id===s.id;});
-          var item=managerRow(s.name,([s.region,s.subregion].filter(Boolean).join(' · ')||'Radio')+' · Flux à confirmer sur iPad');
-          item.actions.appendChild(actionButton('▶ Tester',function(){previewRadio(s);state('Essai : '+s.name+' · utilise Power pour arrêter.');}));
-          var add=actionButton(exists?'Enregistrée':'+ Enregistrer',function(){
-            if(addStation(s)){add.textContent='Enregistrée';add.disabled=true;state(s.name+' ajoutée aux autres stations. Tu peux la promouvoir en favorite.');}
-            else state('Cette station est déjà enregistrée ou la limite est atteinte.');
-          },exists?'':'primary');add.disabled=exists;item.actions.appendChild(add);
-          results.appendChild(item.row);
-        });
-      }).catch(function(){submit.disabled=false;state('Annuaire temporairement indisponible. Essaie plus tard ou ajoute une adresse HTTPS directement.');});
+      radioBrowserFetch(params).then(function(data){submit.disabled=false;showStations(data,false,null);})
+        .catch(function(){submit.disabled=false;state('Annuaire temporairement indisponible. Essaie plus tard ou ajoute une adresse HTTPS directement.');});
     });
     sectionTitle(box,'Ajouter une adresse de diffusion connue');
     var manual=make('form','manager-search');
     var stationName=make('input','manager-input');stationName.placeholder='Nom de la station';stationName.required=true;
     var stationURL=make('input','manager-input');stationURL.placeholder='https://…/radio.mp3';stationURL.type='url';stationURL.required=true;
+    var stationLogo=make('input','manager-input');stationLogo.placeholder='Logo HTTPS (facultatif)';stationLogo.type='url';stationLogo.setAttribute('aria-label','Adresse HTTPS du logo');
     var addManual=make('button','manager-btn','Ajouter');addManual.type='submit';
-    manual.appendChild(stationName);manual.appendChild(stationURL);manual.appendChild(addManual);box.appendChild(manual);
+    manual.appendChild(stationName);manual.appendChild(stationURL);manual.appendChild(stationLogo);manual.appendChild(addManual);box.appendChild(manual);
     var manualState=feedbackLine(box);
     manual.addEventListener('submit',function(e){
       e.preventDefault();var url=stationURL.value.trim();
       if(!httpsUrl(url)){manualState('Il faut une adresse de flux HTTPS, pas simplement le site de la radio.');return;}
-      var s={id:'manual-'+Date.now(),name:stationName.value.trim(),region:'Ajout manuel',url:url,logo:'',home:'https://www.radio-browser.info/'};
+      var logoInput=stationLogo.value.trim();if(logoInput&&!httpsUrl(logoInput)){manualState('Le logo doit être une adresse d’image HTTPS.');return;}
+      var s={id:'manual-'+Date.now(),name:stationName.value.trim(),region:'Ajout manuel',url:url,logo:logoInput,home:'https://www.radio-browser.info/'};
       if(addStation(s)){renderRadiosTool();}else manualState('Cette station existe déjà ou l’adresse n’est pas valide.');
     });
     box.appendChild(make('p','manager-note','Annuaire communautaire Radio Browser : une station référencée n’est pas garantie lisible sur Safari. Les réglages restent propres à chaque appareil et navigateur.'));
