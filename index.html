@@ -375,6 +375,17 @@ html[data-theme="light"] .manager-empty{color:#526b80}
 .manager-tip{font-size:12px;line-height:1.4;color:#c3d7e8}
 html[data-theme="light"] .manager-tip{color:#4e657d}
 @media(max-width:500px){.manager-geo-row{grid-template-columns:1fr}}
+
+/* V17 — alignement Safari 15, boutons météo et nom de commune. */
+.tools-close{position:relative;display:block;width:42px;height:42px;min-width:42px;min-height:42px;padding:0;line-height:normal;box-sizing:border-box}
+.tools-close:before,.tools-close:after{content:"";position:absolute;left:50%;top:50%;width:19px;height:2px;border-radius:2px;background:currentColor;transform-origin:center center;-webkit-transform-origin:center center}
+.tools-close:before{-webkit-transform:translate(-50%,-50%) rotate(45deg);transform:translate(-50%,-50%) rotate(45deg)}
+.tools-close:after{-webkit-transform:translate(-50%,-50%) rotate(-45deg);transform:translate(-50%,-50%) rotate(-45deg)}
+.weather-title-actions .city,.weather-title-actions .city-manage{height:39px;min-height:39px;max-height:39px;box-sizing:border-box;margin:0;align-self:center}
+.weather-title-actions .city{padding-top:0;padding-bottom:0;line-height:normal}
+.weather-title-actions .city-manage{width:39px;min-width:39px;flex:0 0 39px;padding:0}
+.weather-place{color:#a9dbff;font-weight:650;margin-left:5px}
+html[data-theme="light"] .weather-place{color:#2e729f}
 </style>
 </head>
 <body>
@@ -396,7 +407,7 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
           </button>
         </div>
       </div>
-      <div class="weather-current"><span class="weather-icon" id="weatherIcon" aria-hidden="true"></span><div><div class="temperature" id="currentTemp">--°</div><div class="weather-desc" id="weatherDesc">Chargement…</div></div></div>
+      <div class="weather-current"><span class="weather-icon" id="weatherIcon" aria-hidden="true"></span><div><div class="temperature" id="currentTemp">--°</div><div class="weather-desc"><span id="weatherDesc">Chargement…</span><span class="weather-place" id="weatherPlace">· Position actuelle</span></div></div></div>
       <div class="facts" id="weatherFacts">Mise à jour de la météo…</div>
       <div class="forecasts" id="forecasts" aria-label="Prévisions des prochaines heures"><div class="forecast">Prévisions…</div></div>
     </section>
@@ -428,7 +439,7 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
 <div class="soft-dim" id="softDim" aria-hidden="true"></div>
 <div class="tools-modal" id="toolsModal" aria-hidden="true">
   <section class="tools-window" role="dialog" aria-modal="true" aria-labelledby="toolsTitle">
-    <div class="tools-heading"><strong id="toolsTitle">Prévisions</strong><button type="button" id="toolsClose" class="tools-close" aria-label="Fermer la fenêtre"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>
+    <div class="tools-heading"><strong id="toolsTitle">Prévisions</strong><button type="button" id="toolsClose" class="tools-close" aria-label="Fermer la fenêtre" title="Fermer"></button></div>
     <div class="tools-body" id="toolsBody"></div>
   </section>
 </div>
@@ -687,6 +698,27 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
   var activeCity=weatherDefault;
   var hourlyForecast=[];
   var localCoords=null,localCoordsTime=0;
+  var localCityName='',localCityNameTime=0,localCityLookupPending=false;
+  function showWeatherPlace(){
+    var name=activeCity==='local'?(localCityName||'Position actuelle'):currentPlace().name;
+    set('weatherPlace','· '+name);
+  }
+  // Géocodage inverse : une localisation Wi-Fi fraîche (sans clé ni serveur personnel)
+  // est envoyée à BigDataCloud uniquement si la météo locale a été demandée.
+  // Si la requête échoue, garder « Position actuelle » au lieu d'inventer une ville.
+  function updateLocalCityName(){
+    if(activeCity!=='local'||localCityLookupPending||!navigator.geolocation)return;
+    if(localCityName&&Date.now()-localCityNameTime<30*60*1000)return;
+    localCityLookupPending=true;
+    navigator.geolocation.getCurrentPosition(function(pos){
+      var url='https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+encodeURIComponent(pos.coords.latitude)+'&longitude='+encodeURIComponent(pos.coords.longitude)+'&localityLanguage=fr';
+      fetch(url).then(function(r){if(!r.ok)throw Error('Lieu non disponible');return r.json();})
+      .then(function(info){
+        var name=typeof info.city==='string'&&info.city.trim()?info.city.trim():typeof info.locality==='string'&&info.locality.trim()?info.locality.trim():'';
+        if(name){localCityName=name.slice(0,90);localCityNameTime=Date.now();if(activeCity==='local'){showWeatherPlace();if(activeTool==='hourly')set('toolsTitle','Prévisions · '+localCityName);}}
+      }).catch(function(){}).then(function(){localCityLookupPending=false;});
+    },function(){localCityLookupPending=false;},{enableHighAccuracy:false,timeout:12000,maximumAge:0});
+  }
   function displayWeatherCities(){
     city.textContent='';
     var localOption=document.createElement('option');localOption.value='local';
@@ -701,11 +733,12 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
   }
   function currentPlace(){return placeById(activeCity)||weatherPlaces[0];}
   displayWeatherCities();
+  showWeatherPlace();
   function chooseCity(id){
     if(!placeById(id))return;
     activeCity=id;weatherDefault=id;
     store('weather.default.v1',id);store('radio.city',id);
-    displayWeatherCities();updateWeather();
+    displayWeatherCities();showWeatherPlace();updateWeather();
   }
   function saveWeatherDefault(id){weatherDefault=id;store('weather.default.v1',id);displayWeatherCities();}
   function locateDevice(){
@@ -728,10 +761,11 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
     }).catch(function(){feedback('Position indisponible. Autorise la localisation de Safari ou choisis une ville.');displayWeatherCities();});
   }
   function updateWeather(){
-    var selectedCity=activeCity,p=currentPlace();set('weatherDesc','Actualisation…');
+    var selectedCity=activeCity,p=currentPlace();set('weatherDesc','Actualisation…');showWeatherPlace();
     var locationPromise;
     if(selectedCity==='local'){
       locationPromise=locateDevice();
+      updateLocalCityName();
     }else if(Number.isFinite(Number(p.lat))&&Number.isFinite(Number(p.lon))&&p.lat!=null&&p.lon!=null){
       locationPromise=Promise.resolve({latitude:Number(p.lat),longitude:Number(p.lon)});
     }else{
@@ -819,7 +853,7 @@ html[data-theme="light"] .manager-tip{color:#4e657d}
   updateDimButton();
   function openTools(tool){
     activeTool=tool;clearDim();toolsModal.classList.add('open');toolsModal.setAttribute('aria-hidden','false');
-    if(tool==='hourly'){set('toolsTitle','Prévisions · '+currentPlace().name);renderHourlyTool();}
+    if(tool==='hourly'){set('toolsTitle','Prévisions · '+(activeCity==='local'?(localCityName||'Météo locale'):currentPlace().name));renderHourlyTool();}
     else if(tool==='timer'){set('toolsTitle','Minuterie radio');renderTimerTool();}
     else if(tool==='cities'){set('toolsTitle','Mes villes météo');renderCitiesTool();}
     else if(tool==='radios'){set('toolsTitle','Mes stations radio');renderRadiosTool();}
