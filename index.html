@@ -7,22 +7,25 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Ma radio" />
-  <meta name="description" content="Horloge, radios belges et météo pour iPad" />
+  <meta name="description" content="Horloge, radios et météo pour iPad" />
   <title>Ma radio · Tableau de bord</title>
   <style>
-    :root{--bg:#0d1727;--panel:#1b2a41;--line:#30415a;--txt:#f7f8fb;--muted:#b8c3d2;--accent:#9cd6ff;--shadow:0 16px 35px rgba(0,0,0,.14)}
+    :root{
+      --bg:#0d1727;--panel:#1b2a41;--line:#30415a;--txt:#f7f8fb;--muted:#b8c3d2;
+      --accent:#9cd6ff;--shadow:0 16px 35px rgba(0,0,0,.14);--soft:#24364d;
+    }
     *{box-sizing:border-box}
     html,body{min-height:100%;margin:0}
     body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;background:radial-gradient(circle at 70% 0%,#263850 0%,var(--bg) 58%);color:var(--txt);-webkit-font-smoothing:antialiased}
     button,select{font-family:inherit;touch-action:manipulation}
-    button:focus-visible,select:focus-visible{outline:3px solid #a8dfff;outline-offset:3px}
-    button{cursor:pointer}
-    .wrap{max-width:1160px;margin:auto;padding:28px 30px 24px;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;gap:20px}
+    button,a{cursor:pointer}
+    button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #a8dfff;outline-offset:3px}
+    .wrap{max-width:1180px;margin:auto;padding:28px 30px 24px;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;gap:18px}
     .top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
     .eyebrow{font-size:12px;letter-spacing:.19em;text-transform:uppercase;font-weight:700;color:#9fb1c8}
     .small{color:var(--muted);font-size:13px}
-    .main{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(310px,.85fr);gap:18px}
-    .clock-card,.weather-card,.radio-card,.toolbar{background:rgba(28,42,62,.96);border:1px solid rgba(186,208,232,.14);box-shadow:var(--shadow);border-radius:25px}
+    .main{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(320px,.88fr);gap:18px}
+    .card{background:rgba(28,42,62,.96);border:1px solid rgba(186,208,232,.14);box-shadow:var(--shadow);border-radius:25px}
     .clock-card{display:flex;flex-direction:column;justify-content:center;padding:32px 36px;min-height:300px}
     .clock{font-size:clamp(92px,12vw,160px);font-variant-numeric:tabular-nums;letter-spacing:-.075em;line-height:1;font-weight:650;margin-left:-7px;white-space:nowrap}
     .clock .separator{font-weight:250;color:#91a7c2;animation:blink 1s step-end infinite}
@@ -39,64 +42,87 @@
     .weather-facts{font-size:14px;color:#d7e2ed;display:flex;gap:13px;flex-wrap:wrap}
     .forecasts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:auto}
     .forecast{background:#25364c;border-radius:13px;text-align:center;padding:12px 5px;font-size:14px}
-    .forecast .ficon{font-size:27px;margin:6px 0}.forecast .temps{font-weight:700;font-size:16px;white-space:nowrap}.forecast .low{color:#adbed0}
-    .road-card{background:rgba(28,42,62,.96);border:1px solid rgba(186,208,232,.14);border-radius:19px;padding:17px 22px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
-    .road-info{display:flex;align-items:flex-start;gap:12px;flex:1;min-width:250px}
-    .road-icon{font-size:25px;line-height:1.2}
-    .road-title{font-size:16px;font-weight:700;margin-bottom:5px}
-    .road-description{font-size:13px;color:#c3d0df;line-height:1.5;max-width:660px}
-    .road-actions{display:flex;gap:10px;flex-wrap:wrap}
-    .road-link{border:1px solid #56708c;padding:11px 14px;border-radius:11px;text-decoration:none;color:#e5f2ff;background:#243c55;white-space:nowrap;font-size:14px;font-weight:650}
-    .road-link:focus-visible,.road-link:hover{outline:2px solid #a8dfff;outline-offset:1px}
+    .forecast .ficon{font-size:27px;margin:6px 0}
+    .forecast .temps{font-weight:700;font-size:16px;white-space:nowrap}
+    .forecast .low{color:#adbed0}
+
+    .info-card{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .info-left{display:flex;gap:12px;align-items:flex-start;flex:1;min-width:250px}
+    .info-icon{font-size:25px;line-height:1.1}
+    .info-title{font-size:16px;font-weight:700;margin-bottom:6px}
+    .info-desc{font-size:13px;color:#c3d0df;line-height:1.5;max-width:700px}
+    .chips{display:flex;gap:10px;flex-wrap:wrap}
+    .chip{border:1px solid #56708c;padding:11px 14px;border-radius:12px;background:#243c55;color:#e5f2ff;font-size:14px;font-weight:700}
+
     .sectionhead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:2px 3px -4px}
     .sectionhead h2{font-size:18px;font-weight:700;margin:0;letter-spacing:-.02em}
-    .station-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
-    .station{min-height:132px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border-radius:19px;background:#203049;color:white;border:2px solid rgba(255,255,255,.08);padding:14px 6px;transition:border-color .18s,background .18s,transform .18s}
-    .station:active{transform:scale(.975)}
+
+    .radio-card{padding:22px;display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:18px;align-items:stretch}
+    .station-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .station{min-height:104px;display:flex;align-items:center;gap:12px;border-radius:18px;background:#203049;color:white;border:2px solid rgba(255,255,255,.08);padding:12px;transition:border-color .18s,background .18s,transform .18s;text-align:left}
+    .station:active{transform:scale(.98)}
     .station.active{background:#273f55;border-color:#99d5ff;box-shadow:inset 0 0 0 1px #99d5ff}
-    .station .logo{height:50px;width:68px;display:grid;place-items:center;border-radius:13px;background:var(--station-bg,#4b75a0);font-weight:800;font-size:19px;letter-spacing:-.035em;text-align:center;line-height:1.05;padding:4px}
-    .station .name{font-size:15px;font-weight:650;line-height:1.15;text-align:center}
+    .logo-box{height:54px;width:54px;min-width:54px;border-radius:15px;background:#fff;display:grid;place-items:center;overflow:hidden;padding:6px}
+    .logo-box img{max-width:100%;max-height:100%;display:block}
+    .logo-fallback{font-weight:800;font-size:12px;line-height:1.05;color:#22374d;text-align:center}
+    .station-meta{min-width:0;display:flex;flex-direction:column;gap:4px}
+    .station .name{font-size:15px;font-weight:700;line-height:1.12}
+    .station .sub{font-size:12px;color:#bfd0e2}
     .station .radio-state{font-size:11px;color:#aab9cb;min-height:14px}
     .station.active .radio-state{color:#bce6ff}
-    .toolbar{padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:15px;min-height:98px}
-    .onoff{background:#86d0ff;border:0;color:#112439;border-radius:15px;min-width:170px;min-height:65px;padding:10px 19px;font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;gap:9px}
-    .onoff.playing{background:#ffcfcb;color:#612823}
-    .power-icon{font-size:24px}
-    .playstatus{flex:1;min-width:0}
+
+    .control-side{display:flex;flex-direction:column;gap:14px;justify-content:space-between}
+    .big-power{flex:1;min-height:190px;background:linear-gradient(180deg,#a5e0ff,#75cbff);border:0;color:#112439;border-radius:24px;padding:16px;font-weight:800;font-size:26px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;box-shadow:inset 0 -14px 26px rgba(0,0,0,.08)}
+    .big-power.playing{background:linear-gradient(180deg,#ffd7d3,#ffb4ac);color:#5b2019}
+    .power-icon{font-size:66px;line-height:1}
+    .side-card{background:#22354b;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:14px 16px}
     .playstatus .label{font-size:17px;font-weight:700;margin-bottom:5px}
-    .playstatus .info{font-size:13px;color:#bacbdc;line-height:1.4}
-    .volume{min-width:185px;border-left:1px solid var(--line);padding-left:17px;display:flex;flex-direction:column;gap:8px;color:#d8e7f5}
-    .volume .vtitle{font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:#a8c5df}
-    .volnote{font-size:14px;font-weight:600;line-height:1.35}
+    .playstatus .info{font-size:13px;color:#bacbdc;line-height:1.45}
+    .vtitle{font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:#a8c5df;margin-bottom:7px}
+    .volnote{font-size:14px;font-weight:600;line-height:1.35;color:#d8e7f5}
     input[type=range]{width:100%;accent-color:#a7deff}
-    .foot{margin-top:auto;display:flex;justify-content:space-between;gap:12px;font-size:12px;color:#9eaec3;line-height:1.4}
+    .smalllink{display:inline-block;margin-top:7px;font-size:13px;color:#acdfff;text-decoration:none}
+
+    .foot{margin-top:auto;display:flex;justify-content:space-between;gap:12px;font-size:12px;color:#9eaec3;line-height:1.4;flex-wrap:wrap}
     a{color:#acdfff}
-    #fallback{display:none}
+
+    .modal{position:fixed;inset:0;background:rgba(7,13,21,.72);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
+    .modal.open{display:flex}
+    .modal-box{width:min(1100px,100%);height:min(86vh,860px);background:#112033;border:1px solid rgba(186,208,232,.18);border-radius:24px;box-shadow:0 24px 50px rgba(0,0,0,.28);display:flex;flex-direction:column;overflow:hidden}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid rgba(186,208,232,.12);background:#18283d}
+    .modal-title{font-size:18px;font-weight:700}
+    .modal-actions{display:flex;gap:10px;align-items:center}
+    .modal-link,.modal-close{border:1px solid #56708c;padding:10px 14px;border-radius:11px;text-decoration:none;color:#e5f2ff;background:#243c55;font-size:14px;font-weight:650}
+    .modal-close{background:#30435b}
+    .modal-note{padding:9px 18px;background:#162335;color:#c8d6e6;font-size:13px;line-height:1.4;border-bottom:1px solid rgba(186,208,232,.08)}
+    .modal-frame{flex:1;border:0;width:100%;background:#fff}
+
+    @media (max-width:980px){
+      .radio-card{grid-template-columns:1fr}
+      .control-side{order:-1}
+      .big-power{min-height:140px}
+      .station-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
     @media (max-width:850px){
       .wrap{padding:22px 20px 18px;gap:16px}
       .main{grid-template-columns:1fr 1fr;gap:13px}
       .clock-card{padding:24px;min-height:275px}
       .clock{font-size:clamp(77px,10.5vw,120px)}
       .weather-card{padding:20px;min-height:275px}
-      .station-grid{gap:8px}
-      .station{min-height:124px;padding:10px 3px}
-      .station .name{font-size:13px}
-      .toolbar{min-height:85px}
     }
     @media (max-width:700px){
       .main{grid-template-columns:1fr}
       .clock-card{min-height:225px;align-items:center;text-align:center}
       .clock{font-size:clamp(85px,20vw,150px)}
       .weather-card{min-height:260px}
-      .station-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-      .toolbar{flex-wrap:wrap}
-      .volume{width:100%;border-left:none;border-top:1px solid var(--line);padding:12px 0 0}
-      .foot{flex-wrap:wrap}
-      .road-card{padding:16px}
-      .road-actions{width:100%}
-      .road-link{flex:1;text-align:center}
+      .station-list{grid-template-columns:1fr}
     }
-    @media (max-width:410px){.clock{font-size:76px}.day{font-size:18px}.weather-now{gap:10px}.weather-icon{font-size:51px}.station-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:410px){
+      .clock{font-size:76px}.day{font-size:18px}.weather-now{gap:10px}.weather-icon{font-size:51px}
+      .radio-card{padding:16px}
+      .station{padding:11px}
+      .big-power{font-size:23px}
+    }
     @media (prefers-reduced-motion:reduce){.clock .separator{animation:none}.station{transition:none}}
   </style>
 </head>
@@ -106,13 +132,15 @@
       <div class="eyebrow">Mon petit tableau de bord</div>
       <div class="small">iPad · radio & météo</div>
     </header>
+
     <main class="main">
-      <section class="clock-card" aria-label="Heure et date">
+      <section class="card clock-card" aria-label="Heure et date">
         <div class="clock" aria-live="off"><span id="hh">--</span><span class="separator">:</span><span id="mm">--</span></div>
         <div class="day" id="date">Chargement de la date…</div>
         <div class="clock-note">Une belle journée commence avec de la musique ♫</div>
       </section>
-      <section class="weather-card" aria-label="Météo">
+
+      <section class="card weather-card" aria-label="Météo">
         <div class="weather-top">
           <div class="eyebrow">La météo</div>
           <select id="city" class="place" aria-label="Choisir la ville">
@@ -122,7 +150,10 @@
         </div>
         <div class="weather-now">
           <div class="weather-icon" id="weatherIcon" aria-hidden="true">☁️</div>
-          <div><div class="weather-temp" id="currentTemp">--°</div><div class="weather-desc" id="weatherDesc">Chargement…</div></div>
+          <div>
+            <div class="weather-temp" id="currentTemp">--°</div>
+            <div class="weather-desc" id="weatherDesc">Chargement…</div>
+          </div>
         </div>
         <div class="weather-facts" id="weatherFacts">Actualisation de la météo en cours</div>
         <div class="forecasts" id="forecasts">
@@ -132,58 +163,99 @@
         </div>
       </section>
     </main>
-    <section class="road-card" aria-label="Vigilance météo et informations routières">
-      <div class="road-info">
-        <div class="road-icon" aria-hidden="true">⚠️</div>
+
+    <section class="card info-card" aria-label="Vigilance météo et état des routes">
+      <div class="info-left">
+        <div class="info-icon" aria-hidden="true">⚠️</div>
         <div>
-          <div class="road-title">Vigilance météo et routes</div>
-          <div class="road-description">Neige, verglas, brouillard : consultez les avertissements officiels de l’IRM. Pour les incidents, le trafic et le plan neige en Wallonie : Trafiroutes. Ces liens n’indiquent pas l’état actuel des routes sur notre écran.</div>
+          <div class="info-title">Vigilance météo et routes</div>
+          <div class="info-desc">Sans serveur intermédiaire, l’intégration la plus fiable consiste à ouvrir les pages officielles de l’IRM et de Trafiroutes dans une fenêtre intégrée. Si leur site refuse l’intégration, tu peux l’ouvrir en plein écran via le bouton prévu.</div>
         </div>
       </div>
-      <div class="road-actions">
-        <a class="road-link" href="https://www.meteo.be/fr/meteo/avertissements/carte-de-belgique" target="_blank" rel="noopener noreferrer">Alertes IRM ↗</a>
-        <a class="road-link" href="https://trafiroutes.wallonie.be/" target="_blank" rel="noopener noreferrer">État des routes ↗</a>
+      <div class="chips">
+        <button class="chip" type="button" id="openMeteoAlert">Alerte IRM</button>
+        <button class="chip" type="button" id="openRoads">État des routes</button>
       </div>
     </section>
-    <div class="sectionhead"><h2>Mes radios</h2><span class="small">Touchez une station pour l'écouter</span></div>
-    <section class="station-grid" id="stations" aria-label="Choix de la radio"></section>
-    <section class="toolbar" aria-label="Commandes radio">
-      <button id="power" class="onoff" type="button" aria-pressed="false"><span class="power-icon">⏻</span><span id="powerText">Allumer</span></button>
-      <div class="playstatus">
-        <div class="label" id="nowStation">VivaCité Hainaut</div>
-        <div class="info" id="status" role="status">Radio éteinte · Appuyez sur Allumer</div>
-        <a id="fallback" target="_blank" rel="noopener noreferrer">Ouvrir le site de la station</a>
-      </div>
-      <div class="volume" id="volumeArea">
-        <div class="vtitle">Volume sonore</div>
-        <div id="iosVolume" class="volnote">Réglage avec les boutons + / − de l’iPad</div>
-        <div id="otherVolume" style="display:none"><input type="range" id="vol" aria-label="Volume" min="0" max="100" value="75" /><span class="small" id="volPct">75 %</span></div>
+
+    <div class="sectionhead">
+      <h2>Mes radios</h2>
+      <span class="small">Stations à gauche · gros bouton marche/arrêt à droite</span>
+    </div>
+
+    <section class="card radio-card" aria-label="Zone radio">
+      <div class="station-list" id="stations"></div>
+      <div class="control-side">
+        <button id="power" class="big-power" type="button" aria-pressed="false">
+          <span class="power-icon">⏻</span>
+          <span id="powerText">Allumer</span>
+        </button>
+        <div class="side-card playstatus">
+          <div class="label" id="nowStation">VivaCité Hainaut</div>
+          <div class="info" id="status" role="status">Radio éteinte · Appuyez sur Allumer</div>
+          <a id="fallback" class="smalllink" target="_blank" rel="noopener noreferrer" style="display:none">Ouvrir le site de la station</a>
+        </div>
+        <div class="side-card">
+          <div class="vtitle">Volume sonore</div>
+          <div id="iosVolume" class="volnote">Réglage avec les boutons + / − de l’iPad</div>
+          <div id="otherVolume" style="display:none">
+            <input type="range" id="vol" aria-label="Volume" min="0" max="100" value="75" />
+            <span class="small" id="volPct">75 %</span>
+          </div>
+        </div>
       </div>
     </section>
+
     <footer class="foot">
       <span>Une page web autonome : aucun Mac ni serveur domestique nécessaire.</span>
-      <span>Météo : <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> · Prévisions, pas mesure d'une sonde locale.</span>
+      <span>Météo : <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> · Vigilance : IRM · Routes : Trafiroutes.</span>
     </footer>
   </div>
+
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <div class="modal-title" id="modalTitle">Fenêtre</div>
+        <div class="modal-actions">
+          <a href="#" id="modalExternal" class="modal-link" target="_blank" rel="noopener noreferrer">Ouvrir en plein écran</a>
+          <button type="button" id="modalClose" class="modal-close">Fermer</button>
+        </div>
+      </div>
+      <div class="modal-note" id="modalNote">Chargement…</div>
+      <iframe id="modalFrame" class="modal-frame" loading="lazy" referrerpolicy="no-referrer"></iframe>
+    </div>
+  </div>
+
   <audio id="audio" preload="none" playsinline></audio>
+
   <script>
   (function(){
     'use strict';
     var stations = [
-      {id:'viva',name:'VivaCité',sub:'Hainaut',symbol:'VIVA',bg:'#ef612f',url:'https://radio.rtbf.be/viva-mo/mp3-160/me',home:'https://www.rtbf.be/vivacite'},
-      {id:'classic',name:'Classic 21',sub:'',symbol:'21',bg:'#1a1a1a',url:'https://radio.rtbf.be/c21/mp3-160/me',home:'https://www.rtbf.be/classic21'},
-      {id:'nostalgie',name:'Nostalgie',sub:'Belgique',symbol:'N',bg:'#db263f',url:'https://stream.rcs.revma.com/5gd04cwptg0uv',home:'https://www.nostalgie.be/'},
-      {id:'sud',name:'Sud Radio',sub:'Belgique',symbol:'SUD',bg:'#cb3440',url:'https://sudradio.ice.infomaniak.ch/sudradio-96.aac',home:'https://www.sudradio.be/'},
-      {id:'contact',name:'Radio Contact',sub:'Belgique',symbol:'C',bg:'#de2257',url:'https://radiocontact.ice.infomaniak.ch/radiocontact-mp3-192.mp3',home:'https://www.radiocontact.be/'}
+      {id:'viva',name:'VivaCité',sub:'Hainaut',logo:'https://www.google.com/s2/favicons?domain=rtbf.be&sz=128',logoAlt:'VivaCité',logoText:'Viva',url:'https://radio.rtbf.be/viva-mo/mp3-160/me',home:'https://www.rtbf.be/vivacite'},
+      {id:'classic',name:'Classic 21',sub:'',logo:'https://www.google.com/s2/favicons?domain=classic21.be&sz=128',logoAlt:'Classic 21',logoText:'21',url:'https://radio.rtbf.be/c21/mp3-160/me',home:'https://www.rtbf.be/classic21'},
+      {id:'nostalgie',name:'Nostalgie',sub:'Belgique',logo:'https://www.google.com/s2/favicons?domain=nostalgie.be&sz=128',logoAlt:'Nostalgie',logoText:'N',url:'https://stream.rcs.revma.com/5gd04cwptg0uv',home:'https://www.nostalgie.be/'},
+      {id:'sud',name:'Sud Radio',sub:'Hainaut',logo:'https://www.google.com/s2/favicons?domain=sudradio.be&sz=128',logoAlt:'Sud Radio',logoText:'Sud',url:'https://stream1.sudradio.be/sudradio-web-hainaut',home:'https://www.sudradio.be/'},
+      {id:'contact',name:'Radio Contact',sub:'Belgique',logo:'https://www.google.com/s2/favicons?domain=radiocontact.be&sz=128',logoAlt:'Radio Contact',logoText:'Contact',url:'https://radiocontact.ice.infomaniak.ch/radiocontact-mp3-192.mp3',home:'https://www.radiocontact.be/'},
+      {id:'mradio',name:'M Radio',sub:'Mons',logo:'https://www.google.com/s2/favicons?domain=mradio.be&sz=128',logoAlt:'M Radio',logoText:'M',url:'',home:'https://www.mradio.be/',embed:'https://www.mradio.be/'}
     ];
+
     var audio=document.getElementById('audio');
     var cards=document.getElementById('stations');
     var power=document.getElementById('power');
+    var powerText=document.getElementById('powerText');
     var fallback=document.getElementById('fallback');
+    var modal=document.getElementById('modal');
+    var modalFrame=document.getElementById('modalFrame');
+    var modalTitle=document.getElementById('modalTitle');
+    var modalExternal=document.getElementById('modalExternal');
+    var modalNote=document.getElementById('modalNote');
     var current=0,playing=false;
-    function getSaved(k,def){try {return localStorage.getItem(k)||def;}catch(e){return def;}}
+
+    function getSaved(k,def){try{return localStorage.getItem(k)||def;}catch(e){return def;}}
     function save(k,v){try{localStorage.setItem(k,v);}catch(e){}}
     function text(id,value){document.getElementById(id).textContent=value;}
+
     function updateClock(){
       var d=new Date();
       text('hh',('0'+d.getHours()).slice(-2));
@@ -191,28 +263,72 @@
       text('date',new Intl.DateTimeFormat('fr-BE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d));
     }
     updateClock();setInterval(updateClock,1000);
+
+    function stationLabel(s){return s.name+(s.sub?' · '+s.sub:'');}
+
+    function openModal(title,url,note){
+      modalTitle.textContent=title;
+      modalExternal.href=url;
+      modalNote.textContent=note || 'Si le contenu ne s’affiche pas ici, utilise « Ouvrir en plein écran ».';
+      modalFrame.src=url;
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+    }
+    function closeModal(){
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+      modalFrame.src='about:blank';
+    }
+    document.getElementById('modalClose').addEventListener('click',closeModal);
+    modal.addEventListener('click',function(e){if(e.target===modal)closeModal();});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape' && modal.classList.contains('open'))closeModal();});
+
+    function logoMarkup(s){
+      return '<span class="logo-box"><img src="'+s.logo+'" alt="'+s.logoAlt+'" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{className:\'logo-fallback\',textContent:\''+s.logoText+'\'}))"></span>';
+    }
+
     function renderStations(){
       cards.innerHTML='';
       stations.forEach(function(s,i){
         var b=document.createElement('button');
-        b.type='button';b.className='station'+(i===current?' active':'');
+        b.type='button';
+        b.className='station'+(i===current?' active':'');
         b.setAttribute('aria-pressed',String(i===current));
-        b.setAttribute('aria-label','Écouter '+s.name+' '+s.sub);
-        b.innerHTML='<span class="logo" style="--station-bg:'+s.bg+'">'+s.symbol+'</span><span class="name">'+s.name+(s.sub?'<br><small>'+s.sub+'</small>':'')+'</span><span class="radio-state">'+(i===current?(playing?'● À l’antenne':'● Sélectionnée'):'')+'</span>';
-        b.addEventListener('click',function(){current=i;save('radio.st',s.id);start();});
+        b.setAttribute('aria-label','Sélectionner '+stationLabel(s));
+        b.innerHTML=logoMarkup(s)+'<span class="station-meta"><span class="name">'+s.name+'</span><span class="sub">'+(s.sub||'')+'</span><span class="radio-state">'+(i===current?(playing?'● À l’antenne':'● Sélectionnée'):'')+'</span></span>';
+        b.addEventListener('click',function(){
+          current=i; save('radio.st',s.id); renderStations(); text('nowStation',stationLabel(stations[current]));
+          if(playing){ start(); }
+        });
         cards.appendChild(b);
       });
-      text('nowStation',stations[current].name+(stations[current].sub?' · '+stations[current].sub:''));
+      text('nowStation',stationLabel(stations[current]));
     }
+
     function updatePower(){
       power.classList.toggle('playing',playing);
       power.setAttribute('aria-pressed',String(playing));
-      text('powerText',playing?'Éteindre':'Allumer');
+      powerText.textContent=playing?'Éteindre':'Allumer';
       renderStations();
     }
+
+    function showFallback(s){
+      fallback.href=s.home;
+      fallback.style.display='inline-block';
+      fallback.textContent='Ouvrir le site de '+s.name;
+    }
+
     function start(){
       var s=stations[current];
       fallback.style.display='none';
+      if(!s.url){
+        playing=false;
+        updatePower();
+        text('status','Lecture via le site de la station.');
+        openModal(stationLabel(s), s.embed || s.home, 'M Radio n’a pas encore de flux direct confirmé dans cette version. Le site s’ouvre ici, avec un bouton pour le plein écran si nécessaire.');
+        showFallback(s);
+        return;
+      }
       audio.pause();
       audio.src=s.url;
       playing=true;
@@ -220,70 +336,99 @@
       updatePower();
       try{
         var p=audio.play();
-        if(p&&typeof p.catch==='function') p.catch(function(err){if(audio.src.indexOf(s.url)!==-1){playing=false;updatePower();text('status','Lecture bloquée ou flux indisponible. Réessayez.');showFallback(s);}});
-      }catch(e){playing=false;updatePower();text('status','Lecture impossible depuis ce navigateur.');showFallback(s);}
+        if(p && typeof p.catch==='function') p.catch(function(){
+          if(audio.src.indexOf(s.url)!==-1){
+            playing=false; updatePower();
+            text('status','Lecture bloquée ou flux indisponible. Réessayez.');
+            showFallback(s);
+          }
+        });
+      }catch(e){
+        playing=false; updatePower();
+        text('status','Lecture impossible depuis ce navigateur.');
+        showFallback(s);
+      }
     }
-    function stop(){audio.pause();audio.removeAttribute('src');audio.load();playing=false;fallback.style.display='none';text('status','Radio éteinte');updatePower();}
-    function showFallback(s){fallback.href=s.home;fallback.style.display='inline-block';}
-    power.addEventListener('click',function(){if(playing)stop();else start();});
-    audio.addEventListener('playing',function(){playing=true;text('status','En direct · son diffusé par l’iPad');updatePower();});
-    audio.addEventListener('waiting',function(){if(playing)text('status','Mise en mémoire tampon…');});
-    audio.addEventListener('error',function(){if(audio.getAttribute('src')){playing=false;updatePower();text('status','Ce flux est momentanément indisponible.');showFallback(stations[current]);}});
-    var savedStation=getSaved('radio.st','viva');stations.forEach(function(s,i){if(s.id===savedStation)current=i;});
-    updatePower();
-    // Sur iPad et iPhone, le volume du média ne peut pas être réglé via JavaScript.
+
+    function stop(){
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+      playing=false;
+      text('status','Radio éteinte');
+      updatePower();
+    }
+
+    power.addEventListener('click',function(){ if(playing) stop(); else start(); });
+    audio.addEventListener('playing',function(){ playing=true; text('status','En direct · son diffusé par l’iPad'); updatePower(); });
+    audio.addEventListener('waiting',function(){ if(playing) text('status','Mise en mémoire tampon…'); });
+    audio.addEventListener('error',function(){ if(audio.getAttribute('src')){ playing=false; updatePower(); text('status','Ce flux est momentanément indisponible.'); showFallback(stations[current]); }});
+
+    var savedStation=getSaved('radio.st','viva');
+    stations.forEach(function(s,i){ if(s.id===savedStation) current=i; });
+    renderStations(); updatePower();
+
     var ios=/iPad|iPhone|iPod/i.test(navigator.userAgent)||navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1;
     if(!ios){
       document.getElementById('iosVolume').style.display='none';
       document.getElementById('otherVolume').style.display='block';
       audio.volume=.75;
-      document.getElementById('vol').addEventListener('input',function(){audio.volume=Number(this.value)/100;text('volPct',this.value+' %');});
+      document.getElementById('vol').addEventListener('input',function(){ audio.volume=Number(this.value)/100; text('volPct',this.value+' %'); });
     }
-    // API météo Open-Meteo : géocodage public + données météorologiques sans clé API.
+
+    document.getElementById('openMeteoAlert').addEventListener('click',function(){
+      openModal('Avertissements IRM','https://www.meteo.be/fr/meteo/avertissements/carte-de-belgique','Avertissements officiels par province. Si l’IRM refuse l’intégration dans la fenêtre, utilise « Ouvrir en plein écran ».');
+    });
+    document.getElementById('openRoads').addEventListener('click',function(){
+      openModal('Trafiroutes','https://trafiroutes.wallonie.be/','Informations officielles de circulation et plan neige. Si la carte ne s’affiche pas ici, utilise « Ouvrir en plein écran ».');
+    });
+
     var city=document.getElementById('city');
     var places={mons:{q:'Mons',country:'BE'},bruxelles:{q:'Bruxelles',country:'BE'}};
-    var chosen=getSaved('radio.city','mons');if(!places[chosen])chosen='mons';city.value=chosen;
+    var chosen=getSaved('radio.city','mons'); if(!places[chosen]) chosen='mons'; city.value=chosen;
     function weatherVisual(code){
-      if(code===0)return ['☀️','Ciel dégagé'];
-      if(code===1||code===2)return ['🌤️','Partiellement nuageux'];
-      if(code===3)return ['☁️','Couvert'];
-      if(code===45||code===48)return ['🌫️','Brouillard'];
-      if([51,53,55,56,57].indexOf(code)>=0)return ['🌦️','Bruine'];
-      if([61,63,65,66,67,80,81,82].indexOf(code)>=0)return ['🌧️','Pluie'];
-      if([71,73,75,77,85,86].indexOf(code)>=0)return ['🌨️','Neige'];
-      if([95,96,99].indexOf(code)>=0)return ['⛈️','Orages'];
+      if(code===0) return ['☀️','Ciel dégagé'];
+      if(code===1||code===2) return ['🌤️','Partiellement nuageux'];
+      if(code===3) return ['☁️','Couvert'];
+      if(code===45||code===48) return ['🌫️','Brouillard'];
+      if([51,53,55,56,57].indexOf(code)>=0) return ['🌦️','Bruine'];
+      if([61,63,65,66,67,80,81,82].indexOf(code)>=0) return ['🌧️','Pluie'];
+      if([71,73,75,77,85,86].indexOf(code)>=0) return ['🌨️','Neige'];
+      if([95,96,99].indexOf(code)>=0) return ['⛈️','Orages'];
       return ['🌥️','Conditions variables'];
     }
-    function dayLabel(n){return n===0?"Aujourd'hui":n===1?'Demain':'Après-demain';}
+    function dayLabel(n){ return n===0?"Aujourd'hui":n===1?'Demain':'Après-demain'; }
     function refreshWeather(){
-      var p=places[city.value],token=city.value;
+      var p=places[city.value], token=city.value;
       text('weatherDesc','Actualisation…');
       fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(p.q)+'&count=10&language=fr&format=json')
-      .then(function(r){if(!r.ok)throw Error('Geocoding');return r.json();})
+      .then(function(r){ if(!r.ok) throw Error('Geocoding'); return r.json(); })
       .then(function(g){
-        var results=g.results||[];var place=results.filter(function(x){return x.country_code===p.country;})[0];
-        if(!place)throw Error('Ville introuvable');
+        var results=g.results||[];
+        var place=results.filter(function(x){ return x.country_code===p.country; })[0];
+        if(!place) throw Error('Ville introuvable');
         var query='latitude='+place.latitude+'&longitude='+place.longitude+'&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,apparent_temperature&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=3';
         return fetch('https://api.open-meteo.com/v1/forecast?'+query);
       })
-      .then(function(r){if(!r.ok)throw Error('Meteo');return r.json();})
+      .then(function(r){ if(!r.ok) throw Error('Meteo'); return r.json(); })
       .then(function(data){
-        if(city.value!==token)return;
-        var curr=data.current,d=data.daily,visual=weatherVisual(curr.weather_code);
-        text('weatherIcon',visual[0]);text('weatherDesc',visual[1]);text('currentTemp',Math.round(curr.temperature_2m)+'°');
+        if(city.value!==token) return;
+        var curr=data.current, d=data.daily, visual=weatherVisual(curr.weather_code);
+        text('weatherIcon',visual[0]); text('weatherDesc',visual[1]); text('currentTemp',Math.round(curr.temperature_2m)+'°');
         text('weatherFacts','Ressenti '+Math.round(curr.apparent_temperature)+'°  ·  Humidité '+Math.round(curr.relative_humidity_2m)+' %  ·  Vent '+Math.round(curr.wind_speed_10m)+' km/h');
-        var forecasts=document.getElementById('forecasts');forecasts.innerHTML='';
+        var forecasts=document.getElementById('forecasts'); forecasts.innerHTML='';
         for(var i=0;i<3;i++){
-          var v=weatherVisual(d.weather_code[i]);var item=document.createElement('div');item.className='forecast';
+          var v=weatherVisual(d.weather_code[i]);
+          var item=document.createElement('div'); item.className='forecast';
           item.innerHTML='<div>'+dayLabel(i)+'</div><div class="ficon">'+v[0]+'</div><div class="temps">'+Math.round(d.temperature_2m_max[i])+'° <span class="low">'+Math.round(d.temperature_2m_min[i])+'°</span></div>';
           forecasts.appendChild(item);
         }
       })
-      .catch(function(){if(city.value===token){text('weatherDesc','Météo indisponible pour le moment');text('weatherFacts','Vérifiez la connexion Internet.');}});
+      .catch(function(){ if(city.value===token){ text('weatherDesc','Météo indisponible pour le moment'); text('weatherFacts','Vérifiez la connexion Internet.'); }});
     }
-    city.addEventListener('change',function(){save('radio.city',city.value);refreshWeather();});
-    refreshWeather();setInterval(refreshWeather,20*60*1000);
-    document.addEventListener('visibilitychange',function(){if(!document.hidden){updateClock();refreshWeather();}});
+    city.addEventListener('change',function(){ save('radio.city',city.value); refreshWeather(); });
+    refreshWeather(); setInterval(refreshWeather,20*60*1000);
+    document.addEventListener('visibilitychange',function(){ if(!document.hidden){ updateClock(); refreshWeather(); }});
   })();
   </script>
 </body>
