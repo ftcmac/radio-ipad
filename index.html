@@ -1144,6 +1144,12 @@ html[data-theme="light"] .alertbuttons .smallbutton.selected-tool{background:#e3
   .weather-panel .weather-detail{min-height:24px}
 }
 
+
+/* V24 : lever/coucher plus lisibles ; flèches intégrées au pictogramme. */
+.weather-solar-row .solar-point svg{width:22px;height:22px;flex:0 0 22px}
+@media (orientation:landscape) and (max-width:1100px){
+  .weather-solar-row .solar-point svg{width:20px;height:20px;flex-basis:20px}
+}
 </style>
 </head>
 <body>
@@ -1175,8 +1181,8 @@ html[data-theme="light"] .alertbuttons .smallbutton.selected-tool{background:#e3
         </div>
       </div>
       <div class="weather-solar-row" aria-label="Lever et coucher du soleil">
-        <span class="solar-point" title="Lever du soleil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19h18M12 3v3M3.9 10.3l2.1 2.1M20.1 10.3L18 12.4"></path><path d="M5 19a7 7 0 0 1 14 0" stroke="#ffca6e"></path><path d="M12 10v6m-3-3 3 3 3-3" stroke="#ffca6e"></path></svg><span id="sunriseInline">—</span></span>
-        <span class="solar-point" title="Coucher du soleil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19h18M12 3v3M3.9 10.3l2.1 2.1M20.1 10.3L18 12.4"></path><path d="M5 19a7 7 0 0 1 14 0" stroke="#ffca6e"></path><path d="M12 16v-6m-3 3 3-3 3 3" stroke="#ffca6e"></path></svg><span id="sunsetInline">—</span></span>
+        <span class="solar-point" title="Lever du soleil" aria-label="Lever du soleil"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 26h26" stroke="currentColor" stroke-width="2.1"/><path d="M9.3 26a6.7 6.7 0 0 1 13.4 0" fill="#FFD36C" fill-opacity=".22" stroke="#FFD36C" stroke-width="2.2"/><path d="M16 14V3.8m-4.2 4.4L16 4l4.2 4.2" stroke="#FFD36C" stroke-width="2.35"/><path d="M5.3 19.4l2.4 1M26.7 19.4l-2.4 1" stroke="#FFD36C" stroke-width="1.7"/></svg><span id="sunriseInline">—</span></span>
+        <span class="solar-point" title="Coucher du soleil" aria-label="Coucher du soleil"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 23h26" stroke="currentColor" stroke-width="2.1"/><path d="M9.3 23a6.7 6.7 0 0 1 13.4 0" fill="#FFAD79" fill-opacity=".22" stroke="#FFAD79" stroke-width="2.2"/><path d="M16 4v10.4m-4.2-4.2 4.2 4.2 4.2-4.2" stroke="#FFAD79" stroke-width="2.35"/><path d="M5.3 16.4l2.4 1M26.7 16.4l-2.4 1" stroke="#FFAD79" stroke-width="1.7"/></svg><span id="sunsetInline">—</span></span>
       </div>
       <div class="weather-current"><span class="weather-icon" id="weatherIcon" aria-hidden="true"></span><div class="temperature" id="currentTemp">--°</div></div>
       <div class="weather-desc weather-summary"><span id="weatherDesc">Chargement…</span><span class="weather-place" id="weatherPlace">· Position actuelle</span></div>
@@ -1215,7 +1221,7 @@ html[data-theme="light"] .alertbuttons .smallbutton.selected-tool{background:#e3
       </div>
     </div>
   </section>
-  <footer class="concept-credit" aria-label="Origine du projet">Une idée de Vince <span aria-hidden="true">·</span> novembre 2026</footer>
+  <footer class="concept-credit" aria-label="Origine du projet">iPad Radio Weather Clock - Vince - Nov. 26</footer>
 </div>
 <div class="big-clock-overlay" id="bigClockOverlay" role="dialog" aria-modal="true" aria-label="Horloge en plein écran" aria-hidden="true"><button class="big-clock-exit" id="bigClockClose" type="button">Fermer</button><div class="big-clock-display" id="bigClockDisplay">--:--</div><div class="big-clock-date" id="bigClockDate"></div></div>
 <div class="timer-toast" id="timerToast" role="alert" aria-live="assertive"></div>
@@ -1811,10 +1817,15 @@ html[data-theme="light"] .alertbuttons .smallbutton.selected-tool{background:#e3
   function solarTime(ts){return ts&&ts.indexOf('T')>=0?ts.split('T')[1].slice(0,5):'—';}
   function getSolarDay(){
     if(!solarData||!solarData.daily)return null;
-    var localStamp=new Date(Date.now()+(solarData.utcOffset||0)*1000).toISOString().slice(0,10);
-    var index=(solarData.daily.time||[]).indexOf(localStamp);
+    var daily=solarData.daily;
+    var localStamp=(solarData.localTime||'').slice(0,10);
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(localStamp)){
+      localStamp=new Date(Date.now()+(solarData.utcOffset||0)*1000).toISOString().slice(0,10);
+    }
+    var index=(daily.time||[]).indexOf(localStamp);
     if(index<0)index=0;
-    return {rise:solarData.daily.sunrise&&solarData.daily.sunrise[index],set:solarData.daily.sunset&&solarData.daily.sunset[index]};
+    var sunrise=daily.sunrise||[],sunset=daily.sunset||[];
+    return {rise:sunrise[index]||sunrise[0]||null,set:sunset[index]||sunset[0]||null};
   }
   function applyAutoTheme(){
     if(!autoTheme)return;
