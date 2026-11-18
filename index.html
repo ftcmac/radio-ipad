@@ -216,6 +216,19 @@ html[data-theme="light"] .modal-actions button,html[data-theme="light"] .modal-a
 @media(min-width:761px){.clock{font-size:190px}}
 @media(max-width:760px){.clock{font-size:124px}}
 @media(max-width:760px){.weather-icon{width:52px;height:52px;flex-basis:52px}.forecast .icon{width:30px;height:30px}}
+/* V10 : chiffres plus généreux, style Apple, sans agrandir leur panneau.
+   Le scaleX/scaleY agit sur la forme des chiffres ; fitClock tient compte
+   de l’élargissement réel pour éviter tout débordement. */
+.clock{
+  font-family:"Arial Rounded MT Bold","Arial Black",-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+  font-weight:800;
+  letter-spacing:-.055em;
+  line-height:1;
+  transform:scale(1.07,1.09);
+  transform-origin:center center;
+}
+.clock .colon{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;font-weight:360;}
+
 
 </style>
 </head>
@@ -242,11 +255,11 @@ html[data-theme="light"] .modal-actions button,html[data-theme="light"] .modal-a
       <div class="forecasts" id="forecasts"><div class="forecast">Aujourd'hui</div><div class="forecast">Demain</div><div class="forecast">Après-demain</div></div>
     </section>
   </main>
-  <section class="card alertbar" aria-label="Avertissements et circulation">
-    <div class="alertname"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l8 14H4L12 4z"></path><path d="M12 9v4"></path><circle cx="12" cy="16" r="1"></circle></svg></span> Vigilance météo et routes</div>
+  <section class="card alertbar" aria-label="Accès à mes équipements connectés">
+    <div class="alertname"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5.5 9v11h13V9"></path><path d="M10 20v-6h4v6"></path></svg></span> Mes équipements</div>
     <div class="alertbuttons">
-      <button class="smallbutton" id="irm" type="button"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l8 14H4L12 4z"></path><path d="M12 9v4"></path><circle cx="12" cy="16" r="1"></circle></svg></span>Alerte IRM</button>
-      <button class="smallbutton" id="routes" type="button"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L8 10l3 2-3 2 3 2-2 7"></path><path d="M14 3l2 7-3 2 3 2-3 2 2 7"></path></svg></span>État des routes</button>
+      <button class="smallbutton" id="tado" type="button"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14.3V5a2 2 0 0 1 4 0v9.3a4.5 4.5 0 1 1-4 0z"></path><path d="M12 10v7"></path></svg></span>Tado</button>
+      <button class="smallbutton" id="netatmo" type="button"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17a4 4 0 0 1 0-8 5.7 5.7 0 0 1 10.8 1.4A3.4 3.4 0 0 1 17 17H7z"></path><path d="M9 20v1M13 19v2M17 20v1"></path></svg></span>Netatmo</button>
     </div>
   </section>
     <section class="card radio-layout" aria-label="Lecteur radio">
@@ -269,8 +282,8 @@ html[data-theme="light"] .modal-actions button,html[data-theme="light"] .modal-a
 <div class="modal" id="modal" aria-hidden="true">
   <section class="modal-window" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-bar"><strong id="modalTitle">Informations</strong><div class="modal-actions"><a id="modalExternal" href="#" target="_blank" rel="noopener noreferrer">Ouvrir le site</a><button id="modalClose" type="button">Fermer <span class="modal-close-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></button></div></div>
-    <div class="modal-hint">Si le site bloque l’affichage intégré, utilise « Ouvrir le site ».</div>
-    <iframe id="modalFrame" title="Informations officielles" loading="lazy" referrerpolicy="no-referrer"></iframe>
+    <div class="modal-hint">Connexion via le site officiel. Si la fenêtre est vide ou refuse l’accès, utilise « Ouvrir le site ». Rien n’est enregistré dans ce tableau de bord.</div>
+    <iframe id="modalFrame" title="Site du fournisseur" loading="eager" referrerpolicy="strict-origin-when-cross-origin"></iframe>
   </section>
 </div>
 <script>
@@ -330,8 +343,8 @@ html[data-theme="light"] .modal-actions button,html[data-theme="light"] .modal-a
     var target=mobile?124:194;
     c.style.fontSize=target+'px';
     var style=getComputedStyle(panel);
-    var maxWidth=panel.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight)-10;
-    // Le texte réel est mesuré (pas un ratio supposé), puis ajusté sans changer le panneau.
+    var maxWidth=(panel.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight)-12)/1.07;
+    // Le texte réel est mesuré, avec marge pour le léger étirement horizontal.
     if(c.scrollWidth>maxWidth){
       c.style.fontSize=Math.floor(target*maxWidth/c.scrollWidth)+'px';
     }
@@ -457,8 +470,8 @@ html[data-theme="light"] .modal-actions button,html[data-theme="light"] .modal-a
   var modal=el('modal');
   function openModal(title,url){set('modalTitle',title);el('modalExternal').href=url;el('modalFrame').src=url;modal.classList.add('open');modal.setAttribute('aria-hidden','false');}
   function closeModal(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');el('modalFrame').src='about:blank';}
-  el('irm').addEventListener('click',function(){openModal('Avertissements officiels IRM','https://www.meteo.be/fr/meteo/avertissements/carte-de-belgique');});
-  el('routes').addEventListener('click',function(){openModal('Trafiroutes · circulation','https://trafiroutes.wallonie.be/');});
+  el('tado').addEventListener('click',function(){openModal('Tado · chauffage','https://app.tado.com/');});
+  el('netatmo').addEventListener('click',function(){openModal('Netatmo · météo et capteurs','https://home.netatmo.com/');});
   el('modalClose').addEventListener('click',closeModal);
   modal.addEventListener('click',function(e){if(e.target===modal)closeModal();});
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.classList.contains('open'))closeModal();});
