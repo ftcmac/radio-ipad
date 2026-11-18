@@ -658,6 +658,79 @@ html[data-theme="light"] .weather-details{color:#416584}
 }
 @media (max-width:500px){.forecasts .forecast{flex-basis:calc((100% - 12px) / 3)}}
 
+
+/* V21 : météo aérée, soleil distinct, air résumé, flèches sur les 12 heures. */
+.weather-panel{position:relative}
+.weather-solar-row{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#bcd6eb;font-size:12px;font-weight:700;line-height:1.15;min-height:20px}
+.solar-point{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.solar-point svg{width:22px;height:22px;display:block;color:#ffce79;flex:0 0 22px}
+.weather-current{justify-content:flex-start;align-items:center;margin-top:4px}
+.weather-summary{display:block;margin-top:0;line-height:1.2;font-size:14px;font-weight:560}
+.weather-summary .weather-place{white-space:normal}
+.weather-details{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;flex-wrap:nowrap;gap:4px;min-width:0;font-size:11px}
+.weather-details .weather-detail{max-width:100%;line-height:1.25;white-space:normal}
+.weather-details .detail-symbol{flex-shrink:0}
+.air-detail{color:#c8e2f2}
+.forecast-rail{position:relative;width:100%;min-width:0;margin-top:auto}
+.forecast-rail .forecasts{margin:0}
+.forecast-rail::before,.forecast-rail::after{content:"";pointer-events:none;position:absolute;top:0;bottom:0;width:26px;z-index:2;display:none}
+.forecast-rail.has-prev::before{display:block;left:0;background:linear-gradient(to right,rgba(28,43,65,.94),transparent)}
+.forecast-rail.has-next::after{display:block;right:0;background:linear-gradient(to left,rgba(28,43,65,.94),transparent)}
+.forecast-arrow{position:absolute;z-index:3;top:50%;transform:translateY(-50%);width:29px;height:43px;border-radius:13px;background:rgba(10,30,50,.86);border:1px solid rgba(190,227,250,.62);color:#e8f8ff;display:flex;justify-content:center;align-items:center;padding:4px;box-shadow:0 2px 11px rgba(0,0,0,.18);touch-action:manipulation}
+.forecast-arrow svg{width:17px;height:21px;display:block}
+.forecast-arrow.prev{left:0}.forecast-arrow.next{right:0}
+.forecast-arrow[hidden]{display:none!important}
+.forecast-arrow.hint{animation:arrow-hint 1s ease-in-out 2}
+@keyframes arrow-hint{50%{transform:translateY(-50%) scale(1.1);background:#347bac}}
+html[data-theme="light"] .weather-solar-row{color:#456983}
+html[data-theme="light"] .air-detail{color:#3b6886}
+html[data-theme="light"] .forecast-arrow{background:rgba(233,246,255,.96);border-color:#91b6d3;color:#245b7a}
+html[data-theme="light"] .forecast-rail.has-prev::before{background:linear-gradient(to right,rgba(255,255,255,.96),transparent)}
+html[data-theme="light"] .forecast-rail.has-next::after{background:linear-gradient(to left,rgba(255,255,255,.96),transparent)}
+.insights-section{font-size:17px;font-weight:800;margin:19px 0 8px}
+.stat-explain{display:block;font-size:12px;color:#adc7d9;margin-top:7px;line-height:1.3}
+html[data-theme="light"] .stat-explain{color:#526b83}
+@media(min-width:761px){
+  .weather-panel{gap:4px;padding-top:16px;padding-bottom:13px}
+  .weather-current{min-height:55px;margin-top:6px}
+  .weather-summary{font-size:14px}
+  .weather-details{font-size:11px;gap:3px}
+}
+@media (orientation:landscape) and (min-width:761px) and (max-width:1100px) and (max-height:820px){
+  .weather-panel{padding-top:10px;padding-bottom:8px;gap:3px}
+  .weather-solar-row{min-height:16px;font-size:10px}
+  .solar-point{gap:4px}.solar-point svg{width:18px;height:18px;flex-basis:18px}
+  .weather-current{min-height:49px;margin-top:3px}
+  .weather-icon{width:48px;height:48px;flex-basis:48px}
+  .weather-summary{font-size:12.5px}
+  .weather-panel .facts{font-size:11px}
+  .weather-details{font-size:10px;gap:2px}
+  .weather-panel .forecast{padding:2px 1px}
+  .weather-panel .forecast .icon{height:23px;width:23px}
+  .forecast-arrow{width:25px;height:39px}
+}
+@media(orientation:portrait) and (min-width:600px) and (max-width:1100px){
+  .weather-panel{gap:4px;padding-top:10px;padding-bottom:10px}
+  .weather-current{margin-top:2px;min-height:49px}
+  .weather-solar-row{font-size:11px;min-height:17px}
+  .solar-point svg{width:19px;height:19px;flex-basis:19px}
+  .weather-summary{font-size:13px}
+  .weather-details{font-size:11px;gap:2px}
+}
+@media(max-width:760px){
+  .weather-solar-row{font-size:11px}
+  .weather-summary{font-size:13px}
+  .weather-details{font-size:10.5px}
+}
+@media (orientation:portrait) and (min-width:600px) and (max-width:1100px){
+  /* Garder les prévisions dans le panneau sur l’iPad Air 2 vertical. */
+  .weather-panel .forecasts .forecast{padding:2px 2px}
+  .weather-panel .forecasts .forecast .icon{width:24px;height:24px;margin:2px auto}
+  .weather-panel .forecasts .forecast .chance{margin-top:0}
+  .weather-solar-row{min-height:16px}
+}
+@media(prefers-reduced-motion:reduce){.forecast-arrow.hint{animation:none}}
+
 </style>
 </head>
 <body>
@@ -688,13 +761,22 @@ html[data-theme="light"] .weather-details{color:#416584}
           </button>
         </div>
       </div>
-      <div class="weather-current"><span class="weather-icon" id="weatherIcon" aria-hidden="true"></span><div><div class="temperature" id="currentTemp">--°</div><div class="weather-desc"><span id="weatherDesc">Chargement…</span><span class="weather-place" id="weatherPlace">· Position actuelle</span></div></div></div>
-      <div class="facts" id="weatherFacts">Mise à jour de la météo…</div>
-      <div class="weather-details" aria-label="Pluie et soleil">
-        <span class="weather-detail rain-detail"><span class="detail-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a8 8 0 0 1 16 0H4zM12 11v6a2 2 0 0 0 4 0"></path><path d="M7 15l-1 2M11 15l-1 2M16 15l-1 2" stroke="#73ccf8"></path></svg></span><span id="rainInline">Pluie : actualisation…</span></span>
-        <span class="weather-detail sun-detail"><span class="detail-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3"></circle><path d="M3 19h18M4 15l2 2M20 15l-2 2M12 1v2M4 8h2M18 8h2"></path></svg></span><span id="sunInline">Lever et coucher : —</span></span>
+      <div class="weather-solar-row" aria-label="Lever et coucher du soleil">
+        <span class="solar-point" title="Lever du soleil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19h18M12 3v3M3.9 10.3l2.1 2.1M20.1 10.3L18 12.4"></path><path d="M5 19a7 7 0 0 1 14 0" stroke="#ffca6e"></path><path d="M12 10v6m-3-3 3 3 3-3" stroke="#ffca6e"></path></svg><span id="sunriseInline">—</span></span>
+        <span class="solar-point" title="Coucher du soleil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19h18M12 3v3M3.9 10.3l2.1 2.1M20.1 10.3L18 12.4"></path><path d="M5 19a7 7 0 0 1 14 0" stroke="#ffca6e"></path><path d="M12 16v-6m-3 3 3-3 3 3" stroke="#ffca6e"></path></svg><span id="sunsetInline">—</span></span>
       </div>
-      <div class="forecasts" id="forecasts" aria-label="Prévisions des 12 prochaines heures : faire glisser horizontalement"><div class="forecast">Prévisions…</div></div>
+      <div class="weather-current"><span class="weather-icon" id="weatherIcon" aria-hidden="true"></span><div class="temperature" id="currentTemp">--°</div></div>
+      <div class="weather-desc weather-summary"><span id="weatherDesc">Chargement…</span><span class="weather-place" id="weatherPlace">· Position actuelle</span></div>
+      <div class="facts" id="weatherFacts">Mise à jour de la météo…</div>
+      <div class="weather-details" aria-label="Risque de pluie et qualité de l'air">
+        <span class="weather-detail rain-detail"><span class="detail-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a8 8 0 0 1 16 0H4zM12 11v6a2 2 0 0 0 4 0"></path><path d="M7 15l-1 2M11 15l-1 2M16 15l-1 2" stroke="#73ccf8"></path></svg></span><span id="rainInline">Pluie : actualisation…</span></span>
+        <span class="weather-detail air-detail"><span class="detail-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8c4-3 6 3 10 0s7-3 10 0M2 13c4-3 6 3 10 0s7-3 10 0M2 18c4-3 6 3 10 0s7-3 10 0"></path></svg></span><span id="airInline">Air : actualisation…</span></span>
+      </div>
+      <div class="forecast-rail" id="forecastRail" aria-label="Prévisions météo horaires">
+        <button class="forecast-arrow prev" id="forecastPrev" type="button" aria-label="Voir les heures précédentes" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <div class="forecasts" id="forecasts" tabindex="0" aria-label="Prévisions des 12 prochaines heures, défilement horizontal"><div class="forecast">Prévisions…</div></div>
+        <button class="forecast-arrow next" id="forecastNext" type="button" aria-label="Voir les heures suivantes" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
     </section>
   </main>
   <section class="card alertbar" aria-label="Sommeil radio et services">
@@ -1017,6 +1099,32 @@ html[data-theme="light"] .weather-details{color:#416584}
   if(!placeById(weatherDefault))weatherDefault=weatherPlaces[0].id;
   var activeCity=weatherDefault;
   var hourlyForecast=[];
+  // Flèches de navigation : elles disparaissent au début et à la fin du ruban.
+  var forecastStrip=el('forecasts'),prevForecast=el('forecastPrev'),nextForecast=el('forecastNext');
+  var scrollHintShown=read('weather.scroll.hint','no')==='yes';
+  function updateForecastArrows(){
+    var max=Math.max(0,forecastStrip.scrollWidth-forecastStrip.clientWidth);
+    var atStart=forecastStrip.scrollLeft<=3,atEnd=forecastStrip.scrollLeft>=max-3;
+    prevForecast.hidden=max<7||atStart;
+    nextForecast.hidden=max<7||atEnd;
+    el('forecastRail').classList.toggle('has-prev',!prevForecast.hidden);
+    el('forecastRail').classList.toggle('has-next',!nextForecast.hidden);
+    if(!nextForecast.hidden && !scrollHintShown){
+      scrollHintShown=true;store('weather.scroll.hint','yes');nextForecast.classList.add('hint');
+      setTimeout(function(){nextForecast.classList.remove('hint');},2700);
+    }
+  }
+  function scrollForecast(direction){
+    var width=forecastStrip.clientWidth;
+    var target=Math.max(0,Math.min(forecastStrip.scrollWidth-width,forecastStrip.scrollLeft+direction*width*.75));
+    try{forecastStrip.scrollTo({left:target,behavior:'smooth'});}catch(e){forecastStrip.scrollLeft=target;}
+    setTimeout(updateForecastArrows,340);
+  }
+  prevForecast.addEventListener('click',function(){scrollForecast(-1);});
+  nextForecast.addEventListener('click',function(){scrollForecast(1);});
+  forecastStrip.addEventListener('scroll',updateForecastArrows);
+  window.addEventListener('resize',function(){setTimeout(updateForecastArrows,100);});
+  window.addEventListener('orientationchange',function(){setTimeout(updateForecastArrows,300);});
   var localCoords=null,localCoordsTime=0;
   var localCityName='',localCityNameTime=0,localCityLookupPending=false;
   function showWeatherPlace(){
@@ -1115,7 +1223,7 @@ html[data-theme="light"] .weather-details{color:#416584}
     }).catch(function(){feedback('Position indisponible. Autorise la localisation de Safari ou choisis une ville.');displayWeatherCities();});
   }
   function updateWeather(){
-    var selectedCity=activeCity,p=currentPlace();set('weatherDesc','Actualisation…');set('rainInline','Pluie : actualisation…');set('sunInline','Lever et coucher : —');showWeatherPlace();
+    var selectedCity=activeCity,p=currentPlace();set('weatherDesc','Actualisation…');set('rainInline','Pluie : actualisation…');set('sunriseInline','—');set('sunsetInline','—');set('airInline','Air : actualisation…');showWeatherPlace();
     var locationPromise;
     if(selectedCity==='local'){
       locationPromise=locateDevice();
@@ -1161,6 +1269,9 @@ html[data-theme="light"] .weather-details{color:#416584}
         box.appendChild(x);
       });
       if(!hourlyForecast.length){box.textContent='Prévisions horaires indisponibles';}
+      box.scrollLeft=0;
+      updateForecastArrows();
+      setTimeout(updateForecastArrows,50);
       renderWeatherDetails();
       if(el('toolsModal').classList.contains('open')&&activeTool==='hourly')renderHourlyTool();
     }).catch(function(){if(activeCity===selectedCity){setConnection(navigator.onLine===false?'offline':'uncertain');set('weatherDesc',selectedCity==='local'?'Position indisponible':'Météo indisponible');set('weatherFacts',selectedCity==='local'?'Autorise la localisation ou choisis une ville.':'Vérifie la connexion Internet.');}});
@@ -1210,7 +1321,7 @@ html[data-theme="light"] .weather-details{color:#416584}
     else if(tool==='cities'){set('toolsTitle','Mes villes météo');renderCitiesTool();}
     else if(tool==='radios'){set('toolsTitle','Mes stations radio');renderRadiosTool();}
     else if(tool==='extras'){set('toolsTitle','Mes outils');renderExtrasTool();}
-    else if(tool==='insights'){set('toolsTitle','Météo, soleil & air');renderInsightsTool();}
+    else if(tool==='insights'){set('toolsTitle','Air & pollens');renderInsightsTool();}
     else if(tool==='shower'){set('toolsTitle','Minuteur pratique');renderShowerTool();}
   }
   function closeTools(){
@@ -1305,13 +1416,14 @@ html[data-theme="light"] .weather-details{color:#416584}
   function loadAirQuality(loc){
     var key=loc.city+'|'+Number(loc.latitude).toFixed(2)+'|'+Number(loc.longitude).toFixed(2);
     if(airRequestKey===key&&Date.now()-airLastTime<50*60*1000)return;
-    airRequestKey=key;airLastTime=Date.now();airData=null;airState='loading';
-    var url='https://air-quality-api.open-meteo.com/v1/air-quality?latitude='+encodeURIComponent(loc.latitude)+'&longitude='+encodeURIComponent(loc.longitude)+'&current=european_aqi,birch_pollen,grass_pollen&timezone=auto';
+    airRequestKey=key;airLastTime=Date.now();airData=null;airState='loading';renderAirInline();
+    var vars=['european_aqi','european_aqi_pm2_5','european_aqi_pm10','european_aqi_ozone','european_aqi_nitrogen_dioxide','european_aqi_sulphur_dioxide','pm2_5','pm10','ozone','nitrogen_dioxide','sulphur_dioxide','carbon_monoxide','uv_index','alder_pollen','birch_pollen','grass_pollen','olive_pollen','mugwort_pollen','ragweed_pollen'];
+    var url='https://air-quality-api.open-meteo.com/v1/air-quality?latitude='+encodeURIComponent(loc.latitude)+'&longitude='+encodeURIComponent(loc.longitude)+'&current='+vars.join(',')+'&timezone=auto';
     fetch(url).then(function(r){if(!r.ok)throw Error('air');return r.json();}).then(function(data){
       if(airRequestKey!==key)return;
       airData=data.current||null;airState=airData?'ready':'error';
-      if(activeTool==='insights')renderInsightsTool();
-    }).catch(function(){if(airRequestKey===key){airData=null;airState='error';if(activeTool==='insights')renderInsightsTool();}});
+      renderAirInline();if(activeTool==='insights')renderInsightsTool();
+    }).catch(function(){if(airRequestKey===key){airData=null;airState='error';renderAirInline();if(activeTool==='insights')renderInsightsTool();}});
   }
   function aqiLabel(value){
     if(value<=20)return 'Bonne';if(value<=40)return 'Correcte';if(value<=60)return 'Moyenne';
@@ -1330,28 +1442,94 @@ html[data-theme="light"] .weather-details{color:#416584}
   function renderWeatherDetails(){
     var hours=hourlyForecast.slice(0,6),hits=[],max=0,seen=false;
     hours.forEach(function(h){if(h.rain!=null&&isFinite(Number(h.rain))){seen=true;max=Math.max(max,Number(h.rain));if(Number(h.rain)>=60)hits.push(h);}});
-    var label=!seen?'Pluie : données indisponibles':hits.length?'Pluie probable vers '+hits[0].time.slice(11,13)+' h ('+Math.round(hits[0].rain)+' %)':max<30?'Faible risque de pluie (6 h)':'Risque de pluie jusqu’à '+Math.round(max)+' % (6 h)';
+    var label=!seen?'Pluie : données indisponibles':hits.length?'Pluie vers '+hits[0].time.slice(11,13)+' h ('+Math.round(hits[0].rain)+' %)':max<30?'Pluie : risque faible (6 h)':'Pluie : jusqu’à '+Math.round(max)+' % (6 h)';
     set('rainInline',label);
     var solar=getSolarDay();
-    set('sunInline',solar&&solar.rise&&solar.set?'Lever '+solarTime(solar.rise)+' · coucher '+solarTime(solar.set):'Lever et coucher : —');
+    set('sunriseInline',solar&&solar.rise?solarTime(solar.rise):'—');
+    set('sunsetInline',solar&&solar.set?solarTime(solar.set):'—');
+  }
+  // Les contributions à l'indice européen sont comparables entre polluants,
+  // contrairement à leurs concentrations ; choix des deux principaux contributeurs.
+  var pollutantInfo=[
+    {key:'pm2_5',index:'european_aqi_pm2_5',label:'PM2,5',title:'Particules fines PM2,5'},
+    {key:'pm10',index:'european_aqi_pm10',label:'PM10',title:'Particules PM10'},
+    {key:'ozone',index:'european_aqi_ozone',label:'O₃',title:'Ozone O₃'},
+    {key:'nitrogen_dioxide',index:'european_aqi_nitrogen_dioxide',label:'NO₂',title:'Dioxyde d’azote NO₂'},
+    {key:'sulphur_dioxide',index:'european_aqi_sulphur_dioxide',label:'SO₂',title:'Dioxyde de soufre SO₂'},
+    {key:'carbon_monoxide',index:null,label:'CO',title:'Monoxyde de carbone CO'}
+  ];
+  var pollenInfo=[
+    {key:'grass_pollen',label:'Graminées'},
+    {key:'birch_pollen',label:'Bouleau'},
+    {key:'alder_pollen',label:'Aulne'},
+    {key:'olive_pollen',label:'Olivier'},
+    {key:'mugwort_pollen',label:'Armoise'},
+    {key:'ragweed_pollen',label:'Ambroisie'}
+  ];
+  function numberOrNull(v){return v==null||v===''||!isFinite(Number(v))?null:Number(v);}
+  function airContributors(){
+    if(!airData)return [];
+    return pollutantInfo.filter(function(p){return numberOrNull(airData[p.key])!==null;})
+      .map(function(p){return {info:p,val:numberOrNull(airData[p.key]),severity:p.index?numberOrNull(airData[p.index]):null};})
+      .sort(function(a,b){return (b.severity==null?-1:b.severity)-(a.severity==null?-1:a.severity);});
+  }
+  function renderAirInline(){
+    var target=el('airInline');if(!target)return;
+    if(airState==='loading'){target.textContent='Air : actualisation…';return;}
+    if(!airData){target.textContent='Air : données indisponibles';return;}
+    var idx=numberOrNull(airData.european_aqi);
+    var label=idx===null?'Air : indice indisponible':'Air : '+aqiLabel(idx).toLowerCase()+' (AQI '+Math.round(idx)+')';
+    var top=airContributors().slice(0,2);
+    if(top.length)label+=' · '+top.map(function(x){return x.info.label+' '+Math.round(x.val);}).join(' · ')+' µg/m³';
+    target.textContent=label;
   }
   function renderInsightsTool(){
     var box=el('toolsBody');box.textContent='';
     var loc=activeCity==='local'?(localCityName||'Météo locale'):currentPlace().name;
-    box.appendChild(make('p','manager-lead','Prévisions pour '+loc+'. Les probabilités ne garantissent pas qu’il pleuvra à un endroit précis.'));
-    box.appendChild(make('div','insight-headline',rainHeadline()));
-    var grid=make('div','mini-stat-grid'),solar=getSolarDay();
-    function tile(label,value){var card=make('div','mini-stat');card.appendChild(make('span','mini-title',label));card.appendChild(make('strong','',value));grid.appendChild(card);}
-    tile('Lever du soleil',solar?solarTime(solar.rise):'Indisponible');
-    tile('Coucher du soleil',solar?solarTime(solar.set):'Indisponible');
-    var air=airData&&airData.european_aqi!=null&&isFinite(Number(airData.european_aqi))?Math.round(airData.european_aqi):null;
-    tile('Qualité de l’air · AQI européen',air!==null?air+' · '+aqiLabel(air):airState==='loading'?'Actualisation…':'Données indisponibles');
-    var pollenValue=function(v){return v!=null&&isFinite(Number(v))?Math.round(v)+' grains/m³':'Hors saison / indisponible';};
-    tile('Pollen de bouleau',pollenValue(airData&&airData.birch_pollen));
-    tile('Pollen de graminées',pollenValue(airData&&airData.grass_pollen));
-    box.appendChild(grid);
-    box.appendChild(make('p','manager-note','Lever/coucher : horaires prévus pour la localité choisie. Air et pollens : estimations modélisées, non des mesures dans la salle de bain. Pollens disponibles en Europe seulement en saison. Source : Open-Meteo et CAMS ENSEMBLE.'));
-    var link=make('a','smalllink','Détails des données Open-Meteo');link.href='https://open-meteo.com/en/docs/air-quality-api';link.target='_blank';link.rel='noopener noreferrer';box.appendChild(link);
+    box.appendChild(make('p','manager-lead','Qualité de l’air et pollens pour '+loc+' · données modélisées Open-Meteo / CAMS, pas des relevés dans la pièce.'));
+    if(airState==='loading'){box.appendChild(make('p','insight-headline','Actualisation des données sur la qualité de l’air…'));return;}
+    if(!airData){
+      box.appendChild(make('p','insight-headline','Données sur la qualité de l’air indisponibles actuellement.'));
+      box.appendChild(make('p','manager-note','La météo et les radios continuent de fonctionner indépendamment. Réessaie plus tard.'));
+      return;
+    }
+    var idx=numberOrNull(airData.european_aqi);
+    var headline=idx===null?'Indice européen indisponible':'Indice européen '+Math.round(idx)+' — '+aqiLabel(idx).toLowerCase();
+    box.appendChild(make('div','insight-headline',headline));
+    var stamp=airData.time||'';
+    if(stamp)box.appendChild(make('p','manager-note','Modélisation valable vers '+stamp.replace('T',' à ')+' (heure locale).'));
+    var contributors=airContributors();
+    if(contributors.length){
+      var dominating=contributors.filter(function(p){return p.severity!==null;}).slice(0,2);
+      if(dominating.length)box.appendChild(make('p','manager-lead','Principaux contributeurs à l’indice : '+dominating.map(function(v){return v.info.label+' (sous-indice '+Math.round(v.severity)+')';}).join(' et ')+'.'));
+    }
+    function heading(v){var h=make('h3','insights-section',v);box.appendChild(h);}
+    function tiles(){var g=make('div','mini-stat-grid');box.appendChild(g);return g;}
+    function card(g,title,value,extra){
+      var c=make('div','mini-stat');c.appendChild(make('span','mini-title',title));c.appendChild(make('strong','',value));
+      if(extra)c.appendChild(make('span','stat-explain',extra));g.appendChild(c);
+    }
+    heading('Polluants atmosphériques');
+    var polGrid=tiles();
+    pollutantInfo.forEach(function(p){
+      var v=numberOrNull(airData[p.key]);
+      var sub=p.index?numberOrNull(airData[p.index]):null;
+      card(polGrid,p.title,v===null?'Non disponible':Math.round(v)+' µg/m³',sub===null?'':'Sous-indice européen '+Math.round(sub)+' · '+aqiLabel(sub).toLowerCase());
+    });
+    heading('Pollens');
+    box.appendChild(make('p','manager-note','Concentrations en grains/m³, lorsque disponibles en Europe pendant la saison pollinique. Aucun niveau de risque n’est déduit arbitrairement des concentrations.'));
+    var pollenGrid=tiles();
+    pollenInfo.forEach(function(p){
+      var v=numberOrNull(airData[p.key]);
+      card(pollenGrid,p.label,v===null?'Hors saison / indisponible':Math.round(v)+' grains/m³');
+    });
+    heading('Autres informations');
+    var misc=tiles();
+    var uv=numberOrNull(airData.uv_index);
+    card(misc,'Indice UV',uv===null?'Indisponible':String(Math.round(uv*10)/10));
+    card(misc,'Indice européen',idx===null?'Indisponible':String(Math.round(idx)),'0–20 bon · 21–40 correct · 41–60 moyen · 61–80 mauvais · 81–100 très mauvais · >100 extrêmement mauvais');
+    box.appendChild(make('p','manager-note','Les polluants sont exprimés en µg/m³. Les sous-indices indiquent leur contribution à l’indice européen : on ne compare pas directement les concentrations de gaz et de particules. Ces estimations ne remplacent pas une station de mesure locale.'));
+    var link=make('a','smalllink','Source : Open-Meteo et CAMS ENSEMBLE');link.href='https://open-meteo.com/en/docs/air-quality-api';link.target='_blank';link.rel='noopener noreferrer';box.appendChild(link);
   }
 
   // Minuteur indépendant de l'arrêt radio : l'alerte visuelle reste visible.
