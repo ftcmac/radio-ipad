@@ -257,7 +257,9 @@ html[data-theme="light"] .modal-actions button,html[data-theme="light"] .modal-a
 .forecast{min-width:0;padding:8px 2px;font-size:12px}
 .forecast .icon{height:28px;width:28px;margin:3px auto}
 .forecast .temp{font-size:15px}
-.forecast .chance{font-size:11px;color:#8dd7fc;margin-top:3px;white-space:nowrap}
+.forecast .chance{font-size:11px;color:#8dd7fc;margin-top:3px;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:4px}
+.chance-icon,.rain-icon{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle}
+.chance-icon svg,.rain-icon svg{width:13px;height:13px;display:block}
 html[data-theme="light"] .forecast .chance{color:#276a95}
 .smallbutton{white-space:nowrap}
 .alertbar{gap:6px}
@@ -278,7 +280,7 @@ html[data-theme="light"] .forecast .chance{color:#276a95}
 .hourly-item .icon svg{width:100%;height:100%}
 .hourly-item .hour{font-weight:750;font-size:15px}
 .hourly-item .temp{font-size:21px;font-weight:800;margin:5px 0}
-.hourly-item .rain{font-size:13px;color:#a5dafa}
+.hourly-item .rain{font-size:13px;color:#a5dafa;display:flex;align-items:center;justify-content:center;gap:5px}
 .timer-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .timer-option{border:1px solid #5d7791;background:#29465f;color:#fff;border-radius:14px;padding:19px 8px;font-size:20px;font-weight:750}
 .timer-option.cancel{grid-column:span 3;background:#423d4f;color:#fff3ef}
@@ -314,6 +316,54 @@ html[data-theme="light"] .timer-detail{color:#526a80}
   .smallbutton{font-size:11px}
   .hourly-list{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* V14 — gestion des villes et radios sans alourdir le tableau de bord. */
+.weather-title-actions{display:flex;align-items:center;gap:7px;min-width:0}
+.weather-title-actions .city{max-width:168px;min-width:0;width:160px}
+.city-manage{border:1px solid var(--border);border-radius:11px;background:#263b54;color:#d8ebff;width:40px;height:39px;flex:0 0 40px;padding:8px;display:flex;align-items:center;justify-content:center}
+.city-manage svg{width:20px;height:20px;display:block}
+html[data-theme="light"] .city-manage{background:#eaf2fa;color:#315879;border-color:#b9cede}
+.manager-lead{font-size:13px;line-height:1.5;color:#bfd1e0;margin:0 0 13px}
+.manager-heading{font-size:15px;font-weight:800;margin:19px 0 10px}
+.manager-list{display:flex;flex-direction:column;gap:8px}
+.manager-row{padding:10px 12px;border-radius:12px;border:1px solid #425d78;background:#243a55;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:54px}
+.manager-info{flex:1;min-width:0}
+.manager-info strong{font-size:14px;display:block;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.manager-info small{font-size:12px;color:#b8cadc;display:block;margin-top:4px;line-height:1.3}
+.manager-actions{display:flex;align-items:center;flex-wrap:wrap;justify-content:flex-end;gap:6px}
+.manager-btn{border-radius:10px;border:1px solid #64839e;background:#324e6b;color:#fff;font-size:12px;font-weight:700;padding:8px 10px;min-height:35px}
+.manager-btn.primary{background:#84d3ff;color:#0c2d43;border-color:#84d3ff}
+.manager-btn.warn{color:#ffd9d4}
+.manager-btn:disabled{opacity:.45;cursor:default}
+.manager-search{display:flex;align-items:center;gap:8px;margin:10px 0 5px;flex-wrap:wrap}
+.manager-input{flex:1;min-width:140px;border:1px solid #5a7793;background:#12263d;color:#f4faff;border-radius:11px;padding:11px 12px;font-size:15px}
+.manager-country{border:1px solid #5a7793;background:#12263d;color:#f4faff;border-radius:11px;padding:11px;font-size:13px}
+.manager-note{font-size:12px;color:#bbd2e5;line-height:1.5;margin:9px 0}
+.manager-feedback{min-height:18px;margin:7px 0;color:#9edbff;font-size:13px}
+.manager-empty{font-size:13px;color:#b2cbe0;padding:10px}
+html[data-theme="light"] .manager-lead,html[data-theme="light"] .manager-note{color:#536c82}
+html[data-theme="light"] .manager-row{background:#eff5fb;border-color:#cbdceb}
+html[data-theme="light"] .manager-info small{color:#62788f}
+html[data-theme="light"] .manager-btn{background:#e2f0fa;color:#2b5575;border-color:#b8d3e8}
+html[data-theme="light"] .manager-btn.primary{background:#2784bd;color:#fff;border-color:#2784bd}
+html[data-theme="light"] .manager-btn.warn{color:#a44232}
+html[data-theme="light"] .manager-input,html[data-theme="light"] .manager-country{background:#fff;color:#1d3449;border-color:#b7cbdc}
+html[data-theme="light"] .manager-feedback{color:#175e8c}
+html[data-theme="light"] .manager-empty{color:#526b80}
+@media(max-width:1100px) and (min-width:761px){.weather-title-actions .city{width:134px}.city-manage{width:36px;height:36px;flex-basis:36px}}
+@media(max-width:760px){.manager-row{align-items:flex-start;flex-wrap:wrap}.manager-actions{width:100%;justify-content:flex-start}.weather-title-actions .city{width:145px}}
+
+/* V15 — filtres géographiques, sauvegardes et horloge animée. */
+@keyframes colonPulse { 0%,49% {opacity:1} 50%,99% {opacity:.09} 100% {opacity:1} }
+.clock .colon {display:inline-block;animation:colonPulse 1s steps(1,end) infinite}
+@media (prefers-reduced-motion: reduce){.clock .colon {animation:none}}
+.manager-geo-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin:8px 0}
+.manager-geo-row .manager-country,.manager-geo-row .manager-input{width:100%;min-width:0}
+.manager-import{display:none}
+.manager-backup{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.manager-tip{font-size:12px;line-height:1.4;color:#c3d7e8}
+html[data-theme="light"] .manager-tip{color:#4e657d}
+@media(max-width:500px){.manager-geo-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -328,11 +378,12 @@ html[data-theme="light"] .timer-detail{color:#526a80}
     </section>
     <section class="card weather-panel" aria-label="Météo">
       <div class="weather-title"><span class="eyebrow">La météo</span>
-        <select class="city" id="city" aria-label="Choisir la ville">
-          <option value="mons">Mons</option>
-          <option value="bruxelles">Bruxelles</option>
-          <option value="conchil">Conchil-le-Temple</option>
-        </select>
+        <div class="weather-title-actions">
+          <select class="city" id="city" aria-label="Choisir la ville"></select>
+          <button class="city-manage" type="button" id="cityManage" aria-label="Rechercher et gérer mes villes météo" title="Mes villes favorites">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.2.9-4.5 4.4 1 6.1-5.4-2.8-5.5 2.8 1.1-6.1L3 9.5l6.2-.9L12 3z"/></svg>
+          </button>
+        </div>
       </div>
       <div class="weather-current"><span class="weather-icon" id="weatherIcon" aria-hidden="true"></span><div><div class="temperature" id="currentTemp">--°</div><div class="weather-desc" id="weatherDesc">Chargement…</div></div></div>
       <div class="facts" id="weatherFacts">Mise à jour de la météo…</div>
@@ -396,7 +447,33 @@ html[data-theme="light"] .timer-detail{color:#526a80}
   function set(id,value){el(id).textContent=value;}
   function read(k,def){try{return localStorage.getItem(k)||def;}catch(e){return def;}}
   function store(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+
+  // Les configurations restent dans Safari sur l'appareil : aucune donnée de compte.
+  function readJSON(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}}
+  function httpsUrl(v){return typeof v==='string' && /^https:\/\/[^\s]+$/i.test(v.trim());}
+  function safeStation(s){
+    if(!s||typeof s!=='object'||!httpsUrl(s.url)||typeof s.name!=='string'||!s.name.trim())return null;
+    var name=s.name.trim().slice(0,85),id=(typeof s.id==='string'?s.id:'').slice(0,120);
+    return {id:id||'saved-'+name,name:name,region:String(s.region||'').slice(0,55),subregion:String(s.subregion||'').slice(0,75),logo:httpsUrl(s.logo)?s.logo:'',mark:String(s.mark||name.slice(0,3)).slice(0,14),url:s.url.trim(),home:httpsUrl(s.home)?s.home:'https://www.radio-browser.info/'};
+  }
+  var savedRadio=readJSON('radio.library.v1');
+  if(savedRadio&&Array.isArray(savedRadio.fav)&&Array.isArray(savedRadio.other)){
+    var seen={};
+    function checked(list,cap){return list.map(safeStation).filter(function(s){
+      if(!s||seen[s.url]||!/^https:\/\//.test(s.url))return false;
+      seen[s.url]=true;return true;
+    }).slice(0,cap);}
+    fav=checked(savedRadio.fav,5);other=checked(savedRadio.other,80);
+    all=fav.concat(other); // indispensable : utiliser les favoris mémorisés dès le chargement
+  }
+  function saveRadios(){store('radio.library.v1',JSON.stringify({fav:fav,other:other}));all=fav.concat(other);}
+  function storedRadioById(id){return all.filter(function(s){return s.id===id;})[0]||null;}
+
     var icons={sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"></circle><path d="M12 2.8v2.1M12 19.1v2.1M4.9 4.9l1.5 1.5M17.6 17.6l1.5 1.5M2.8 12h2.1M19.1 12h2.1M4.9 19.1l1.5-1.5M17.6 6.4l1.5-1.5"></path></svg>',moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.2A7.9 7.9 0 0 1 9.8 4a8.9 8.9 0 1 0 10.2 10.2z"></path></svg>',radio:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="11" rx="3"></rect><path d="M7 7l8-4"></path><circle cx="8.5" cy="12.5" r="1.6"></circle><path d="M13 12h4M13 15h4"></path></svg>'};
+  function precipIcon(kind){
+    if(kind==='umbrella') return '<span class="chance-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 11a8 8 0 0 1 16 0H4z" fill="#9fe1ff" fill-opacity=".14" stroke="#8fdcff" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 11v6.2a1.8 1.8 0 1 0 3.6 0" stroke="#8fdcff" stroke-width="1.8" stroke-linecap="round"/><path d="M7 15.4l-1 1.9M11 15.4l-1 1.9M15 15.4l-1 1.9" stroke="#69caff" stroke-width="1.8" stroke-linecap="round"/></svg></span>';
+    return '<span class="chance-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4c1.9 3 4.7 5.5 4.7 8.4A4.7 4.7 0 0 1 12 17a4.7 4.7 0 0 1-4.7-4.6C7.3 9.5 10.1 7 12 4z" fill="#9fe1ff" fill-opacity=".18" stroke="#7fd8ff" stroke-width="1.8"/><path d="M9.5 12.5a2.7 2.7 0 0 0 4 2.1" stroke="#7fd8ff" stroke-width="1.5" stroke-linecap="round"/></svg></span>';
+  }
   /* Thème mémorisé entre deux ouvertures, sombre par défaut. */
   var activeTheme=read('radio.theme','dark')==='light'?'light':'dark';
   function setTheme(theme){
@@ -416,9 +493,9 @@ html[data-theme="light"] .timer-detail{color:#526a80}
     store('radio.theme',next);
     setTheme(next);
   });
-  var audio=el('audio'),selected=read('radio.st','viva'),playing=false,serial=0;
-  if(!all.some(function(s){return s.id===selected;}))selected='viva';
-  var current=function(){return all.filter(function(s){return s.id===selected;})[0];};
+  var audio=el('audio'),selected=read('radio.st','viva'),playing=false,serial=0,previewStation=null;
+  if(!all.some(function(s){return s.id===selected;}))selected=all.length?all[0].id:'';
+  var current=function(){return previewStation||storedRadioById(selected)||all[0]||{name:'Aucune station',region:'',url:'',home:'https://www.radio-browser.info/'};};
   function clock(){var d=new Date();set('hour',String(d.getHours()).padStart(2,'0'));set('minute',String(d.getMinutes()).padStart(2,'0'));set('date',new Intl.DateTimeFormat('fr-BE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d));}
   clock();setInterval(clock,1000);
   function fitClock(){
@@ -443,9 +520,9 @@ html[data-theme="light"] .timer-detail{color:#526a80}
 
   function logo(s){
     var box=document.createElement('span');box.className='logo-wrap';
-    var img=document.createElement('img');img.className='logo-img';img.alt='Logo '+s.name;img.src=s.logo;img.loading='lazy';
+    var img=document.createElement('img');img.className='logo-img';img.alt='Logo '+s.name;img.loading='lazy';if(s.logo)img.src=s.logo;
     img.onerror=function(){box.textContent='';var sp=document.createElement('span');sp.className='logo-fallback';sp.textContent=s.mark;box.appendChild(sp);};
-    box.appendChild(img);return box;
+    if(s.logo)box.appendChild(img);else{var label=document.createElement('span');label.className='logo-fallback';label.textContent=s.mark||s.name.slice(0,3);box.appendChild(label);}return box;
   }
   function render(){
     var grid=el('favorites');grid.textContent='';
@@ -457,21 +534,30 @@ html[data-theme="light"] .timer-detail{color:#526a80}
       if(s.region){var r=document.createElement('span');r.className='station-region';r.textContent=s.region;meta.appendChild(r);}
       b.appendChild(meta);b.addEventListener('click',function(){choose(s.id);});grid.appendChild(b);
     });
+    // Les places libérées restent accessibles et ouvrent le gestionnaire.
+    for(var missing=fav.length;missing<5;missing++){
+      var empty=document.createElement('button');empty.type='button';empty.className='station';
+      empty.setAttribute('aria-label','Ajouter une station favorite');
+      var label=document.createElement('span');label.className='station-name';label.textContent='+ Ajouter une favorite';empty.appendChild(label);
+      empty.addEventListener('click',function(){openTools('radios');});grid.appendChild(empty);
+    }
     var otherActive=!fav.some(function(s){return s.id===selected;});
     var tile=document.createElement('div');tile.className='more-tile'+(otherActive?' selected':'');
     var icon=document.createElement('span');icon.className='more-icon';icon.setAttribute('aria-hidden','true');icon.innerHTML=icons.radio;tile.appendChild(icon);
     var label=document.createElement('span');
     var name=document.createElement('span');name.className='more-label';name.textContent='Autres radios ▾';label.appendChild(name);
-    var detail=document.createElement('span');detail.className='more-current';detail.textContent=otherActive?current().name:'Choisir une station';label.appendChild(detail);tile.appendChild(label);
+    var detail=document.createElement('span');detail.className='more-current';detail.textContent=otherActive?current().name:'Rechercher / gérer';label.appendChild(detail);tile.appendChild(label);
     var select=document.createElement('select');select.className='more-select';select.setAttribute('aria-label','Choisir une autre radio');
     var opt=document.createElement('option');opt.value='';opt.textContent='Autres radios…';select.appendChild(opt);
     other.forEach(function(s){var o=document.createElement('option');o.value=s.id;o.textContent=s.name;select.appendChild(o);});
+    var manage=document.createElement('option');manage.value='__manage__';manage.textContent='★ Rechercher et gérer les stations…';select.appendChild(manage);
     select.value=otherActive?selected:'';
-    select.addEventListener('change',function(){if(this.value)choose(this.value);});tile.appendChild(select);grid.appendChild(tile);
+    select.addEventListener('change',function(){if(this.value==='__manage__'){openTools('radios');this.value=otherActive?selected:'';}else if(this.value)choose(this.value);});tile.appendChild(select);grid.appendChild(tile);
     set('selectedName',current().name+(current().region?' · '+current().region:''));
   }
   function powerUI(){el('power').classList.toggle('on',playing);el('power').setAttribute('aria-pressed',String(playing));el('power').setAttribute('aria-label',playing?'Éteindre la radio':'Allumer la radio');set('powerLabel',playing?'Éteindre':'Allumer');}
   function choose(id){
+    previewStation=null;
     if(selected===id){if(!playing)start();return;}
     selected=id;store('radio.st',id);render();
     if(playing)start();else set('playStatus','Radio éteinte');
@@ -479,13 +565,17 @@ html[data-theme="light"] .timer-detail{color:#526a80}
   function fallback(){el('radioLink').href=current().home;el('radioLink').style.display='inline-block';}
   function start(){
     var s=current(),call=++serial;
+    if(!httpsUrl(s.url)){playing=false;powerUI();set('playStatus','Aucun flux disponible.');return;}
     audio.pause();audio.removeAttribute('src');audio.load();el('radioLink').style.display='none';
     audio.src=s.url;playing=true;clearDim();powerUI();set('playStatus','Connexion au direct…');
     try{var p=audio.play();if(p&&p.catch)p.catch(function(){if(call===serial){playing=false;powerUI();set('playStatus','Lecture indisponible.');fallback();scheduleDim(20000);}});}
     catch(e){if(call===serial){playing=false;powerUI();set('playStatus','Lecture impossible.');fallback();scheduleDim(20000);}}
   }
-  function stop(){++serial;audio.pause();audio.removeAttribute('src');audio.load();playing=false;if(timerDeadline){timerDeadline=0;updateTimerLabel();}powerUI();set('playStatus','Radio éteinte');el('radioLink').style.display='none';scheduleDim(10000);}
+  function stop(){++serial;audio.pause();audio.removeAttribute('src');audio.load();playing=false;previewStation=null;render();if(timerDeadline){timerDeadline=0;updateTimerLabel();}powerUI();set('playStatus','Radio éteinte');el('radioLink').style.display='none';scheduleDim(10000);}
   el('power').addEventListener('click',function(){if(playing)stop();else start();});
+  function previewRadio(s){
+    previewStation=s;start();render();set('playStatus','Essai du flux · confirme son fonctionnement avant l’ajout');
+  }
   audio.addEventListener('playing',function(){playing=true;powerUI();set('playStatus','● En direct');});
   audio.addEventListener('waiting',function(){if(playing)set('playStatus','Connexion au direct…');});
   audio.addEventListener('error',function(){if(audio.getAttribute('src')){playing=false;powerUI();set('playStatus','Flux indisponible.');fallback();scheduleDim(20000);}});
@@ -498,8 +588,8 @@ html[data-theme="light"] .timer-detail{color:#526a80}
       cloud:'<path d="M16 48h30a10 10 0 0 0 1-20 16 16 0 0 0-31-1 11 11 0 0 0 0 21z" fill="#bcd0e2" fill-opacity=".20" stroke="#a8c3d7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>',
       rays:'<circle cx="24" cy="24" r="9" fill="#ffcc67" fill-opacity=".20" stroke="#ffc65d" stroke-width="3"/><path d="M24 7V4M24 44v-5M7 24H4M12 12l-3-3M36 12l3-3M12 36l-3 3" stroke="#ffc65d" stroke-width="2.7" stroke-linecap="round"/>',
       partialCloud:'<path d="M24 48h23a9 9 0 0 0 0-18 13.5 13.5 0 0 0-26-1A9.5 9.5 0 0 0 24 48z" fill="#bcd0e2" fill-opacity=".24" stroke="#b7cee0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>',
-      rain:'<path d="M19 53l-3 5M32 53l-3 5M45 53l-3 5" stroke="#69caff" stroke-width="3.4" stroke-linecap="round"/>',
-      drizzle:'<path d="M22 54l-2 3M35 54l-2 3" stroke="#7fd3f4" stroke-width="3" stroke-linecap="round"/>',
+      rain:'<path d="M18 52c-1.3 2-2.4 3.4-2.4 4.2a2.4 2.4 0 0 0 4.8 0c0-.8-1.1-2.2-2.4-4.2zM31 52c-1.3 2-2.4 3.4-2.4 4.2a2.4 2.4 0 0 0 4.8 0c0-.8-1.1-2.2-2.4-4.2zM44 52c-1.3 2-2.4 3.4-2.4 4.2a2.4 2.4 0 0 0 4.8 0c0-.8-1.1-2.2-2.4-4.2z" fill="#69caff" fill-opacity=".25" stroke="#69caff" stroke-width="2" stroke-linejoin="round"/>',
+      drizzle:'<path d="M22 53c-.8 1.2-1.4 2.1-1.4 2.8a1.4 1.4 0 0 0 2.8 0c0-.7-.6-1.6-1.4-2.8zM36 53c-.8 1.2-1.4 2.1-1.4 2.8a1.4 1.4 0 0 0 2.8 0c0-.7-.6-1.6-1.4-2.8z" fill="#7fd3f4" fill-opacity=".25" stroke="#7fd3f4" stroke-width="1.6" stroke-linejoin="round"/>',
       snow:'<path d="M18 54v8M14 58h8M31 54v8M27 58h8M44 54v8M40 58h8" stroke="#91d4fc" stroke-width="2.3" stroke-linecap="round"/>',
       fog:'<path d="M10 50h39M15 57h29M7 43h9M48 43h9" stroke="#8da9bd" stroke-width="3.2" stroke-linecap="round"/>',
       lightning:'<path d="M35 49l-9 12 3-10h-6l9-13" fill="#ffdb7c" stroke="#ffcc59" stroke-width="2" stroke-linejoin="round"/>'
@@ -526,20 +616,70 @@ html[data-theme="light"] .timer-detail{color:#526a80}
     return ['variable','Conditions variables'];
   }
   el('weatherIcon').innerHTML=weatherSVG('cloud');
-  var places={mons:{name:'Mons',country:'BE'},bruxelles:{name:'Bruxelles',country:'BE'},conchil:{name:'Conchil-le-Temple',country:'FR'}};
-  var city=el('city'),lastCity=read('radio.city','mons');city.value=places[lastCity]?lastCity:'mons';
+  var defaultPlaces=[
+    {id:'mons',name:'Mons',country:'BE',countryName:'Belgique'},
+    {id:'bruxelles',name:'Bruxelles',country:'BE',countryName:'Belgique'},
+    {id:'conchil',name:'Conchil-le-Temple',country:'FR',countryName:'France'}
+  ];
+  var weatherPlaces=readJSON('weather.favorites.v1');
+  if(!Array.isArray(weatherPlaces))weatherPlaces=defaultPlaces;
+  weatherPlaces=weatherPlaces.filter(function(p){return p&&typeof p.name==='string'&&typeof p.id==='string'&&p.name.length<120;}).slice(0,35);
+  if(!weatherPlaces.length)weatherPlaces=[defaultPlaces[0]];
+  function weatherSave(){store('weather.favorites.v1',JSON.stringify(weatherPlaces));}
+  function placeById(id){return weatherPlaces.filter(function(p){return p.id===id;})[0]||null;}
+  var city=el('city');
+  var previousCity=read('radio.city','mons');
+  var weatherDefault=read('weather.default.v1',previousCity);
+  if(!placeById(weatherDefault))weatherDefault=weatherPlaces[0].id;
+  var activeCity=weatherDefault;
   var hourlyForecast=[];
+  function displayWeatherCities(){
+    city.textContent='';
+    weatherPlaces.forEach(function(p){
+      var option=document.createElement('option');option.value=p.id;
+      option.textContent=p.name+(p.id===weatherDefault?' ★':'');city.appendChild(option);
+    });
+    if(!placeById(activeCity))activeCity=weatherDefault;
+    city.value=activeCity;
+  }
+  function currentPlace(){return placeById(activeCity)||weatherPlaces[0];}
+  displayWeatherCities();
+  function chooseCity(id){
+    if(!placeById(id))return;
+    activeCity=id;displayWeatherCities();updateWeather();
+  }
+  function saveWeatherDefault(id){weatherDefault=id;store('weather.default.v1',id);displayWeatherCities();}
+  function requestLocalWeather(feedback){
+    if(!navigator.geolocation){feedback('La localisation n’est pas disponible sur cet appareil.');return;}
+    feedback('Demande de localisation…');
+    navigator.geolocation.getCurrentPosition(function(pos){
+      var p={id:'local',name:'Ma position',country:'',countryName:'',lat:pos.coords.latitude,lon:pos.coords.longitude};
+      var old=placeById('local');if(old){old.lat=p.lat;old.lon=p.lon;}else weatherPlaces.unshift(p);
+      weatherSave();saveWeatherDefault('local');chooseCity('local');
+      if(activeTool==='cities')renderCitiesTool();
+      feedback('Prévisions locales activées. Les coordonnées restent sur cet appareil.');
+    },function(e){feedback('Localisation refusée ou indisponible. Choisis une ville dans la recherche.');},{enableHighAccuracy:false,timeout:12000,maximumAge:600000});
+  }
   function updateWeather(){
-    var selectedCity=city.value,p=places[selectedCity];set('weatherDesc','Actualisation…');
-    fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(p.name)+'&count=10&language=fr&format=json')
-    .then(function(r){if(!r.ok)throw Error('localisation');return r.json();})
-    .then(function(g){var loc=(g.results||[]).filter(function(x){return x.country_code===p.country;})[0];
-      if(!loc && selectedCity==='conchil') loc={latitude:50.37093,longitude:1.66575};
-      if(!loc)throw Error('ville introuvable');
+    var selectedCity=activeCity,p=currentPlace();set('weatherDesc','Actualisation…');
+    var locationPromise;
+    if(Number.isFinite(Number(p.lat))&&Number.isFinite(Number(p.lon))&&p.lat!=null&&p.lon!=null){
+      locationPromise=Promise.resolve({latitude:Number(p.lat),longitude:Number(p.lon)});
+    }else{
+      locationPromise=fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(p.name)+'&count=10&language=fr&format=json')
+      .then(function(r){if(!r.ok)throw Error('localisation');return r.json();})
+      .then(function(g){
+        var loc=(g.results||[]).filter(function(x){return x.country_code===p.country;})[0];
+        if(!loc)throw Error('Ville introuvable');
+        p.lat=loc.latitude;p.lon=loc.longitude;weatherSave();return loc;
+      });
+    }
+    locationPromise.then(function(loc){
       var qs='latitude='+loc.latitude+'&longitude='+loc.longitude+'&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,apparent_temperature&hourly=temperature_2m,precipitation_probability,weather_code&timezone=auto&forecast_days=2';
-      return fetch('https://api.open-meteo.com/v1/forecast?'+qs);})
+      return fetch('https://api.open-meteo.com/v1/forecast?'+qs);
+    })
     .then(function(r){if(!r.ok)throw Error('météo');return r.json();})
-    .then(function(data){if(city.value!==selectedCity)return;
+    .then(function(data){if(activeCity!==selectedCity)return;
       var c=data.current,v=icon(c.weather_code);
       el('weatherIcon').innerHTML=weatherSVG(v[0]);
       set('weatherDesc',v[1]);set('currentTemp',Math.round(c.temperature_2m)+'°');
@@ -556,15 +696,22 @@ html[data-theme="light"] .timer-detail{color:#526a80}
         var status=icon(hour.code);
         var hh=hour.time.slice(11,13);
         var pop=hour.rain==null?'—':Math.round(hour.rain)+' %';
-        x.innerHTML='<div>'+hh+' h</div><div class="icon">'+weatherSVG(status[0])+'</div><div class="temp">'+Math.round(hour.temp)+'°</div><div class="chance">☂ '+pop+'</div>';
+        x.innerHTML='<div>'+hh+' h</div><div class="icon">'+weatherSVG(status[0])+'</div><div class="temp">'+Math.round(hour.temp)+'°</div><div class="chance">'+precipIcon('umbrella')+'<span>'+pop+'</span></div>';
         box.appendChild(x);
       });
       if(!hourlyForecast.length){box.textContent='Prévisions horaires indisponibles';}
       if(el('toolsModal').classList.contains('open')&&activeTool==='hourly')renderHourlyTool();
-    }).catch(function(){if(city.value===selectedCity){set('weatherDesc','Météo indisponible');set('weatherFacts','Vérifier la connexion Internet');}});
+    }).catch(function(){if(activeCity===selectedCity){set('weatherDesc','Météo indisponible');set('weatherFacts','Vérifier la connexion Internet');}});
   }
-  city.addEventListener('change',function(){store('radio.city',city.value);updateWeather();});
+  city.addEventListener('change',function(){chooseCity(city.value);});
+  el('cityManage').addEventListener('click',function(){openTools('cities');});
   updateWeather();setInterval(updateWeather,20*60*1000);
+  if(weatherDefault==='local'&&placeById('local')&&navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(function(pos){
+      var p=placeById('local');if(!p)return;p.lat=pos.coords.latitude;p.lon=pos.coords.longitude;weatherSave();
+      if(activeCity==='local')updateWeather();
+    },function(){},{enableHighAccuracy:false,timeout:10000,maximumAge:600000});
+  }
   document.addEventListener('visibilitychange',function(){if(!document.hidden){clock();updateWeather();}});
 
   // Modales créées dans la page : indépendantes des sites tiers.
@@ -602,8 +749,10 @@ html[data-theme="light"] .timer-detail{color:#526a80}
   updateDimButton();
   function openTools(tool){
     activeTool=tool;clearDim();toolsModal.classList.add('open');toolsModal.setAttribute('aria-hidden','false');
-    if(tool==='hourly'){set('toolsTitle','Prévisions · '+places[city.value].name);renderHourlyTool();}
-    else{set('toolsTitle','Minuterie radio');renderTimerTool();}
+    if(tool==='hourly'){set('toolsTitle','Prévisions · '+currentPlace().name);renderHourlyTool();}
+    else if(tool==='timer'){set('toolsTitle','Minuterie radio');renderTimerTool();}
+    else if(tool==='cities'){set('toolsTitle','Mes villes météo');renderCitiesTool();}
+    else if(tool==='radios'){set('toolsTitle','Mes stations radio');renderRadiosTool();}
   }
   function closeTools(){
     toolsModal.classList.remove('open');toolsModal.setAttribute('aria-hidden','true');
@@ -620,7 +769,7 @@ html[data-theme="light"] .timer-detail{color:#526a80}
       var item=document.createElement('div');item.className='hourly-item';
       var kind=icon(hour.code)[0],precip=hour.rain==null?'—':Math.round(hour.rain)+' %';
       var day=hour.time.slice(8,10)+'/'+hour.time.slice(5,7);
-      item.innerHTML='<div class="hour">'+day+' · '+hour.time.slice(11,13)+' h</div><div class="icon">'+weatherSVG(kind)+'</div><div class="temp">'+Math.round(hour.temp)+'°</div><div class="rain">☂ '+precip+'</div>';
+      item.innerHTML='<div class="hour">'+day+' · '+hour.time.slice(11,13)+' h</div><div class="icon">'+weatherSVG(kind)+'</div><div class="temp">'+Math.round(hour.temp)+'°</div><div class="rain">'+precipIcon('umbrella')+'<span>'+precip+'</span></div>';
       grid.appendChild(item);
     });
     box.appendChild(grid);
@@ -661,6 +810,267 @@ html[data-theme="light"] .timer-detail{color:#526a80}
     note.textContent='La minuterie fonctionne tant que la page reste active. iPadOS peut suspendre le décompte lorsque Safari passe en arrière-plan ou que l’écran est verrouillé.';
     box.appendChild(note);
   }
+
+  // Constructeurs DOM sûrs : les textes viennent de l'utilisateur et des annuaires.
+  function make(tag,cls,textValue){
+    var e=document.createElement(tag);if(cls)e.className=cls;
+    if(textValue!=null)e.textContent=textValue;return e;
+  }
+  function actionButton(caption,action,style){
+    var b=make('button','manager-btn'+(style?' '+style:''),caption);
+    b.type='button';b.addEventListener('click',action);return b;
+  }
+  function managerRow(title,detail){
+    var row=make('div','manager-row');var info=make('div','manager-info');
+    info.appendChild(make('strong','',title));info.appendChild(make('small','',detail));row.appendChild(info);
+    var actions=make('div','manager-actions');row.appendChild(actions);
+    return {row:row,actions:actions};
+  }
+  function sectionTitle(parent,title){parent.appendChild(make('div','manager-heading',title));}
+  function feedbackLine(parent){var e=make('div','manager-feedback');e.setAttribute('role','status');parent.appendChild(e);return function(msg){e.textContent=msg;};}
+  // Choix des pays en français, sans service extérieur et sans bibliothèque.
+  var isoCountries=('AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BV BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY HK HM HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG UM US UY UZ VA VC VE VG VI VN VU WF WS YE YT ZA ZM ZW').split(' ');
+  function countryLabel(code){
+    try{if(Intl.DisplayNames){return new Intl.DisplayNames(['fr'],{type:'region'}).of(code)||code;}}catch(e){}
+    var fallbacks={BE:'Belgique',FR:'France',NL:'Pays-Bas',LU:'Luxembourg',DE:'Allemagne',CH:'Suisse',GB:'Royaume-Uni',US:'États-Unis',CA:'Canada',ES:'Espagne',IT:'Italie'};
+    return fallbacks[code]||code;
+  }
+  function countryPicker(label){
+    var select=make('select','manager-country');select.setAttribute('aria-label',label);
+    var first=make('option','', 'Tous les pays');first.value='';select.appendChild(first);
+    isoCountries.map(function(code){return {code:code,label:countryLabel(code)};}).sort(function(a,b){return a.label.localeCompare(b.label,'fr');}).forEach(function(item){
+      var opt=make('option','',item.label);opt.value=item.code;select.appendChild(opt);
+    });
+    return select;
+  }
+  function normalizeRegion(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();}
+  function addBackupSection(box){
+    sectionTitle(box,'Sauvegarder ou transférer mes favoris');
+    box.appendChild(make('p','manager-note','Une mise à jour du fichier HTML n’efface pas les favoris sauvegardés sur ce navigateur. Pour changer d’iPad ou éviter une perte de données, exporte-les dans Fichiers.'));
+    var group=make('div','manager-backup');
+    group.appendChild(actionButton('Exporter mes favoris',function(){
+      var exportedWeather=weatherPlaces.filter(function(p){return p.id!=='local';});
+      var exportDefault=weatherDefault==='local'?((exportedWeather[0]||{}).id||'mons'):weatherDefault;
+      var payload={format:'radio-ipad-sauvegarde',version:1,exportedAt:new Date().toISOString(),radios:{favorites:fav,others:other,selected:selected},weather:{places:exportedWeather,defaultCity:exportDefault},settings:{theme:activeTheme,dimEnabled:dimEnabled}};
+      var blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});
+      var objectURL=URL.createObjectURL(blob);var a=document.createElement('a');a.href=objectURL;a.download='radio-ipad-favoris.json';document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(objectURL);},60000);
+    },'primary'));
+    var importBtn=actionButton('Importer une sauvegarde',function(){chooser.click();});group.appendChild(importBtn);
+    var chooser=make('input','manager-import');chooser.type='file';chooser.accept='.json,application/json';group.appendChild(chooser);
+    box.appendChild(group);var feedback=feedbackLine(box);
+    chooser.addEventListener('change',function(){
+      var file=chooser.files&&chooser.files[0];if(!file)return;
+      var reader=new FileReader();reader.onload=function(){
+        var data;try{data=JSON.parse(String(reader.result||''));}catch(e){feedback('Fichier JSON illisible.');return;}
+        if(!data||data.format!=='radio-ipad-sauvegarde'||data.version!==1||!data.radios||!data.weather){feedback('Ce fichier ne correspond pas à une sauvegarde de notre tableau de bord.');return;}
+        if(!Array.isArray(data.radios.favorites)||!Array.isArray(data.radios.others)||!Array.isArray(data.weather.places)){feedback('Fichier de sauvegarde incomplet.');return;}
+        if(!confirm('Remplacer les favoris radio et météo de cet appareil par ceux de la sauvegarde ? Cette opération ne peut pas être annulée.'))return;
+        var usedURLs={};
+        function cleanList(list,limit){return list.map(safeStation).filter(function(s){if(!s||usedURLs[s.url])return false;usedURLs[s.url]=true;return true;}).slice(0,limit);}
+        var newFav=cleanList(data.radios.favorites,5),newOther=cleanList(data.radios.others,80);
+        var newPlaces=data.weather.places.filter(function(p){return p && typeof p.id==='string' && typeof p.name==='string' && p.name.length>0 && p.name.length<120 && (p.lat==null || (Number.isFinite(Number(p.lat))&&Math.abs(Number(p.lat))<=90)) && (p.lon==null || (Number.isFinite(Number(p.lon))&&Math.abs(Number(p.lon))<=180));}).slice(0,35);
+        if(!newPlaces.length)newPlaces=[{id:'mons',name:'Mons',country:'BE',countryName:'Belgique'}];
+        if(playing)stop();
+        fav=newFav;other=newOther;saveRadios();selected=storedRadioById(data.radios.selected)?data.radios.selected:(all[0]?all[0].id:'');store('radio.st',selected);previewStation=null;
+        weatherPlaces=newPlaces;weatherSave();var incomingDefault=data.weather.defaultCity;
+        weatherDefault=placeById(incomingDefault)?incomingDefault:weatherPlaces[0].id;store('weather.default.v1',weatherDefault);
+        activeCity=weatherDefault;store('radio.city',activeCity);displayWeatherCities();updateWeather();
+        if(data.settings&&data.settings.theme){store('radio.theme',data.settings.theme==='light'?'light':'dark');setTheme(data.settings.theme==='light'?'light':'dark');}
+        if(data.settings&&typeof data.settings.dimEnabled==='boolean'){dimEnabled=data.settings.dimEnabled;store('radio.dim',dimEnabled?'yes':'no');updateDimButton();}
+        render();powerUI();set('playStatus','Radio éteinte');
+        if(activeTool==='cities')renderCitiesTool();else if(activeTool==='radios')renderRadiosTool();
+      };reader.onerror=function(){feedback('Impossible de lire le fichier.');};reader.readAsText(file);chooser.value='';
+    });
+    box.appendChild(make('p','manager-tip','La position GPS exacte n’est volontairement pas incluse dans la sauvegarde. Safari et une application ajoutée à l’écran d’accueil peuvent utiliser des stockages distincts.'));
+  }
+  function renderCitiesTool(){
+    var box=el('toolsBody');box.textContent='';
+    box.appendChild(make('p','manager-lead','Choisis une localité pour la météo. La ville marquée ★ sera affichée au prochain lancement.'));
+    var position=actionButton('⌖ Ma position · météo locale',function(){requestLocalWeather(function(message){state(message);});},'primary');
+    box.appendChild(position);
+    var state=feedbackLine(box);
+    sectionTitle(box,'Mes villes favorites');
+    var list=make('div','manager-list');box.appendChild(list);
+    weatherPlaces.forEach(function(p){
+      var item=managerRow(p.name, (p.countryName||'Localisation GPS')+(p.id===weatherDefault?' · ★ Par défaut':''));
+      item.actions.appendChild(actionButton('Afficher',function(){chooseCity(p.id);renderCitiesTool();},p.id===activeCity?'primary':''));
+      if(p.id!==weatherDefault)item.actions.appendChild(actionButton('★ Par défaut',function(){saveWeatherDefault(p.id);chooseCity(p.id);renderCitiesTool();}));
+      var remove=actionButton('Retirer',function(){
+        weatherPlaces=weatherPlaces.filter(function(x){return x.id!==p.id;});
+        if(!weatherPlaces.length)weatherPlaces=[defaultPlaces[0]];
+        if(weatherDefault===p.id)saveWeatherDefault(weatherPlaces[0].id);
+        if(activeCity===p.id)activeCity=weatherDefault;
+        weatherSave();displayWeatherCities();updateWeather();renderCitiesTool();
+      },'warn');
+      remove.disabled=weatherPlaces.length<=1;item.actions.appendChild(remove);
+      list.appendChild(item.row);
+    });
+    sectionTitle(box,'Rechercher une localité');
+    var form=make('form','manager-search');
+    var input=make('input','manager-input');input.type='search';input.placeholder='Ex. : Lille, Namur, Paris…';input.autocomplete='off';input.setAttribute('aria-label','Nom de la localité');
+    var submit=make('button','manager-btn primary','Rechercher');submit.type='submit';
+    var geo=make('div','manager-geo-row');var country=countryPicker('Filtrer les villes par pays');country.value='BE';
+    var region=make('input','manager-input');region.type='search';region.placeholder='Région / province (facultatif)';region.setAttribute('aria-label','Région ou province de la ville');
+    geo.appendChild(country);geo.appendChild(region);
+    form.appendChild(input);form.appendChild(submit);box.appendChild(form);box.appendChild(geo);
+    var results=make('div','manager-list');box.appendChild(results);
+    var searchState=feedbackLine(box);
+    form.addEventListener('submit',function(e){
+      e.preventDefault();var q=input.value.trim();if(q.length<2){searchState('Saisis au moins deux caractères du nom de la ville.');return;}
+      searchState('Recherche des localités…');results.textContent='';submit.disabled=true;
+      var url='https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=100&language=fr&format=json';
+      if(country.value)url+='&countryCode='+encodeURIComponent(country.value);
+      fetch(url)
+      .then(function(r){if(!r.ok)throw Error('Service indisponible');return r.json();})
+      .then(function(data){
+        submit.disabled=false;
+        var matches=(data.results||[]).filter(function(loc){
+          return (!country.value||loc.country_code===country.value)&&(!region.value.trim()||normalizeRegion([loc.admin1,loc.admin2,loc.admin3].join(' ')).indexOf(normalizeRegion(region.value))>=0);
+        }).slice(0,22);
+        searchState(matches.length?matches.length+' résultat(s) : sélectionne la bonne commune.':'Aucune commune trouvée avec ces filtres. Essaie une autre région ou retire le filtre.');
+        matches.forEach(function(loc){
+          var label=loc.name+', '+(loc.admin1?loc.admin1+' · ':'')+loc.country;
+          var item=managerRow(label,'Coordonnées météo : '+Number(loc.latitude).toFixed(2)+'°, '+Number(loc.longitude).toFixed(2)+'°');
+          var locId='geo-'+loc.id;
+          var exists=weatherPlaces.some(function(x){return x.id===locId;});
+          var add=actionButton(exists?'Déjà enregistrée':'+ Favori',function(){
+            if(weatherPlaces.some(function(x){return x.id===locId;})){searchState('Cette ville est déjà dans tes favoris.');return;}
+            if(weatherPlaces.length>=35){searchState('Limite de 35 villes favorites atteinte.');return;}
+            weatherPlaces.push({id:locId,name:loc.name,country:loc.country_code,countryName:loc.country,region:loc.admin1||'',lat:loc.latitude,lon:loc.longitude});
+            weatherSave();displayWeatherCities();chooseCity(locId);renderCitiesTool();
+          },exists?'':'primary');add.disabled=exists;item.actions.appendChild(add);results.appendChild(item.row);
+        });
+      }).catch(function(){submit.disabled=false;searchState('Recherche indisponible. Vérifie ta connexion Wi-Fi.');});
+    });
+    addBackupSection(box);
+  }
+
+  function addStation(s){
+    var clean=safeStation(s);if(!clean)return false;
+    if(all.some(function(x){return x.url===clean.url||x.id===clean.id;}))return false;
+    if(all.length>=85)return false;
+    other.push(clean);saveRadios();render();return true;
+  }
+  function promoteStation(id){
+    var station=storedRadioById(id);if(!station)return;
+    var index=fav.findIndex(function(s){return s.id===id;});
+    if(index>=0){
+      fav.splice(index,1);other.push(station);
+    }else{
+      other=other.filter(function(s){return s.id!==id;});
+      if(fav.length>=5){var old=fav.pop();other.unshift(old);}
+      fav.push(station);
+    }
+    saveRadios();render();renderRadiosTool();
+  }
+  function moveFavorite(id,direction){
+    var index=fav.findIndex(function(s){return s.id===id;});var target=index+direction;
+    if(index<0||target<0||target>=fav.length)return;
+    var moved=fav.splice(index,1)[0];fav.splice(target,0,moved);
+    saveRadios();render();renderRadiosTool();
+  }
+  function removeStation(id){
+    if(previewStation&&previewStation.id===id){previewStation=null;}
+    var isSelected=selected===id;
+    var wasPlaying=playing&&isSelected;
+    fav=fav.filter(function(s){return s.id!==id;});other=other.filter(function(s){return s.id!==id;});
+    saveRadios();
+    if(isSelected){selected=all.length?all[0].id:'';store('radio.st',selected);}
+    if(wasPlaying)stop();render();renderRadiosTool();
+  }
+  function radioSearchResult(entry){
+    var url=(entry.url_resolved||entry.url||'').trim();
+    if(!httpsUrl(url))return null;
+    var codec=String(entry.codec||'').toUpperCase();
+    if(codec && ['MP3','AAC','AAC+','MPEG',''].indexOf(codec)===-1)return null;
+    if(entry.lastcheckok===0||entry.lastcheckok===false)return null;
+    var name=String(entry.name||'').trim();if(!name)return null;
+    var uuid=String(entry.stationuuid||'').slice(0,100);
+    return safeStation({id:'rb-'+uuid,name:name,region:entry.country||'',subregion:entry.state||'',logo:entry.favicon||'',mark:name.slice(0,3),url:url,home:entry.homepage||'https://www.radio-browser.info/'});
+  }
+  function renderRadiosTool(){
+    var box=el('toolsBody');box.textContent='';
+    box.appendChild(make('p','manager-lead','Cinq grandes touches maximum. La sixième ouvre les autres stations. Les favoris et leur ordre sont enregistrés sur cet iPad.'));
+    sectionTitle(box,'Mes cinq favorites');
+    var list=make('div','manager-list');box.appendChild(list);
+    if(!fav.length)list.appendChild(make('div','manager-empty','Aucune favorite : ajoute une station depuis la liste ou la recherche.'));
+    fav.forEach(function(s,i){
+      var row=managerRow((i+1)+'. '+s.name,s.region||'Radio favorite');
+      var up=actionButton('↑',function(){moveFavorite(s.id,-1);});up.disabled=i===0;row.actions.appendChild(up);
+      var down=actionButton('↓',function(){moveFavorite(s.id,1);});down.disabled=i===fav.length-1;row.actions.appendChild(down);
+      row.actions.appendChild(actionButton('Retirer ★',function(){promoteStation(s.id);},'warn'));
+      list.appendChild(row.row);
+    });
+    sectionTitle(box,'Mes autres stations');
+    var extras=make('div','manager-list');box.appendChild(extras);
+    if(!other.length)extras.appendChild(make('div','manager-empty','Aucune autre station enregistrée.'));
+    other.forEach(function(s){
+      var item=managerRow(s.name,s.region||'Station enregistrée');
+      item.actions.appendChild(actionButton('▶ Écouter',function(){closeTools();choose(s.id);start();}));
+      item.actions.appendChild(actionButton('★ Favorite',function(){promoteStation(s.id);},'primary'));
+      item.actions.appendChild(actionButton('Supprimer',function(){removeStation(s.id);},'warn'));
+      extras.appendChild(item.row);
+    });
+    sectionTitle(box,'Chercher une station dans le monde');
+    var form=make('form','manager-search');
+    var input=make('input','manager-input');input.type='search';input.placeholder='Nom (facultatif si pays choisi)';input.autocomplete='off';input.setAttribute('aria-label','Nom de la radio');
+    var country=countryPicker('Filtrer les radios par pays');country.value='BE';
+    var region=make('input','manager-input');region.type='search';region.placeholder='Région / province : Hainaut…';region.setAttribute('aria-label','Filtrer les radios par région ou province');
+    var geo=make('div','manager-geo-row');geo.appendChild(country);geo.appendChild(region);
+    var submit=make('button','manager-btn primary','Rechercher');submit.type='submit';
+    form.appendChild(input);form.appendChild(submit);box.appendChild(form);box.appendChild(geo);
+    var results=make('div','manager-list');box.appendChild(results);
+    var state=feedbackLine(box);
+    box.appendChild(make('p','manager-note','Tu peux chercher par nom, par pays, par région/province, ou combiner ces critères. Les régions dépendent des informations publiées par les radios.'));
+    form.addEventListener('submit',function(e){
+      e.preventDefault();var q=input.value.trim();var rgn=region.value.trim();
+      if(q.length===1){state('Saisis au moins deux caractères du nom, ou laisse ce champ vide.');return;}
+      if(!q&&!rgn&&!country.value){state('Choisis au moins un pays, une région ou un nom de radio.');return;}
+      results.textContent='';submit.disabled=true;state('Recherche des stations…');
+      var params='limit=80&hidebroken=true&order=votes&reverse=true';
+      if(q)params+='&name='+encodeURIComponent(q);
+      if(country.value)params+='&countrycode='+encodeURIComponent(country.value);
+      if(rgn)params+='&state='+encodeURIComponent(rgn);
+      var hosts=['https://de1.api.radio-browser.info','https://nl1.api.radio-browser.info'];
+      function request(i){
+        return fetch(hosts[i]+'/json/stations/search?'+params,{headers:{'Accept':'application/json'}})
+        .then(function(r){if(!r.ok)throw Error('Annuaire indisponible');return r.json();})
+        .catch(function(err){if(i+1<hosts.length)return request(i+1);throw err;});
+      }
+      request(0).then(function(data){
+        submit.disabled=false;var used={};
+        var matches=data.map(radioSearchResult).filter(function(s){if(!s||used[s.url])return false;used[s.url]=true;return true;}).slice(0,18);
+        state(matches.length?'Stations recensées : teste la lecture avant de les ajouter.':'Aucun flux HTTPS MP3/AAC compatible trouvé pour cette recherche.');
+        matches.forEach(function(s){
+          var exists=all.some(function(x){return x.url===s.url||x.id===s.id;});
+          var item=managerRow(s.name,([s.region,s.subregion].filter(Boolean).join(' · ')||'Radio')+' · Flux à confirmer sur iPad');
+          item.actions.appendChild(actionButton('▶ Tester',function(){previewRadio(s);state('Essai : '+s.name+' · utilise Power pour arrêter.');}));
+          var add=actionButton(exists?'Enregistrée':'+ Enregistrer',function(){
+            if(addStation(s)){add.textContent='Enregistrée';add.disabled=true;state(s.name+' ajoutée aux autres stations. Tu peux la promouvoir en favorite.');}
+            else state('Cette station est déjà enregistrée ou la limite est atteinte.');
+          },exists?'':'primary');add.disabled=exists;item.actions.appendChild(add);
+          results.appendChild(item.row);
+        });
+      }).catch(function(){submit.disabled=false;state('Annuaire temporairement indisponible. Essaie plus tard ou ajoute une adresse HTTPS directement.');});
+    });
+    sectionTitle(box,'Ajouter une adresse de diffusion connue');
+    var manual=make('form','manager-search');
+    var stationName=make('input','manager-input');stationName.placeholder='Nom de la station';stationName.required=true;
+    var stationURL=make('input','manager-input');stationURL.placeholder='https://…/radio.mp3';stationURL.type='url';stationURL.required=true;
+    var addManual=make('button','manager-btn','Ajouter');addManual.type='submit';
+    manual.appendChild(stationName);manual.appendChild(stationURL);manual.appendChild(addManual);box.appendChild(manual);
+    var manualState=feedbackLine(box);
+    manual.addEventListener('submit',function(e){
+      e.preventDefault();var url=stationURL.value.trim();
+      if(!httpsUrl(url)){manualState('Il faut une adresse de flux HTTPS, pas simplement le site de la radio.');return;}
+      var s={id:'manual-'+Date.now(),name:stationName.value.trim(),region:'Ajout manuel',url:url,logo:'',home:'https://www.radio-browser.info/'};
+      if(addStation(s)){renderRadiosTool();}else manualState('Cette station existe déjà ou l’adresse n’est pas valide.');
+    });
+    box.appendChild(make('p','manager-note','Annuaire communautaire Radio Browser : une station référencée n’est pas garantie lisible sur Safari. Les réglages restent propres à chaque appareil et navigateur.'));
+    addBackupSection(box);
+  }
+
   el('hourlyButton').addEventListener('click',function(){openTools('hourly');});
   el('timerButton').addEventListener('click',function(){openTools('timer');});
   el('toolsClose').addEventListener('click',closeTools);
