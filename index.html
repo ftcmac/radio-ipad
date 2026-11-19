@@ -1150,13 +1150,99 @@ html[data-theme="light"] .alertbuttons .smallbutton.selected-tool{background:#e3
 @media (orientation:landscape) and (max-width:1100px){
   .weather-solar-row .solar-point svg{width:20px;height:20px;flex-basis:20px}
 }
+
+/* Horloge à volets basculants : une animation CSS au vrai changement de chiffre.
+   Safari 15 : CSS 3D, pas de bibliothèque extérieure. */
+.clock-menu-divider{height:1px;margin:6px 7px 7px;background:rgba(190,210,232,.24)}
+.clock-menu-heading{font-size:10px;letter-spacing:.12em;color:#a7c7df;font-weight:800;padding:4px 11px 2px}
+.theme-menu{min-width:218px}
+html[data-theme="light"] .clock-menu-divider{background:#d3e0ec}
+html[data-theme="light"] .clock-menu-heading{color:#64839c}
+.flip-digits{display:none;align-items:center;justify-content:center;gap:.027em;height:1.12em;white-space:nowrap;font-family:"Arial Black",-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;font-weight:850;line-height:1;letter-spacing:0;font-variant-numeric:tabular-nums}
+.clock.flip-active{transform:none!important;letter-spacing:0!important;margin-left:0}
+.clock.flip-active #classicDigits{display:none}
+.clock.flip-active .flip-digits{display:flex}
+.flip-digit{position:relative;width:.63em;height:.93em;display:inline-block;flex:0 0 .63em;perspective:4em;-webkit-perspective:4em;font-family:inherit;color:#f4f5f6;text-shadow:0 .012em .025em rgba(0,0,0,.16)}
+.flip-half,.flip-flap{position:absolute;left:0;right:0;height:50%;overflow:hidden;background:#272c35;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.flip-top,.flip-top-flap{top:0;border-radius:.075em .075em 0 0;background:linear-gradient(#373e49,#303640);border-bottom:1px solid #141922}
+.flip-bottom,.flip-bottom-flap{bottom:0;border-radius:0 0 .075em .075em;background:linear-gradient(#232934,#2d333e);border-top:1px solid rgba(220,232,248,.10)}
+.flip-half .flip-num,.flip-flap .flip-num{position:absolute;display:block;left:0;right:0;height:.93em;font-size:.82em;line-height:1.12em;text-align:center;letter-spacing:-.055em;white-space:nowrap}
+.flip-top .flip-num,.flip-top-flap .flip-num{top:.008em}
+.flip-bottom .flip-num,.flip-bottom-flap .flip-num{top:-.558em}
+.flip-top-flap,.flip-bottom-flap{z-index:4;visibility:hidden;transform-style:preserve-3d;-webkit-transform-style:preserve-3d}
+.flip-top-flap{transform-origin:bottom; -webkit-transform-origin:bottom}
+.flip-bottom-flap{transform-origin:top;-webkit-transform-origin:top}
+.flip-digit.flipping .flip-top-flap{visibility:visible;animation:flip-fall-top .30s ease-in forwards;-webkit-animation:flip-fall-top .30s ease-in forwards}
+.flip-digit.flipping .flip-bottom-flap{visibility:visible;animation:flip-fall-bottom .30s .30s ease-out both;-webkit-animation:flip-fall-bottom .30s .30s ease-out both}
+@keyframes flip-fall-top{0%{transform:rotateX(0deg)}100%{transform:rotateX(-90deg)}}
+@keyframes flip-fall-bottom{0%{transform:rotateX(90deg)}100%{transform:rotateX(0deg)}}
+@-webkit-keyframes flip-fall-top{0%{-webkit-transform:rotateX(0deg)}100%{-webkit-transform:rotateX(-90deg)}}
+@-webkit-keyframes flip-fall-bottom{0%{-webkit-transform:rotateX(90deg)}100%{-webkit-transform:rotateX(0deg)}}
+.flip-separator{position:relative;display:inline-block;font-size:1em;line-height:1;color:transparent;width:.16em;height:.93em;flex:0 0 .16em;text-align:center}
+.flip-separator:before,.flip-separator:after{content:"";position:absolute;left:50%;transform:translateX(-50%);width:.075em;height:.075em;border-radius:50%;background:#9babbc}
+.flip-separator:before{top:.29em}.flip-separator:after{bottom:.26em}
+.flip-digit:after{content:"";position:absolute;left:0;right:0;top:calc(50% - 1px);height:2px;background:#0a1019;box-shadow:0 1px 1px rgba(255,255,255,.14);z-index:5;pointer-events:none}
+.big-clock-display.flip-active{font-size:190px;line-height:1;max-width:100%}
+.big-clock-display.flip-active .flip-digits{display:flex}
+.big-clock-display .flip-digit{color:#f5f5f5}
+html[data-theme="light"] .flip-digit{color:#f4f5f7}
+@media (prefers-reduced-motion:reduce){
+ .flip-digit.flipping .flip-top-flap,.flip-digit.flipping .flip-bottom-flap{animation:none;-webkit-animation:none;visibility:hidden}
+}
+
+/* V26 – studio horloge : styles, couleurs, format et présentation XXL. */
+.clock{--clock-accent:inherit}
+.clock.clock-ink{color:var(--clock-accent)}
+.clock.clock-ink .colon{color:inherit;opacity:.72}
+.clock.clock-font-system,.big-clock-display.clock-font-system{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;font-weight:700;letter-spacing:-.055em}
+.clock.clock-font-rounded,.big-clock-display.clock-font-rounded{font-family:"Arial Rounded MT Bold","Arial Black",-apple-system,sans-serif;font-weight:800;letter-spacing:-.055em}
+.clock.clock-font-fine,.big-clock-display.clock-font-fine{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;font-weight:350;letter-spacing:-.045em}
+.clock.clock-font-mono,.big-clock-display.clock-font-mono{font-family:Menlo,Monaco,"Courier New",monospace;font-weight:700;letter-spacing:-.11em}
+.clock.colon-static .colon,.clock.colon-static .flip-separator{animation:none!important;-webkit-animation:none!important;opacity:1!important}
+.clock.flip-active:not(.colon-static) .flip-separator{animation:colonPulse 1s steps(1,end) infinite}
+.clock-seconds{font-size:.31em;letter-spacing:-.055em;margin-left:.01em;font-weight:600;vertical-align:baseline}
+.clock-seconds .colon{font-size:.78em}
+.clock-small-extra{font-size:.23em;font-weight:750;letter-spacing:0;margin-left:.18em;white-space:nowrap;align-self:flex-end;padding-bottom:.4em}
+.clock-meridiem{font-size:.15em;font-weight:800;letter-spacing:0;margin-left:.25em;vertical-align:baseline}
+.clock.flip-active{display:flex;align-items:center;justify-content:center;gap:0;min-width:0}
+.clock-side-info{display:none}
+.clock.flip-active .clock-side-info,.big-clock-display.flip-active .clock-side-info{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:.045em;margin-left:.09em;flex:0 0 auto}
+.clock.flip-active .clock-side-info .clock-small-extra:not([hidden]),.clock.flip-active .clock-side-info .clock-meridiem:not([hidden]),.big-clock-display.flip-active .clock-side-info .clock-small-extra,.big-clock-display.flip-active .clock-side-info .clock-meridiem{display:block;font-size:.155em;line-height:1.2;margin:0;padding:0;align-self:auto}
+.clock.flip-active .clock-side-info .clock-meridiem[hidden]{display:none!important}
+#clockSeconds[hidden],#clockFlipSeconds[hidden],#clockPeriod[hidden]{display:none!important}
+.big-clock-display.clock-ink{color:var(--clock-accent)}
+.clock.clock-ink.flip-active .flip-digit,.big-clock-display.clock-ink.flip-active .flip-digit{color:inherit}
+.big-clock-display .clock-small-extra{font-size:.22em;margin-left:.17em}
+.big-clock-display .clock-meridiem{font-size:.15em;margin-left:.22em}
+.big-clock-display.flip-active{display:flex;align-items:center;justify-content:center}
+.big-clock-overlay.clock-bg-black{background:#000;color:#fff}
+.big-clock-overlay.clock-bg-dark{background:#071421;color:#f9fcff}
+.big-clock-overlay.clock-bg-light{background:#f7f9fc;color:#1b344c}
+.big-clock-overlay.clock-align-high{justify-content:flex-start;padding-top:12vh}
+.clock-custom-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.clock-custom-field{display:flex;flex-direction:column;gap:7px;min-width:0}
+.clock-custom-field>label{font-size:13px;font-weight:750;color:#bed3e5}
+.clock-custom-field select,.clock-custom-field input[type=color]{border:1px solid #6b8caa;border-radius:10px;background:#19314b;color:#fff;min-height:43px;padding:8px;font:inherit;width:100%;max-width:100%}
+.clock-custom-field input[type=color]{padding:5px;cursor:pointer}
+.clock-custom-field input[type=range]{width:100%;accent-color:#91d9ff}
+.clock-custom-checkbox{display:flex;align-items:center;gap:9px;padding:11px 12px;border-radius:10px;border:1px solid #45647e;background:#233b55;font-size:13px;font-weight:650;cursor:pointer}
+.clock-custom-checkbox input{width:19px;height:19px;accent-color:#86d4ff}
+.clock-custom-presets{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
+.clock-custom-preview{border:1px solid #5d7996;border-radius:15px;padding:18px 10px;background:#12243b;color:#fff;text-align:center;font-size:44px;font-variant-numeric:tabular-nums;letter-spacing:-.035em;min-height:92px;display:flex;align-items:center;justify-content:center}
+.clock-custom-preview small{font-size:13px;align-self:flex-end;margin:0 0 8px 7px}
+.clock-custom-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:16px}
+html[data-theme="light"] .clock-custom-field>label{color:#405e77}
+html[data-theme="light"] .clock-custom-field select,html[data-theme="light"] .clock-custom-field input[type=color]{background:#fff;color:#244563;border-color:#adcadf}
+html[data-theme="light"] .clock-custom-checkbox{background:#eff5fa;color:#21405c;border-color:#c8dbe8}
+@media(max-width:570px){.clock-custom-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
 <div class="shell">
   <main class="dashboard">
     <section class="card clock-panel" id="clockPanel" aria-label="Horloge et date">
-      <div class="clock" id="clockDisplay" role="button" tabindex="0" aria-label="Afficher l’horloge en grand"><span id="hour">--</span><span class="colon">:</span><span id="minute">--</span></div>
+      <div class="clock" id="clockDisplay" role="button" tabindex="0" aria-label="Afficher l’horloge en grand"><span id="classicDigits"><span id="hour">--</span><span class="colon">:</span><span id="minute">--</span><span id="clockSeconds" class="clock-seconds" hidden></span><span id="clockPeriod" class="clock-meridiem" hidden></span></span><span class="flip-digits" id="flipDigits" aria-hidden="true"></span><span id="clockSideInfo" class="clock-side-info"><span id="clockFlipSeconds" class="clock-small-extra" hidden></span><span id="clockFlipPeriod" class="clock-meridiem" hidden></span></span></div>
       <div class="date-row">
         <div class="date" id="date">Chargement…</div>
         <div class="clock-actions" id="clockActions">
@@ -1166,6 +1252,11 @@ html[data-theme="light"] .alertbuttons .smallbutton.selected-tool{background:#e3
             <button type="button" class="theme-choice" data-theme-choice="light"><span class="theme-menu-icon" id="themeMenuSun" aria-hidden="true"></span> Clair <span class="theme-check" aria-hidden="true"></span></button>
             <button type="button" class="theme-choice" data-theme-choice="dark"><span class="theme-menu-icon" id="themeMenuMoon" aria-hidden="true"></span> Sombre <span class="theme-check" aria-hidden="true"></span></button>
             <button type="button" class="theme-choice" data-theme-choice="auto"><span class="theme-menu-icon" id="themeMenuAuto" aria-hidden="true"></span> Automatique <span class="theme-check" aria-hidden="true"></span></button>
+            <div class="clock-menu-divider"></div>
+            <div class="clock-menu-heading">STYLE DE L’HORLOGE</div>
+            <button type="button" class="theme-choice clock-choice" data-clock-style="classic">Classique <span class="theme-check" aria-hidden="true"></span></button>
+            <button type="button" class="theme-choice clock-choice" data-clock-style="flip">À volets basculants <span class="theme-check" aria-hidden="true"></span></button>
+            <button type="button" class="theme-choice" id="clockCustomizeOpen"><span class="theme-menu-icon" aria-hidden="true">⚙</span> Personnaliser…</button>
           </div>
         </div>
       </div>
@@ -1352,24 +1443,173 @@ html[data-theme="light"] .alertbuttons .smallbutton.selected-tool{background:#e3
   var audio=el('audio'),selected=read('radio.st','viva'),playing=false,serial=0,previewStation=null;
   if(!all.some(function(s){return s.id===selected;}))selected=all.length?all[0].id:'';
   var current=function(){return previewStation||storedRadioById(selected)||all[0]||{name:'Aucune station',region:'',url:'',home:'https://www.radio-browser.info/'};};
-  function clock(){var d=new Date();set('hour',String(d.getHours()).padStart(2,'0'));set('minute',String(d.getMinutes()).padStart(2,'0'));set('date',new Intl.DateTimeFormat('fr-BE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d));
-    var huge=el('bigClockDisplay');if(huge){huge.textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');el('bigClockDate').textContent=el('date').textContent;}}
+  // Le mode Flip préserve l'horloge classique tant qu'il n'est pas choisi.
+  var clockStyle=read('radio.clock.style','classic')==='flip'?'flip':'classic';
+  var clockDefaults={font:'rounded',weight:800,color:'default',customColor:'#b6e8ff',size:100,format:'24',seconds:false,blink:true,date:true,xxlBackground:'auto',xxlColor:'default',xxlCustomColor:'#ffffff',xxlAlign:'center'};
+  function cleanClockSettings(raw){
+    var v=raw&&typeof raw==='object'?raw:{},out={};
+    Object.keys(clockDefaults).forEach(function(key){out[key]=clockDefaults[key];});
+    if(['rounded','system','fine','mono'].indexOf(v.font)>=0)out.font=v.font;
+    if([400,600,700,800,900].indexOf(Number(v.weight))>=0)out.weight=Number(v.weight);
+    if(['default','white','ice','amber','red','custom'].indexOf(v.color)>=0)out.color=v.color;
+    if(/^#[0-9a-f]{6}$/i.test(v.customColor||''))out.customColor=v.customColor;
+    if(Number(v.size)>=75&&Number(v.size)<=120)out.size=Math.round(Number(v.size));
+    if(v.format==='12'||v.format==='24')out.format=v.format;
+    ['seconds','blink','date'].forEach(function(k){if(typeof v[k]==='boolean')out[k]=v[k];});
+    if(['auto','dark','black','light'].indexOf(v.xxlBackground)>=0)out.xxlBackground=v.xxlBackground;
+    if(['default','white','ice','amber','red','custom'].indexOf(v.xxlColor)>=0)out.xxlColor=v.xxlColor;
+    if(/^#[0-9a-f]{6}$/i.test(v.xxlCustomColor||''))out.xxlCustomColor=v.xxlCustomColor;
+    if(v.xxlAlign==='high'||v.xxlAlign==='center')out.xxlAlign=v.xxlAlign;
+    return out;
+  }
+  var clockPrefs=cleanClockSettings(readJSON('radio.clock.preferences.v1'));
+  function clockPalette(value,custom){
+    return {white:'#ffffff',ice:'#a8e7ff',amber:'#ffd08b',red:'#ff7676',custom:custom}[value]||'';
+  }
+  function saveClockPrefs(){store('radio.clock.preferences.v1',JSON.stringify(clockPrefs));}
+
+  var flipMain=null,flipBig=null;
+  function createFlipDigit(value){
+    var card=document.createElement('span');card.className='flip-digit';card.dataset.value=value;
+    ['top','bottom','top-flap','bottom-flap'].forEach(function(part){
+      var half=document.createElement('span');half.className=(part.indexOf('flap')>-1?'flip-flap ':'flip-half ')+'flip-'+part;
+      var num=document.createElement('span');num.className='flip-num';num.textContent=value;half.appendChild(num);card.appendChild(half);
+    });
+    return card;
+  }
+  function prepareFlip(container){
+    container.textContent='';var digits=[];
+    for(var i=0;i<5;i++){
+      if(i===2){var colon=document.createElement('span');colon.className='flip-separator';colon.textContent=':';container.appendChild(colon);}
+      else{var card=createFlipDigit('0');digits.push(card);container.appendChild(card);}
+    }
+    return {digits:digits,last:'',timers:[]};
+  }
+  function syncFlip(state,stamp,animate){
+    if(!state)return;
+    var textValue=stamp.replace(':','');
+    if(state.last===textValue)return;
+    for(var i=0;i<4;i++){
+      var digit=state.digits[i],value=textValue.charAt(i),old=digit.dataset.value;
+      if(old===value && state.last)continue;
+      if(digit._timer)clearTimeout(digit._timer);
+      digit.classList.remove('flipping');
+      var halves=digit.children;
+      if(!animate||!state.last||window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+        for(var j=0;j<4;j++)halves[j].firstChild.textContent=value;
+        digit.dataset.value=value;continue;
+      }
+      // Derrière la moitié supérieure qui bascule, le nouveau chiffre est déjà prêt.
+      // L'ancien bas du chiffre reste visible jusqu'au second volet.
+      halves[0].firstChild.textContent=value;
+      halves[1].firstChild.textContent=old;
+      halves[2].firstChild.textContent=old;
+      halves[3].firstChild.textContent=value;
+      // Forcer Safari à recommencer l'animation pour un nouveau basculement.
+      void digit.offsetHeight;
+      digit.classList.add('flipping');
+      digit.dataset.value=value;
+      (function(card,newValue){card._timer=setTimeout(function(){
+        card.classList.remove('flipping');
+        card.children[0].firstChild.textContent=newValue;
+        card.children[1].firstChild.textContent=newValue;
+      },670);})(digit,value);
+    }
+    state.last=textValue;
+  }
+  function refreshFlipMode(){
+    var main=el('clockDisplay'),big=el('bigClockDisplay'),active=clockStyle==='flip';
+    main.classList.toggle('flip-active',active);
+    big.classList.toggle('flip-active',active);
+    if(active){
+      if(!flipMain)flipMain=prepareFlip(el('flipDigits'));
+      if(!flipBig){
+        var child=document.createElement('span');child.className='flip-digits';big.textContent='';big.appendChild(child);flipBig=prepareFlip(child);
+        var sideExtra=document.createElement('span');sideExtra.className='clock-side-info';big.appendChild(sideExtra);
+        var secondsExtra=document.createElement('span');secondsExtra.className='clock-small-extra big-flip-seconds';sideExtra.appendChild(secondsExtra);
+        var periodExtra=document.createElement('span');periodExtra.className='clock-meridiem big-flip-period';sideExtra.appendChild(periodExtra);
+      }
+    }else{
+      big.textContent='--:--';flipBig=null;
+    }
+    var choices=document.querySelectorAll('[data-clock-style]');
+    for(var i=0;i<choices.length;i++){
+      var chosen=choices[i].getAttribute('data-clock-style')===clockStyle;
+      choices[i].classList.toggle('active',chosen);
+      choices[i].setAttribute('aria-pressed',String(chosen));
+      var check=choices[i].querySelector('.theme-check');if(check)check.textContent=chosen?'✓':'';
+    }
+  }
+  refreshFlipMode();
+  var clockChoices=document.querySelectorAll('[data-clock-style]');
+  for(var ci=0;ci<clockChoices.length;ci++)clockChoices[ci].addEventListener('click',function(e){
+    e.stopPropagation();clockStyle=this.getAttribute('data-clock-style')==='flip'?'flip':'classic';
+    store('radio.clock.style',clockStyle);refreshFlipMode();clock();fitClock();fitBigClock();closeThemeMenu();
+  });
+  el('clockCustomizeOpen').addEventListener('click',function(e){e.stopPropagation();closeThemeMenu();openTools('clockPrefs');});
+  function clock(){
+    var d=new Date(),hour=d.getHours(),period=hour>=12?'PM':'AM';
+    if(clockPrefs.format==='12')hour=(hour%12)||12;
+    var stamp=String(hour).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    var sec=String(d.getSeconds()).padStart(2,'0');
+    set('hour',stamp.slice(0,2));set('minute',stamp.slice(3,5));
+    set('clockSeconds',clockPrefs.seconds?':'+sec:'');
+    set('clockFlipSeconds',clockPrefs.seconds?':'+sec:'');
+    set('clockPeriod',clockPrefs.format==='12'?period:'');set('clockFlipPeriod',clockPrefs.format==='12'?period:'');
+    set('date',new Intl.DateTimeFormat('fr-BE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d));
+    var huge=el('bigClockDisplay');
+    if(clockStyle==='flip'){
+      syncFlip(flipMain,stamp,true);syncFlip(flipBig,stamp,true);
+      if(huge){
+        var s=huge.querySelector('.big-flip-seconds');
+        if(s)s.textContent=clockPrefs.seconds?':'+sec:'';
+        var p=huge.querySelector('.big-flip-period');
+        if(p)p.textContent=clockPrefs.format==='12'?period:'';
+      }
+    }else if(huge){huge.textContent=stamp+(clockPrefs.seconds?':'+sec:'')+(clockPrefs.format==='12'?' '+period:'');}
+    if(huge)el('bigClockDate').textContent=el('date').textContent;
+  }
   clock();setInterval(clock,1000);
   function fitClock(){
     var c=el('clockDisplay'),panel=c.parentElement;
     if(!panel)return;
     var mobile=window.innerWidth<=760;
     var shortPortrait=window.innerWidth>=600 && window.innerWidth<=1100 && window.innerHeight<=990 && window.innerHeight>window.innerWidth;
-    var target=shortPortrait?158:(mobile?124:194);
+    var target=Math.round((shortPortrait?158:(mobile?124:194))*clockPrefs.size/100);
     c.style.fontSize=target+'px';
     var style=getComputedStyle(panel);
-    var maxWidth=(panel.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight)-12)/1.07;
-    // Le texte réel est mesuré, avec marge pour le léger étirement horizontal.
-    if(c.scrollWidth>maxWidth){
-      c.style.fontSize=Math.floor(target*maxWidth/c.scrollWidth)+'px';
-    }
+    var maxWidth=panel.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight)-12;
+    var ink=clockStyle==='flip'?el('flipDigits'):el('classicDigits');
+    var valueWidth=ink.getBoundingClientRect().width;
+    if(clockStyle==='flip')valueWidth+=el('clockSideInfo').getBoundingClientRect().width;
+    valueWidth=Math.max(valueWidth,c.scrollWidth>maxWidth?c.scrollWidth:maxWidth);
+    if(valueWidth>maxWidth){c.style.fontSize=Math.max(42,Math.floor(target*maxWidth/valueWidth))+'px';}
   }
-  fitClock();
+  function applyClockPreferences(){
+    var main=el('clockDisplay'),big=el('bigClockDisplay'),overlay=el('bigClockOverlay');
+    ['system','rounded','fine','mono'].forEach(function(f){main.classList.toggle('clock-font-'+f,clockPrefs.font===f);big.classList.toggle('clock-font-'+f,clockPrefs.font===f);});
+    var color=clockPalette(clockPrefs.color,clockPrefs.customColor);
+    main.classList.toggle('clock-ink',!!color);main.style.setProperty('--clock-accent',color||'inherit');
+    main.style.fontWeight=clockPrefs.weight;
+    big.style.fontWeight=clockPrefs.weight;
+    var fontFamilies={rounded:'"Arial Rounded MT Bold","Arial Black",-apple-system,sans-serif',system:'-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif',fine:'-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif',mono:'Menlo,Monaco,"Courier New",monospace'};
+    var mainFlip=el('flipDigits'),bigFlip=big.querySelector('.flip-digits');
+    [mainFlip,bigFlip].forEach(function(f){if(!f)return;f.style.fontFamily=fontFamilies[clockPrefs.font];f.style.fontWeight=clockPrefs.weight;});
+    main.classList.toggle('colon-static',!clockPrefs.blink);
+    el('clockSeconds').hidden=!clockPrefs.seconds;
+    el('clockFlipSeconds').hidden=!clockPrefs.seconds;
+    el('clockPeriod').hidden=clockPrefs.format!=='12';el('clockFlipPeriod').hidden=clockPrefs.format!=='12';
+    el('date').style.display=clockPrefs.date?'':'none';
+    el('bigClockDate').style.display=clockPrefs.date?'':'none';
+    overlay.classList.toggle('clock-bg-black',clockPrefs.xxlBackground==='black');
+    overlay.classList.toggle('clock-bg-dark',clockPrefs.xxlBackground==='dark');
+    overlay.classList.toggle('clock-bg-light',clockPrefs.xxlBackground==='light');
+    overlay.classList.toggle('clock-align-high',clockPrefs.xxlAlign==='high');
+    var xxlInk=clockPalette(clockPrefs.xxlColor,clockPrefs.xxlCustomColor);
+    big.classList.toggle('clock-ink',!!xxlInk);big.style.setProperty('--clock-accent',xxlInk||'inherit');
+    clock();fitClock();fitBigClock();
+  }
+  applyClockPreferences();
   window.addEventListener('resize',fitClock);
   window.addEventListener('orientationchange',fitClock);
   // Adapter également l'horloge une fois les polices système prêtes.
@@ -1743,6 +1983,7 @@ html[data-theme="light"] .alertbuttons .smallbutton.selected-tool{background:#e3
     else if(tool==='extras'){set('toolsTitle','Mes outils');renderExtrasTool();}
     else if(tool==='insights'){set('toolsTitle','Air & pollens');renderInsightsTool();}
     else if(tool==='shower'){set('toolsTitle','Minuteur pratique');renderShowerTool();}
+    else if(tool==='clockPrefs'){set('toolsTitle','Personnaliser l’horloge');renderClockCustomizer();}
   }
   function closeTools(){
     toolsModal.classList.remove('open');toolsModal.setAttribute('aria-hidden','true');
@@ -2019,8 +2260,12 @@ html[data-theme="light"] .alertbuttons .smallbutton.selected-tool{background:#e3
   var bigClockOpen=false;
   function fitBigClock(){
     var big=el('bigClockDisplay');if(!big||!bigClockOpen)return;
-    var maxWidth=window.innerWidth-50,target=Math.min(340,Math.floor(window.innerWidth*.29));
-    big.style.fontSize=target+'px';if(big.scrollWidth>maxWidth)big.style.fontSize=Math.floor(target*maxWidth/big.scrollWidth)+'px';
+    var maxWidth=window.innerWidth-54,target=Math.round(Math.min(340,Math.floor(window.innerWidth*.29))*clockPrefs.size/100);
+    big.style.fontSize=target+'px';
+    var content=clockStyle==='flip'?big.querySelector('.flip-digits'):big;
+    var used=content?content.getBoundingClientRect().width:big.scrollWidth;
+    if(clockStyle==='flip'){var side=big.querySelector('.clock-side-info');if(side)used+=side.getBoundingClientRect().width;}
+    if(used>maxWidth)big.style.fontSize=Math.max(40,Math.floor(target*maxWidth/used))+'px';
   }
   function openBigClock(){
     closeTools();clearDim();bigClockOpen=true;clock();el('bigClockOverlay').classList.add('open');el('bigClockOverlay').setAttribute('aria-hidden','false');fitBigClock();
@@ -2074,6 +2319,57 @@ html[data-theme="light"] .alertbuttons .smallbutton.selected-tool{background:#e3
     var b=make('button','manager-btn'+(style?' '+style:''),caption);
     b.type='button';b.addEventListener('click',action);return b;
   }
+  function renderClockCustomizer(){
+    var box=el('toolsBody');box.textContent='';
+    box.appendChild(make('p','manager-lead','Modifie les réglages et regarde l’horloge changer immédiatement. Le choix reste enregistré sur cet iPad.'));
+    var preview=make('div','clock-custom-preview');box.appendChild(preview);
+    function updatePreview(){
+      var d=new Date(),h=d.getHours(),p=h>=12?'PM':'AM';
+      if(clockPrefs.format==='12')h=h%12||12;
+      var value=String(h).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+(clockPrefs.seconds?':'+String(d.getSeconds()).padStart(2,'0'):'');
+      preview.textContent=value+(clockPrefs.format==='12'?' '+p:'');
+      preview.style.fontFamily=clockPrefs.font==='mono'?'Menlo,monospace':clockPrefs.font==='fine'?'-apple-system,sans-serif':clockPrefs.font==='system'?'-apple-system,sans-serif':'Arial Rounded MT Bold,Arial Black,sans-serif';
+      preview.style.fontWeight=clockPrefs.font==='fine'?350:clockPrefs.weight;
+      preview.style.color=clockPalette(clockPrefs.color,clockPrefs.customColor)||'#fff';
+      preview.style.fontSize=Math.round(43*clockPrefs.size/100)+'px';
+      preview.style.letterSpacing=clockStyle==='flip'?'0':'-.04em';
+      preview.style.background=clockStyle==='flip'?'#292e37':'#12243b';
+      preview.style.borderColor=clockStyle==='flip'?'#687282':'#5d7996';
+    }
+    var presets=make('div','clock-custom-presets');box.appendChild(presets);
+    function preset(label,style,prefs){presets.appendChild(actionButton(label,function(){
+      clockStyle=style;store('radio.clock.style',style);clockPrefs=cleanClockSettings(prefs);
+      saveClockPrefs();refreshFlipMode();applyClockPreferences();renderClockCustomizer();
+    },'clock-preset'));}
+    preset('D’origine','classic',clockDefaults);
+    preset('Minimal','classic',{font:'fine',weight:400,size:105,color:'white',format:'24',blink:false,date:true});
+    preset('Digital','classic',{font:'mono',size:100,color:'ice',format:'24',blink:true,date:true});
+    preset('Réveil rétro','flip',{font:'rounded',size:100,color:'default',format:'24',blink:true,date:true});
+    var grid=make('div','clock-custom-grid');box.appendChild(grid);
+    function field(label){var wrap=make('div','clock-custom-field');wrap.appendChild(make('label','',label));grid.appendChild(wrap);return wrap;}
+    function choose(label,current,opts,callback){var wrap=field(label),sel=make('select','');
+      opts.forEach(function(v){var o=make('option','',v[1]);o.value=v[0];sel.appendChild(o);});
+      sel.value=current;sel.addEventListener('change',function(){callback(sel.value);saveClockPrefs();refreshFlipMode();applyClockPreferences();updatePreview();});wrap.appendChild(sel);return sel;
+    }
+    choose('Style de l’horloge',clockStyle,[['classic','Chiffres classiques'],['flip','Volets basculants']],function(v){clockStyle=v;store('radio.clock.style',v);});
+    choose('Police',clockPrefs.font,[['rounded','Arrondie'],['system','Apple classique'],['fine','Fine'],['mono','Numérique / monospace']],function(v){clockPrefs.font=v;});
+    choose('Épaisseur',String(clockPrefs.weight),[['400','Fine'],['600','Moyenne'],['700','Épaisse'],['800','Très épaisse'],['900','Extra épaisse']],function(v){clockPrefs.weight=Number(v);});
+    var colorSel=choose('Couleur des chiffres',clockPrefs.color,[['default','Selon le thème'],['white','Blanc'],['ice','Bleu glacier'],['amber','Ambre'],['red','Rouge'],['custom','Personnalisée']],function(v){clockPrefs.color=v;customWrap.style.display=v==='custom'?'':'none';});
+    var customWrap=field('Couleur personnalisée');var custom=make('input','');custom.type='color';custom.value=clockPrefs.customColor;custom.style.display=clockPrefs.color==='custom'?'':'none';custom.addEventListener('input',function(){clockPrefs.customColor=custom.value;clockPrefs.color='custom';colorSel.value='custom';saveClockPrefs();applyClockPreferences();updatePreview();});customWrap.appendChild(custom);customWrap.style.display=clockPrefs.color==='custom'?'':'none';
+    var sizeWrap=field('Taille des chiffres : '+clockPrefs.size+' %'),slider=make('input','');slider.type='range';slider.min='75';slider.max='120';slider.step='5';slider.value=clockPrefs.size;slider.addEventListener('input',function(){clockPrefs.size=Number(slider.value);sizeWrap.firstChild.textContent='Taille des chiffres : '+slider.value+' %';saveClockPrefs();applyClockPreferences();updatePreview();});sizeWrap.appendChild(slider);
+    choose('Format horaire',clockPrefs.format,[['24','24 heures'],['12','12 heures (AM/PM)']],function(v){clockPrefs.format=v;});
+    function check(label,prop){var row=make('label','clock-custom-checkbox');var cb=make('input','');cb.type='checkbox';cb.checked=clockPrefs[prop];cb.addEventListener('change',function(){clockPrefs[prop]=cb.checked;saveClockPrefs();applyClockPreferences();updatePreview();});row.appendChild(cb);row.appendChild(make('span','',label));grid.appendChild(row);}
+    check('Afficher les secondes', 'seconds');check('Faire clignoter les deux-points','blink');check('Afficher la date','date');
+    sectionTitle(box,'Horloge XXL');
+    var bigGrid=make('div','clock-custom-grid');grid=bigGrid;box.appendChild(bigGrid);
+    choose('Fond XXL',clockPrefs.xxlBackground,[['auto','Selon le thème'],['dark','Bleu nuit'],['black','Noir'],['light','Clair']],function(v){clockPrefs.xxlBackground=v;});
+    choose('Couleur en XXL',clockPrefs.xxlColor,[['default','Selon le fond'],['white','Blanc'],['ice','Bleu glacier'],['amber','Ambre'],['red','Rouge'],['custom','Personnalisée']],function(v){clockPrefs.xxlColor=v;xxlWrap.style.display=v==='custom'?'':'none';});
+    var xxlWrap=field('Couleur personnalisée XXL'),bigCustom=make('input','');bigCustom.type='color';bigCustom.value=clockPrefs.xxlCustomColor;bigCustom.style.display=clockPrefs.xxlColor==='custom'?'':'none';bigCustom.addEventListener('input',function(){clockPrefs.xxlColor='custom';clockPrefs.xxlCustomColor=bigCustom.value;saveClockPrefs();applyClockPreferences();});xxlWrap.appendChild(bigCustom);xxlWrap.style.display=clockPrefs.xxlColor==='custom'?'':'none';
+    choose('Disposition XXL',clockPrefs.xxlAlign,[['center','Au centre'],['high','En haut']],function(v){clockPrefs.xxlAlign=v;});
+    var footer=make('div','clock-custom-footer');footer.appendChild(make('span','manager-note','Enregistré automatiquement · les tailles sont limitées pour éviter les débordements.'));
+    footer.appendChild(actionButton('Rétablir l’horloge d’origine',function(){clockStyle='classic';clockPrefs=cleanClockSettings({});store('radio.clock.style',clockStyle);saveClockPrefs();refreshFlipMode();applyClockPreferences();renderClockCustomizer();},'warn'));box.appendChild(footer);
+    updatePreview();
+  }
   function managerRow(title,detail){
     var row=make('div','manager-row');var info=make('div','manager-info');
     info.appendChild(make('strong','',title));info.appendChild(make('small','',detail));row.appendChild(info);
@@ -2105,7 +2401,7 @@ html[data-theme="light"] .alertbuttons .smallbutton.selected-tool{background:#e3
     group.appendChild(actionButton('Exporter mes favoris',function(){
       var exportedWeather=weatherPlaces.filter(function(p){return p.id!=='local';});
       var exportDefault=weatherDefault; // garde le choix « local », jamais les coordonnées GPS
-      var payload={format:'radio-ipad-sauvegarde',version:1,exportedAt:new Date().toISOString(),radios:{favorites:fav,others:other,selected:selected},weather:{places:exportedWeather,defaultCity:exportDefault},settings:{theme:activeTheme,dimEnabled:dimEnabled,autoTheme:autoTheme}};
+      var payload={format:'radio-ipad-sauvegarde',version:1,exportedAt:new Date().toISOString(),radios:{favorites:fav,others:other,selected:selected},weather:{places:exportedWeather,defaultCity:exportDefault},settings:{theme:activeTheme,dimEnabled:dimEnabled,autoTheme:autoTheme,clockStyle:clockStyle,clockPreferences:clockPrefs}};
       var blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});
       var objectURL=URL.createObjectURL(blob);var a=document.createElement('a');a.href=objectURL;a.download='radio-ipad-favoris.json';document.body.appendChild(a);a.click();document.body.removeChild(a);
       setTimeout(function(){URL.revokeObjectURL(objectURL);},60000);
@@ -2133,6 +2429,9 @@ html[data-theme="light"] .alertbuttons .smallbutton.selected-tool{background:#e3
         if(data.settings&&data.settings.theme){store('radio.theme',data.settings.theme==='light'?'light':'dark');setTheme(data.settings.theme==='light'?'light':'dark');}
         if(data.settings&&typeof data.settings.dimEnabled==='boolean'){dimEnabled=data.settings.dimEnabled;store('radio.dim',dimEnabled?'yes':'no');updateDimButton();}
         if(data.settings&&typeof data.settings.autoTheme==='boolean'){autoTheme=data.settings.autoTheme;store('radio.theme.mode',autoTheme?'auto':'manual');applyAutoTheme();}
+        if(data.settings&&['classic','flip'].indexOf(data.settings.clockStyle)>=0){clockStyle=data.settings.clockStyle;store('radio.clock.style',clockStyle);refreshFlipMode();}
+        if(data.settings&&data.settings.clockPreferences){clockPrefs=cleanClockSettings(data.settings.clockPreferences);saveClockPrefs();}
+        applyClockPreferences();
         render();powerUI();set('playStatus','Radio éteinte');
         if(activeTool==='cities')renderCitiesTool();else if(activeTool==='radios')renderRadiosTool();
       };reader.onerror=function(){feedback('Impossible de lire le fichier.');};reader.readAsText(file);chooser.value='';
