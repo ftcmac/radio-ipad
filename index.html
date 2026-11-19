@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.19.03">
-<meta name="radio-app-release-notes" content="Assistant de première ouverture et restauration complète|Aide visuelle disponible via ⓘ dans Outils|Favoris et villes réorganisables avec poignées|Classement alphabétique, ordre d’ajout ou manuel">
+<meta name="radio-app-release" content="2026.11.19.04">
+<meta name="radio-app-release-notes" content="Conseils de réglages iPad au premier lancement|Guide pour conserver l’écran allumé et autoriser la météo locale|Boutons de volume adaptables selon le modèle">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -1464,6 +1464,26 @@ html[data-theme="light"] .drag-handle{background:#e3f1fc;color:#265b84;border-co
 html[data-theme="light"] .sortable-row.sort-active{background:#d9f2ff}
 @media(max-width:760px){.setup-dialog{padding:17px 15px;max-height:90vh}.setup-options{grid-template-columns:1fr}.setup-head h2{font-size:21px}.help-top{justify-content:flex-start;padding-left:17px}.help-tag{font-size:11px;max-width:190px;min-width:100px}.help-tag strong{font-size:12px}.help-options{font-size:11px}.sort-tools{align-items:flex-start}}
 
+/* V31 – recommandations de configuration iPad compactes, sans réglage automatique. */
+.setup-actions{position:sticky;bottom:-1px;z-index:2;background:#1b3048;padding:11px 0 1px;border-top:1px solid #43617b;box-shadow:0 -8px 12px rgba(27,48,72,.9)}
+.ipad-advice{background:#213b55;border:1px solid #527895;border-radius:16px;padding:14px 15px;min-width:0}
+.ipad-advice-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.ipad-advice-head strong{font-size:15px;color:#f4fbff}
+.ipad-advice-optional{font-size:11px;color:#afd5eb;background:#163149;border:1px solid #476b88;padding:4px 8px;border-radius:20px}
+.ipad-advice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.ipad-advice-item{display:flex;align-items:flex-start;gap:9px;padding:10px 11px;border-radius:12px;background:#1a3047;border:1px solid #42637f;min-width:0}
+.ipad-advice-symbol{width:28px;height:28px;flex:0 0 28px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:#315b7a;color:#b6e8ff;font-size:17px;font-weight:700}
+.ipad-advice-content{display:flex;flex-direction:column;gap:3px;min-width:0}
+.ipad-advice-content strong{font-size:12.5px;color:#f3faff}
+.ipad-advice-content span{font-size:11.5px;line-height:1.4;color:#bfd6e7}
+.ipad-advice-foot{font-size:11px;color:#afc8dc;line-height:1.4;margin:10px 1px 0}
+html[data-theme="light"] .tools-modal .ipad-advice{background:#e3eff8;border-color:#afcee1}
+html[data-theme="light"] .tools-modal .ipad-advice-head strong,html[data-theme="light"] .tools-modal .ipad-advice-content strong{color:#21435f}
+html[data-theme="light"] .tools-modal .ipad-advice-item{background:#f4faff;border-color:#c3d7e6}
+html[data-theme="light"] .tools-modal .ipad-advice-content span,html[data-theme="light"] .tools-modal .ipad-advice-foot{color:#496a84}
+html[data-theme="light"] .tools-modal .ipad-advice-optional{background:#d4e9f9;color:#295d80}
+@media(max-width:570px){.ipad-advice-grid{grid-template-columns:1fr}.ipad-advice-item{padding:9px 10px}}
+
 </style>
 </head>
 <body>
@@ -2277,6 +2297,7 @@ html[data-theme="light"] .sortable-row.sort-active{background:#d9f2ff}
     else if(tool==='insights'){set('toolsTitle','Air & pollens');renderInsightsTool();}
     else if(tool==='shower'){set('toolsTitle','Minuteur pratique');renderShowerTool();}
     else if(tool==='clockPrefs'){set('toolsTitle','Personnaliser l’horloge');renderClockCustomizer();}
+    else if(tool==='ipadAdvice'){set('toolsTitle','Conseils pour votre iPad');var adviceBody=el('toolsBody');adviceBody.textContent='';adviceBody.appendChild(make('p','manager-lead','Ces réglages sont facultatifs et se changent dans l’application Réglages de l’iPad.'));renderIpadAdvice(adviceBody);}
   }
   function closeTools(){
     var palette=toolsModal.querySelector('.clock-palette-backdrop');if(palette&&palette.parentNode)palette.parentNode.removeChild(palette);
@@ -2599,6 +2620,7 @@ html[data-theme="light"] .sortable-row.sort-active{background:#d9f2ff}
     item('Météo & qualité de l’air','Soleil, pluie à venir, pollution et pollens',function(){openTools('insights');});
     item('Minuteur pratique','Un décompte avec alerte, sans couper la radio',function(){openTools('shower');});
     item('Aide ⓘ','Toutes les fonctions expliquées sur l’écran',function(){showHelp();});
+    item('Conseils pour l’iPad','Écran, luminosité, localisation et boutons de volume',function(){openTools('ipadAdvice');});
     item('Horloge XXL','Un grand affichage sur tout l’écran',openBigClock);
     item('Thème automatique',autoTheme?'Activé · clair au lever du soleil, sombre au coucher':'Désactivé · mode manuel conservé',function(){
       autoTheme=!autoTheme;store('radio.theme.mode',autoTheme?'auto':'manual');
@@ -3255,6 +3277,24 @@ html[data-theme="light"] .sortable-row.sort-active{background:#d9f2ff}
     {id:'sud',name:'Sud Radio',region:'Hainaut',url:'https://stream1.sudradio.be/sudradio-web-hainaut',home:'https://www.sudradio.be/'},
     {id:'contact',name:'Radio Contact',region:'Belgique',url:'https://radiocontact.ice.infomaniak.ch/radiocontact-mp3-192.mp3',home:'https://www.radiocontact.be/'}
   ];
+  // Conseils facultatifs : la webapp ne peut pas modifier les Réglages de l’iPad.
+  function renderIpadAdvice(parent){
+    var card=make('section','ipad-advice');
+    var head=make('div','ipad-advice-head');head.appendChild(make('strong','','⚙ Réglages conseillés pour un iPad dédié'));
+    head.appendChild(make('span','ipad-advice-optional','Facultatif · 1 minute'));card.appendChild(head);
+    var grid=make('div','ipad-advice-grid');card.appendChild(grid);
+    function tip(symbol,title,description){
+      var row=make('div','ipad-advice-item');row.appendChild(make('span','ipad-advice-symbol',symbol));
+      var content=make('div','ipad-advice-content');content.appendChild(make('strong','',title));
+      content.appendChild(make('span','',description));row.appendChild(content);grid.appendChild(row);
+    }
+    tip('☀','Luminosité automatique','Réglages → Accessibilité → Affichage et taille du texte → Luminosité automatique.');
+    tip('◷','Écran toujours visible','Réglages → Luminosité et affichage → Verrouillage automatique → Jamais (si disponible).');
+    tip('⌖','Météo locale','Réglages → Confidentialité / Confidentialité et sécurité → Service de localisation, puis autoriser la position quand Safari ou la webapp le demande.');
+    tip('↕','Volume selon l’orientation','Si l’option existe : Réglages → Sons → désactiver « Position fixe des commandes de volume ». Selon le modèle d’iPad.');
+    card.appendChild(make('p','ipad-advice-foot','Pour une utilisation prolongée, gardez l’iPad alimenté et ventilé, avec une luminosité modérée. L’écran allumé en permanence consomme davantage d’énergie. Ces choix se font dans les Réglages de l’iPad, pas dans la webapp.'));
+    parent.appendChild(card);
+  }
   function setupBtn(label,fn,primary){var b=make('button','setup-btn'+(primary?' primary':''),label);b.type='button';b.addEventListener('click',fn);return b;}
   function setupHeading(title,subtitle){set('setupTitle',title);set('setupSubtitle',subtitle);setupBody.textContent='';setupActions.textContent='';
     var bar=el('setupSteps');bar.textContent='';for(var i=0;i<3;i++){var dot=make('span',i===setupStep?'current':'');bar.appendChild(dot);}
@@ -3388,6 +3428,7 @@ html[data-theme="light"] .sortable-row.sort-active{background:#d9f2ff}
       var share=make('span','setup-share');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M12 15V2m-4 4 4-4 4 4"/></svg>';
       var line=make('p','');line.appendChild(make('strong','','Safari : '));line.appendChild(share);line.appendChild(make('span','',' Partager → Sur l’écran d’accueil → Ajouter'));info.appendChild(line);
       info.appendChild(make('p','','Si vous lisez ceci dans la webapp déjà installée, cette étape est évidemment inutile.'));
+      renderIpadAdvice(setupBody);
       var note=make('div','setup-install');setupBody.appendChild(note);
       note.appendChild(make('strong','','↻ Mises à jour et nouveautés'));
       note.appendChild(make('p','','La webapp peut recevoir régulièrement des améliorations. Lorsqu’elle est ouverte et connectée, elle vérifie discrètement les mises à jour au maximum une fois par jour et affiche une alerte si une nouvelle version est disponible. Aucune actualisation ne coupera la radio sans votre accord.'));
