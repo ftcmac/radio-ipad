@@ -1236,6 +1236,36 @@ html[data-theme="light"] .clock-custom-field select,html[data-theme="light"] .cl
 html[data-theme="light"] .clock-custom-checkbox{background:#eff5fa;color:#21405c;border-color:#c8dbe8}
 @media(max-width:570px){.clock-custom-grid{grid-template-columns:1fr}}
 
+/* V27 – réglages lisibles et caractères de radio légèrement agrandis. */
+.clock-panel .theme-toggle{color:#d8eafa}
+html[data-theme="light"] .clock-panel .theme-toggle{color:#315879}
+.clock-panel .theme-toggle .theme-icon,.clock-panel .theme-toggle .theme-icon svg{width:23px;height:23px;display:block}
+.clock-menu-heading:first-child{padding-top:9px;padding-bottom:6px}
+.station-name,.more-label{font-size:16px;line-height:1.16;word-wrap:break-word}
+@media(max-width:760px){.station-name,.more-label{font-size:15.5px}}
+@media(max-width:500px){.station-name,.more-label{font-size:15px}}
+.clock.clock-font-avenir,.big-clock-display.clock-font-avenir{font-family:"Avenir Next",Avenir,-apple-system,Arial,sans-serif;letter-spacing:-.06em}
+.clock.clock-font-helvetica,.big-clock-display.clock-font-helvetica{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;letter-spacing:-.055em}
+.clock.clock-font-futura,.big-clock-display.clock-font-futura{font-family:Futura,"Trebuchet MS",Arial,sans-serif;letter-spacing:-.055em}
+.clock.clock-font-verdana,.big-clock-display.clock-font-verdana{font-family:Verdana,Geneva,Arial,sans-serif;letter-spacing:-.085em}
+.clock.clock-font-georgia,.big-clock-display.clock-font-georgia{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.07em}
+.clock.clock-font-times,.big-clock-display.clock-font-times{font-family:"Times New Roman",Times,serif;letter-spacing:-.075em}
+.clock.clock-font-courier,.big-clock-display.clock-font-courier{font-family:"Courier New",Courier,monospace;letter-spacing:-.11em}
+.clock-custom-field .clock-color-editor{display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid #496984;border-radius:12px;background:#192e45}
+.clock-color-row{display:flex;align-items:center;gap:9px;min-width:0}
+.clock-color-swatch{flex:0 0 45px;height:41px;border-radius:9px;border:2px solid rgba(255,255,255,.5)}
+.clock-custom-field input.clock-color-native{padding:3px;width:48px;height:41px;min-height:41px;flex:0 0 48px;cursor:pointer}
+.clock-custom-field input.clock-hex-input{min-width:0;max-width:100%;flex:1;padding:8px 9px;min-height:41px;background:#10243b;border:1px solid #6686a3;color:#fff;border-radius:9px;font:600 14px Menlo,"Courier New",monospace}
+.clock-custom-field input.clock-hex-input.invalid{border-color:#f3a29b}
+.clock-color-hint{font-size:12px;line-height:1.4;color:#bed1e4}
+.clock-color-slider-row{display:flex;align-items:center;gap:10px;font-size:12px;color:#d2e2ef}
+.clock-color-slider-row span{flex:0 0 76px}
+.clock-color-slider-row input{flex:1;min-width:0;accent-color:#a2dfff}
+.clock-color-slider-row:first-of-type input{background:linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}
+html[data-theme="light"] .clock-custom-field .clock-color-editor{background:#e8f2fa;border-color:#b6cad9}
+html[data-theme="light"] .clock-color-hint,html[data-theme="light"] .clock-color-slider-row{color:#365a76}
+html[data-theme="light"] .clock-custom-field input.clock-hex-input{background:white;color:#1a3b53;border-color:#aac3d5}
+
 </style>
 </head>
 <body>
@@ -1247,8 +1277,9 @@ html[data-theme="light"] .clock-custom-checkbox{background:#eff5fa;color:#21405c
         <div class="date" id="date">Chargement…</div>
         <div class="clock-actions" id="clockActions">
           <button id="clockTimerButton" class="clock-mini-button" type="button" aria-label="Ouvrir le minuteur indépendant" title="Minuteur indépendant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l3 2M9 2h6M18 5l2 2"></path></svg><span id="clockTimerBadge" class="clock-timer-badge" hidden></span></button>
-          <button id="themeToggle" class="theme-toggle" type="button" aria-label="Choisir le thème" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="Choisir l'apparence"><span id="themeSymbol" class="theme-icon" aria-hidden="true"></span><span class="theme-auto-indicator" id="themeAutoIndicator" aria-hidden="true">A</span></button>
+          <button id="themeToggle" class="theme-toggle" type="button" aria-label="Réglages d’apparence" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu" title="Choisir l'apparence"><span id="themeSymbol" class="theme-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h5m4 0h7M4 12h2m4 0h10M4 17h10m4 0h2"></path><circle cx="11" cy="7" r="2"></circle><circle cx="8" cy="12" r="2"></circle><circle cx="16" cy="17" r="2"></circle></svg></span></button>
           <div class="theme-menu" id="themeMenu" role="group" aria-label="Apparence du tableau de bord">
+            <div class="clock-menu-heading">THÈME</div>
             <button type="button" class="theme-choice" data-theme-choice="light"><span class="theme-menu-icon" id="themeMenuSun" aria-hidden="true"></span> Clair <span class="theme-check" aria-hidden="true"></span></button>
             <button type="button" class="theme-choice" data-theme-choice="dark"><span class="theme-menu-icon" id="themeMenuMoon" aria-hidden="true"></span> Sombre <span class="theme-check" aria-hidden="true"></span></button>
             <button type="button" class="theme-choice" data-theme-choice="auto"><span class="theme-menu-icon" id="themeMenuAuto" aria-hidden="true"></span> Automatique <span class="theme-check" aria-hidden="true"></span></button>
@@ -1256,7 +1287,7 @@ html[data-theme="light"] .clock-custom-checkbox{background:#eff5fa;color:#21405c
             <div class="clock-menu-heading">STYLE DE L’HORLOGE</div>
             <button type="button" class="theme-choice clock-choice" data-clock-style="classic">Classique <span class="theme-check" aria-hidden="true"></span></button>
             <button type="button" class="theme-choice clock-choice" data-clock-style="flip">À volets basculants <span class="theme-check" aria-hidden="true"></span></button>
-            <button type="button" class="theme-choice" id="clockCustomizeOpen"><span class="theme-menu-icon" aria-hidden="true">⚙</span> Personnaliser…</button>
+            <button type="button" class="theme-choice" id="clockCustomizeOpen"><span class="theme-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h5m4 0h7M4 12h2m4 0h10M4 17h10m4 0h2"></path><circle cx="11" cy="7" r="2"></circle><circle cx="8" cy="12" r="2"></circle><circle cx="16" cy="17" r="2"></circle></svg></span> Personnaliser…</button>
           </div>
         </div>
       </div>
@@ -1400,10 +1431,8 @@ html[data-theme="light"] .clock-custom-checkbox{background:#eff5fa;color:#21405c
     activeTheme=theme;
     document.documentElement.setAttribute('data-theme',theme);
     var isLight=theme==='light';
-    el('themeSymbol').innerHTML=isLight?icons.moon:icons.sun;
-    el('themeToggle').setAttribute('aria-label','Choisir le thème : '+(autoTheme?'automatique':isLight?'clair':'sombre'));
-    el('themeToggle').title='Apparence : '+(autoTheme?'automatique':isLight?'clair':'sombre');
-    el('themeToggle').classList.toggle('is-auto',autoTheme);
+    el('themeToggle').setAttribute('aria-label','Réglages d’apparence, thème '+(autoTheme?'automatique':isLight?'clair':'sombre'));
+    el('themeToggle').title='Réglages d’apparence';
     updateThemeChoices();
     var meta=document.querySelector('meta[name="theme-color"]');
     if(meta)meta.setAttribute('content',isLight?'#e9f2fa':'#10192a');
@@ -1449,7 +1478,7 @@ html[data-theme="light"] .clock-custom-checkbox{background:#eff5fa;color:#21405c
   function cleanClockSettings(raw){
     var v=raw&&typeof raw==='object'?raw:{},out={};
     Object.keys(clockDefaults).forEach(function(key){out[key]=clockDefaults[key];});
-    if(['rounded','system','fine','mono'].indexOf(v.font)>=0)out.font=v.font;
+    if(['rounded','system','fine','mono','avenir','helvetica','futura','verdana','georgia','times','courier'].indexOf(v.font)>=0)out.font=v.font;
     if([400,600,700,800,900].indexOf(Number(v.weight))>=0)out.weight=Number(v.weight);
     if(['default','white','ice','amber','red','custom'].indexOf(v.color)>=0)out.color=v.color;
     if(/^#[0-9a-f]{6}$/i.test(v.customColor||''))out.customColor=v.customColor;
@@ -1466,6 +1495,19 @@ html[data-theme="light"] .clock-custom-checkbox{background:#eff5fa;color:#21405c
   function clockPalette(value,custom){
     return {white:'#ffffff',ice:'#a8e7ff',amber:'#ffd08b',red:'#ff7676',custom:custom}[value]||'';
   }
+  var clockFontFamilies={
+    rounded:'"Arial Rounded MT Bold","Arial Black",-apple-system,sans-serif',
+    system:'-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif',
+    fine:'-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif',
+    mono:'Menlo,Monaco,"Courier New",monospace',
+    avenir:'"Avenir Next","Avenir",-apple-system,Arial,sans-serif',
+    helvetica:'"Helvetica Neue",Helvetica,Arial,sans-serif',
+    futura:'Futura,"Trebuchet MS",Arial,sans-serif',
+    verdana:'Verdana,Geneva,Arial,sans-serif',
+    georgia:'Georgia,"Times New Roman",serif',
+    times:'"Times New Roman",Times,serif',
+    courier:'"Courier New",Courier,monospace'
+  };
   function saveClockPrefs(){store('radio.clock.preferences.v1',JSON.stringify(clockPrefs));}
 
   var flipMain=null,flipBig=null;
@@ -1587,14 +1629,13 @@ html[data-theme="light"] .clock-custom-checkbox{background:#eff5fa;color:#21405c
   }
   function applyClockPreferences(){
     var main=el('clockDisplay'),big=el('bigClockDisplay'),overlay=el('bigClockOverlay');
-    ['system','rounded','fine','mono'].forEach(function(f){main.classList.toggle('clock-font-'+f,clockPrefs.font===f);big.classList.toggle('clock-font-'+f,clockPrefs.font===f);});
+    ['system','rounded','fine','mono','avenir','helvetica','futura','verdana','georgia','times','courier'].forEach(function(f){main.classList.toggle('clock-font-'+f,clockPrefs.font===f);big.classList.toggle('clock-font-'+f,clockPrefs.font===f);});
     var color=clockPalette(clockPrefs.color,clockPrefs.customColor);
     main.classList.toggle('clock-ink',!!color);main.style.setProperty('--clock-accent',color||'inherit');
     main.style.fontWeight=clockPrefs.weight;
     big.style.fontWeight=clockPrefs.weight;
-    var fontFamilies={rounded:'"Arial Rounded MT Bold","Arial Black",-apple-system,sans-serif',system:'-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif',fine:'-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif',mono:'Menlo,Monaco,"Courier New",monospace'};
     var mainFlip=el('flipDigits'),bigFlip=big.querySelector('.flip-digits');
-    [mainFlip,bigFlip].forEach(function(f){if(!f)return;f.style.fontFamily=fontFamilies[clockPrefs.font];f.style.fontWeight=clockPrefs.weight;});
+    [mainFlip,bigFlip].forEach(function(f){if(!f)return;f.style.fontFamily=clockFontFamilies[clockPrefs.font];f.style.fontWeight=clockPrefs.weight;});
     main.classList.toggle('colon-static',!clockPrefs.blink);
     el('clockSeconds').hidden=!clockPrefs.seconds;
     el('clockFlipSeconds').hidden=!clockPrefs.seconds;
@@ -2297,7 +2338,7 @@ html[data-theme="light"] .clock-custom-checkbox{background:#eff5fa;color:#21405c
     box.appendChild(group);
     var status=connectivity==='online'?'Dernière météo actualisée avec succès':connectivity==='offline'?'L’iPad indique être hors ligne':'Actualisation non confirmée';
     box.appendChild(make('p','extra-status','Connexion : '+status+'. L’horloge reste disponible même hors ligne.'));
-    box.appendChild(make('p','manager-note','Appuyer sur le soleil ou la lune à côté de la date repasse en mode manuel. Le changement automatique suit le lever et le coucher du soleil de la ville sélectionnée.'));
+    box.appendChild(make('p','manager-note','Les réglages d’apparence sont accessibles par l’icône à trois curseurs à côté de la date. Le thème automatique suit le lever et le coucher du soleil de la ville sélectionnée.'));
   }
   el('extrasButton').addEventListener('click',function(){openTools('insights');});
   el('clockTimerButton').addEventListener('click',function(){openTools('shower');});
@@ -2319,6 +2360,51 @@ html[data-theme="light"] .clock-custom-checkbox{background:#eff5fa;color:#21405c
     var b=make('button','manager-btn'+(style?' '+style:''),caption);
     b.type='button';b.addEventListener('click',action);return b;
   }
+  // Palette autonome : Safari 15 peut utiliser les curseurs même si son sélecteur natif varie.
+  function clockHex(v){
+    v=String(v||'').trim();
+    if(/^#[0-9a-fA-F]{3}$/.test(v))return '#'+v.slice(1).split('').map(function(c){return c+c;}).join('').toLowerCase();
+    if(/^#[0-9a-fA-F]{6}$/.test(v))return v.toLowerCase();
+    return null;
+  }
+  function clockHslToHex(h,s,l){
+    h=((Number(h)%360)+360)%360;s=Number(s)/100;l=Number(l)/100;
+    var a=s*Math.min(l,1-l);
+    function channel(n){var k=(n+h/30)%12;var v=l-a*Math.max(-1,Math.min(k-3,9-k,1));return Math.round(255*v).toString(16).padStart(2,'0');}
+    return '#'+channel(0)+channel(8)+channel(4);
+  }
+  function clockHexToHsl(hex){
+    var r=parseInt(hex.slice(1,3),16)/255,g=parseInt(hex.slice(3,5),16)/255,b=parseInt(hex.slice(5,7),16)/255;
+    var max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min,h=0,s=0,l=(max+min)/2;
+    if(d){s=d/(1-Math.abs(2*l-1));switch(max){case r:h=((g-b)/d)%6;break;case g:h=(b-r)/d+2;break;default:h=(r-g)/d+4;break;}h=(h*60+360)%360;}
+    return [Math.round(h),Math.round(s*100),Math.round(l*100)];
+  }
+  function clockColorEditor(parent,initial,onChange){
+    var editor=make('div','clock-color-editor');parent.appendChild(editor);
+    var top=make('div','clock-color-row');editor.appendChild(top);
+    var swatch=make('span','clock-color-swatch');top.appendChild(swatch);
+    var nativePicker=make('input','clock-color-native');nativePicker.type='color';nativePicker.setAttribute('aria-label','Choisir une couleur avec la palette système');top.appendChild(nativePicker);
+    var hex=make('input','clock-hex-input');hex.type='text';hex.setAttribute('aria-label','Code de couleur hexadécimal');hex.maxLength=7;hex.placeholder='#A8E7FF';hex.autocomplete='off';hex.spellcheck=false;top.appendChild(hex);
+    var info=make('div','clock-color-hint','Choisis une couleur sur la palette, règle les curseurs ou saisis un code #RRGGBB.');editor.appendChild(info);
+    var bars=[];
+    [['Teinte',0,360],['Saturation',0,100],['Luminosité',0,100]].forEach(function(item){
+      var wrap=make('label','clock-color-slider-row'),title=make('span','',item[0]);wrap.appendChild(title);
+      var range=make('input','clock-color-slider');range.type='range';range.min=item[1];range.max=item[2];range.step=1;range.setAttribute('aria-label',item[0]);wrap.appendChild(range);editor.appendChild(wrap);bars.push(range);
+    });
+    function render(hexVal,syncSliders){
+      swatch.style.backgroundColor=hexVal;nativePicker.value=hexVal;hex.value=hexVal.toUpperCase();
+      hex.classList.remove('invalid');
+      if(syncSliders){var hsl=clockHexToHsl(hexVal);bars.forEach(function(v,i){v.value=hsl[i];});}
+    }
+    function commit(hexVal,syncSliders){render(hexVal,syncSliders);onChange(hexVal);}
+    nativePicker.addEventListener('input',function(){var v=clockHex(nativePicker.value);if(v)commit(v,true);});
+    nativePicker.addEventListener('change',function(){var v=clockHex(nativePicker.value);if(v)commit(v,true);});
+    hex.addEventListener('input',function(){var v=clockHex(hex.value);if(v)commit(v,true);else hex.classList.add('invalid');});
+    hex.addEventListener('blur',function(){var v=clockHex(hex.value);if(v)commit(v,true);else render(nativePicker.value,true);});
+    bars.forEach(function(bar){bar.addEventListener('input',function(){commit(clockHslToHex(bars[0].value,bars[1].value,bars[2].value),false);});});
+    render(clockHex(initial)||'#a8e7ff',true);
+    return editor;
+  }
   function renderClockCustomizer(){
     var box=el('toolsBody');box.textContent='';
     box.appendChild(make('p','manager-lead','Modifie les réglages et regarde l’horloge changer immédiatement. Le choix reste enregistré sur cet iPad.'));
@@ -2328,7 +2414,7 @@ html[data-theme="light"] .clock-custom-checkbox{background:#eff5fa;color:#21405c
       if(clockPrefs.format==='12')h=h%12||12;
       var value=String(h).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+(clockPrefs.seconds?':'+String(d.getSeconds()).padStart(2,'0'):'');
       preview.textContent=value+(clockPrefs.format==='12'?' '+p:'');
-      preview.style.fontFamily=clockPrefs.font==='mono'?'Menlo,monospace':clockPrefs.font==='fine'?'-apple-system,sans-serif':clockPrefs.font==='system'?'-apple-system,sans-serif':'Arial Rounded MT Bold,Arial Black,sans-serif';
+      preview.style.fontFamily=clockFontFamilies[clockPrefs.font];
       preview.style.fontWeight=clockPrefs.font==='fine'?350:clockPrefs.weight;
       preview.style.color=clockPalette(clockPrefs.color,clockPrefs.customColor)||'#fff';
       preview.style.fontSize=Math.round(43*clockPrefs.size/100)+'px';
@@ -2352,10 +2438,10 @@ html[data-theme="light"] .clock-custom-checkbox{background:#eff5fa;color:#21405c
       sel.value=current;sel.addEventListener('change',function(){callback(sel.value);saveClockPrefs();refreshFlipMode();applyClockPreferences();updatePreview();});wrap.appendChild(sel);return sel;
     }
     choose('Style de l’horloge',clockStyle,[['classic','Chiffres classiques'],['flip','Volets basculants']],function(v){clockStyle=v;store('radio.clock.style',v);});
-    choose('Police',clockPrefs.font,[['rounded','Arrondie'],['system','Apple classique'],['fine','Fine'],['mono','Numérique / monospace']],function(v){clockPrefs.font=v;});
+    choose('Police',clockPrefs.font,[['rounded','Arrondie'],['system','Apple classique'],['fine','Fine'],['mono','Monospace (Menlo)'],['avenir','Avenir Next — moderne'],['helvetica','Helvetica Neue — élégante'],['futura','Futura — géométrique'],['verdana','Verdana — lisible'],['georgia','Georgia — à empattements'],['times','Times New Roman — classique'],['courier','Courier New — rétro']],function(v){clockPrefs.font=v;});
     choose('Épaisseur',String(clockPrefs.weight),[['400','Fine'],['600','Moyenne'],['700','Épaisse'],['800','Très épaisse'],['900','Extra épaisse']],function(v){clockPrefs.weight=Number(v);});
     var colorSel=choose('Couleur des chiffres',clockPrefs.color,[['default','Selon le thème'],['white','Blanc'],['ice','Bleu glacier'],['amber','Ambre'],['red','Rouge'],['custom','Personnalisée']],function(v){clockPrefs.color=v;customWrap.style.display=v==='custom'?'':'none';});
-    var customWrap=field('Couleur personnalisée');var custom=make('input','');custom.type='color';custom.value=clockPrefs.customColor;custom.style.display=clockPrefs.color==='custom'?'':'none';custom.addEventListener('input',function(){clockPrefs.customColor=custom.value;clockPrefs.color='custom';colorSel.value='custom';saveClockPrefs();applyClockPreferences();updatePreview();});customWrap.appendChild(custom);customWrap.style.display=clockPrefs.color==='custom'?'':'none';
+    var customWrap=field('Palette libre de l’horloge');clockColorEditor(customWrap,clockPrefs.customColor,function(hex){clockPrefs.customColor=hex;clockPrefs.color='custom';colorSel.value='custom';saveClockPrefs();applyClockPreferences();updatePreview();});customWrap.style.display=clockPrefs.color==='custom'?'':'none';
     var sizeWrap=field('Taille des chiffres : '+clockPrefs.size+' %'),slider=make('input','');slider.type='range';slider.min='75';slider.max='120';slider.step='5';slider.value=clockPrefs.size;slider.addEventListener('input',function(){clockPrefs.size=Number(slider.value);sizeWrap.firstChild.textContent='Taille des chiffres : '+slider.value+' %';saveClockPrefs();applyClockPreferences();updatePreview();});sizeWrap.appendChild(slider);
     choose('Format horaire',clockPrefs.format,[['24','24 heures'],['12','12 heures (AM/PM)']],function(v){clockPrefs.format=v;});
     function check(label,prop){var row=make('label','clock-custom-checkbox');var cb=make('input','');cb.type='checkbox';cb.checked=clockPrefs[prop];cb.addEventListener('change',function(){clockPrefs[prop]=cb.checked;saveClockPrefs();applyClockPreferences();updatePreview();});row.appendChild(cb);row.appendChild(make('span','',label));grid.appendChild(row);}
@@ -2364,7 +2450,7 @@ html[data-theme="light"] .clock-custom-checkbox{background:#eff5fa;color:#21405c
     var bigGrid=make('div','clock-custom-grid');grid=bigGrid;box.appendChild(bigGrid);
     choose('Fond XXL',clockPrefs.xxlBackground,[['auto','Selon le thème'],['dark','Bleu nuit'],['black','Noir'],['light','Clair']],function(v){clockPrefs.xxlBackground=v;});
     choose('Couleur en XXL',clockPrefs.xxlColor,[['default','Selon le fond'],['white','Blanc'],['ice','Bleu glacier'],['amber','Ambre'],['red','Rouge'],['custom','Personnalisée']],function(v){clockPrefs.xxlColor=v;xxlWrap.style.display=v==='custom'?'':'none';});
-    var xxlWrap=field('Couleur personnalisée XXL'),bigCustom=make('input','');bigCustom.type='color';bigCustom.value=clockPrefs.xxlCustomColor;bigCustom.style.display=clockPrefs.xxlColor==='custom'?'':'none';bigCustom.addEventListener('input',function(){clockPrefs.xxlColor='custom';clockPrefs.xxlCustomColor=bigCustom.value;saveClockPrefs();applyClockPreferences();});xxlWrap.appendChild(bigCustom);xxlWrap.style.display=clockPrefs.xxlColor==='custom'?'':'none';
+    var xxlWrap=field('Palette libre XXL');clockColorEditor(xxlWrap,clockPrefs.xxlCustomColor,function(hex){clockPrefs.xxlColor='custom';clockPrefs.xxlCustomColor=hex;saveClockPrefs();applyClockPreferences();});xxlWrap.style.display=clockPrefs.xxlColor==='custom'?'':'none';
     choose('Disposition XXL',clockPrefs.xxlAlign,[['center','Au centre'],['high','En haut']],function(v){clockPrefs.xxlAlign=v;});
     var footer=make('div','clock-custom-footer');footer.appendChild(make('span','manager-note','Enregistré automatiquement · les tailles sont limitées pour éviter les débordements.'));
     footer.appendChild(actionButton('Rétablir l’horloge d’origine',function(){clockStyle='classic';clockPrefs=cleanClockSettings({});store('radio.clock.style',clockStyle);saveClockPrefs();refreshFlipMode();applyClockPreferences();renderClockCustomizer();},'warn'));box.appendChild(footer);
