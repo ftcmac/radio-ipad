@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.19.04">
-<meta name="radio-app-release-notes" content="Conseils de réglages iPad au premier lancement|Guide pour conserver l’écran allumé et autoriser la météo locale|Boutons de volume adaptables selon le modèle">
+<meta name="radio-app-release" content="2026.11.19.05">
+<meta name="radio-app-release-notes" content="Installation sur l’écran d’accueil avant la configuration|Assistant plus cohérent sur iPad en portrait et paysage|Localisation demandée après l’installation, uniquement si souhaitée">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -1484,6 +1484,70 @@ html[data-theme="light"] .tools-modal .ipad-advice-content span,html[data-theme=
 html[data-theme="light"] .tools-modal .ipad-advice-optional{background:#d4e9f9;color:#295d80}
 @media(max-width:570px){.ipad-advice-grid{grid-template-columns:1fr}.ipad-advice-item{padding:9px 10px}}
 
+
+/* V32 – installer d'abord, puis configurer ; présentation régulière sur iPad. */
+.setup-dialog{width:min(790px,100%);padding:25px 27px;scrollbar-width:thin}
+.setup-head{margin-bottom:14px}
+.setup-steps{margin:12px 0 16px}
+.setup-steps span{width:32px;height:5px}
+.setup-pane{gap:12px;min-width:0}
+.setup-pane .setup-options{align-items:stretch;gap:12px}
+.setup-pane .setup-option{padding:16px;border-radius:14px;gap:10px;min-width:0}
+.setup-pane .setup-option>strong{font-size:15px;line-height:1.3;min-height:20px}
+.setup-pane .setup-option>p:not(.setup-feedback){font-size:13px;line-height:1.48;margin:0}
+.setup-btn{display:inline-flex;align-items:center;justify-content:center;text-align:center;line-height:1.25;min-height:48px;padding:10px 14px;border-radius:11px;white-space:normal}
+.setup-pane .setup-option>.setup-btn{margin-top:auto;min-height:48px}
+.setup-inline{min-width:0;max-width:100%;gap:9px}
+.setup-pane .setup-inline .setup-btn{min-width:0;width:auto;flex:1 1 0;padding:10px 8px}
+.setup-pane .setup-inline input,.setup-pane .setup-inline select{width:100%;min-width:0;min-height:48px;font-size:14px}
+.setup-pane .setup-inline select,.setup-pane .setup-select-group select{appearance:none;-webkit-appearance:none;padding-right:34px;background-repeat:no-repeat;background-position:right 11px center;background-size:12px 9px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 10'%3E%3Cpath d='M2 2l5 5 5-5' fill='none' stroke='%23d3eaff' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.setup-sort-row{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;margin-top:auto}
+.setup-sort-row .setup-muted{font-size:12px;line-height:1.3}
+.setup-pane .setup-results{max-height:195px}
+.setup-pane .setup-result{align-items:center;flex-wrap:wrap;gap:8px;padding:9px 10px}
+.setup-pane .setup-result>span{font-size:13px;line-height:1.35;flex:1 1 100%}
+.setup-pane .setup-result .setup-btn{min-height:38px;width:auto!important;flex:1 1 90px!important;font-size:12px;padding:8px;line-height:1.2}
+.setup-select-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.setup-select-group{display:flex;flex-direction:column;gap:6px;min-width:0}
+.setup-select-group label{color:#c8dfed;font-size:12px;font-weight:750}
+.setup-select-group select{width:100%;min-width:0;min-height:48px;background:#183049;color:#f4faff;border:1px solid #6285a2;border-radius:11px;padding:11px 34px 11px 12px;font:inherit;font-size:14px}
+.setup-install-first{display:flex;flex-direction:column;gap:12px;padding:20px 22px;border:1px solid #6b98b7;background:linear-gradient(150deg,#274561,#1d344d);border-radius:17px}
+.setup-install-first h3{margin:0;font-size:17px;color:#fff}
+.setup-install-first p{margin:0;font-size:13px;line-height:1.55;color:#d9eafb}
+.setup-install-guide{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:6px 0}
+.setup-install-step{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;padding:13px 8px;background:#182f47;border:1px solid #527997;border-radius:13px;min-height:108px}
+.setup-install-step .setup-step-symbol{display:flex;align-items:center;justify-content:center;height:36px;min-width:36px;color:#b8e6ff;font-weight:850;font-size:23px}
+.setup-install-step .setup-step-symbol svg{height:29px;width:29px}
+.setup-install-step span:last-child{font-size:12px;line-height:1.3;color:#e9f6ff}
+.setup-install-footnote{font-size:12px!important;color:#b9d4e8!important}
+.setup-quiet-action{background:transparent!important;border-color:#587895!important;color:#c7deed!important}
+.setup-install .setup-share{width:31px;height:31px}
+.setup-actions{margin-top:15px;padding:13px 0 1px;min-height:61px}
+.setup-actions .setup-btn{min-width:144px}
+.setup-option .manager-import{max-width:100%}
+@media(max-width:820px){
+ .setup-pane .setup-options{grid-template-columns:1fr}
+ .setup-pane .setup-option{padding:13px}
+ .setup-dialog{padding:19px 18px;max-height:90vh}
+ .setup-install-first{padding:15px}
+}
+@media(max-width:470px){
+ .setup-install-guide{gap:6px}
+ .setup-install-step{padding:10px 4px}
+ .setup-install-step span:last-child{font-size:11px}
+ .setup-select-pair{grid-template-columns:1fr}
+ .setup-sort-row{grid-template-columns:1fr;gap:4px}
+ .setup-actions .setup-btn{min-width:0;flex:1}
+}
+.setup-clock-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.setup-clock-head strong{font-size:15px;line-height:1.3}
+.setup-pane .setup-clock-head .setup-btn{width:auto;min-height:44px;padding:8px 12px;font-size:12px;flex:0 0 auto}
+/* Le bandeau de navigation reste visible sans recouvrir les options en bas. */
+.setup-dialog{display:flex;flex-direction:column;overflow:hidden;max-height:90vh;max-height:90dvh}
+.setup-head,.setup-steps,.setup-actions{flex-shrink:0}
+.setup-pane{min-height:0;flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1px 5px 10px 1px}
+.setup-actions{position:static;box-shadow:none;background:transparent}
+
 </style>
 </head>
 <body>
@@ -2108,14 +2172,14 @@ html[data-theme="light"] .tools-modal .ipad-advice-optional{background:#d4e9f9;c
     if(activeCity!=='local'||localCityLookupPending||!navigator.geolocation)return;
     if(localCityName&&Date.now()-localCityNameTime<30*60*1000)return;
     localCityLookupPending=true;
-    navigator.geolocation.getCurrentPosition(function(pos){
-      var url='https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+encodeURIComponent(pos.coords.latitude)+'&longitude='+encodeURIComponent(pos.coords.longitude)+'&localityLanguage=fr';
-      fetch(url).then(function(r){if(!r.ok)throw Error('Lieu non disponible');return r.json();})
-      .then(function(info){
-        var name=typeof info.city==='string'&&info.city.trim()?info.city.trim():typeof info.locality==='string'&&info.locality.trim()?info.locality.trim():'';
-        if(name){localCityName=name.slice(0,90);localCityNameTime=Date.now();if(activeCity==='local'){showWeatherPlace();if(activeTool==='hourly')set('toolsTitle','Prévisions · '+localCityName);}}
-      }).catch(function(){}).then(function(){localCityLookupPending=false;});
-    },function(){localCityLookupPending=false;},{enableHighAccuracy:false,timeout:12000,maximumAge:0});
+    // Réutilise la position de locateDevice : aucune seconde demande GPS pour nommer la ville.
+    locateDevice().then(function(pos){
+      var url='https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+encodeURIComponent(pos.latitude)+'&longitude='+encodeURIComponent(pos.longitude)+'&localityLanguage=fr';
+      return fetch(url).then(function(r){if(!r.ok)throw Error('Lieu non disponible');return r.json();});
+    }).then(function(info){
+      var name=typeof info.city==='string'&&info.city.trim()?info.city.trim():typeof info.locality==='string'&&info.locality.trim()?info.locality.trim():'';
+      if(name){localCityName=name.slice(0,90);localCityNameTime=Date.now();if(activeCity==='local'){showWeatherPlace();if(activeTool==='hourly')set('toolsTitle','Prévisions · '+localCityName);}}
+    }).catch(function(){}).then(function(){localCityLookupPending=false;});
   }
   // Afficher les villes dans une liste de boutons personnalisée :
   // évite le sélecteur natif qui peut ne plus s'ouvrir après le GPS en PWA iPadOS 15.
@@ -2193,7 +2257,7 @@ html[data-theme="light"] .tools-modal .ipad-advice-optional{background:#d4e9f9;c
     }).catch(function(){feedback('Position indisponible. Autorise la localisation de Safari ou choisis une ville.');displayWeatherCities();});
   }
   function updateWeather(){
-    if(read('radio.setup.weatherReady.v1','')==='no'){set('weatherDesc','À configurer');set('weatherFacts','Choisissez la météo locale ou une ville dans les réglages.');return;}
+    if(read('radio.setup.weatherReady.v1','')==='no'||(!previousUserInstallation&&read('radio.setup.complete.v1','')!=='yes')){set('weatherDesc','À configurer');set('weatherFacts','Choisissez la météo locale ou une ville dans les réglages.');return;}
     var selectedCity=activeCity,p=currentPlace();set('weatherDesc','Actualisation…');set('rainInline','Pluie : actualisation…');set('sunriseInline','—');set('sunsetInline','—');set('airInline','Air : actualisation…');showWeatherPlace();
     var locationPromise;
     if(selectedCity==='local'){
@@ -3269,7 +3333,8 @@ html[data-theme="light"] .tools-modal .ipad-advice-optional{background:#d4e9f9;c
   // Assistant de configuration : seulement lors d'une vraie première installation,
   // jamais lors d'une mise à jour d'une installation existante.
   var setupOverlay=el('setupOverlay'),setupBody=el('setupBody'),setupActions=el('setupActions');
-  var setupStep=0,setupRestored=false,setupWeatherChosen=false;
+  var runningAsWebApp=!!(window.navigator.standalone===true||(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches));
+  var setupStep=runningAsWebApp?1:0,setupRestored=false,setupWeatherChosen=false;
   var suggestedRadioList=[
     {id:'viva',name:'VivaCité',region:'Hainaut',url:'https://radio.rtbf.be/viva-mo/mp3-160/me',home:'https://www.rtbf.be/vivacite'},
     {id:'classic',name:'Classic 21',region:'',url:'https://radio.rtbf.be/c21/mp3-160/me',home:'https://www.rtbf.be/classic21'},
@@ -3297,10 +3362,11 @@ html[data-theme="light"] .tools-modal .ipad-advice-optional{background:#d4e9f9;c
   }
   function setupBtn(label,fn,primary){var b=make('button','setup-btn'+(primary?' primary':''),label);b.type='button';b.addEventListener('click',fn);return b;}
   function setupHeading(title,subtitle){set('setupTitle',title);set('setupSubtitle',subtitle);setupBody.textContent='';setupActions.textContent='';
-    var bar=el('setupSteps');bar.textContent='';for(var i=0;i<3;i++){var dot=make('span',i===setupStep?'current':'');bar.appendChild(dot);}
+    var bar=el('setupSteps');bar.textContent='';var total=runningAsWebApp?3:4,stepIndex=runningAsWebApp?setupStep-1:setupStep;for(var i=0;i<total;i++){var dot=make('span',i===stepIndex?'current':'');bar.appendChild(dot);}
+    var dialog=setupOverlay.querySelector('.setup-dialog');if(dialog)dialog.scrollTop=0;
   }
   function setupActionsFor(nextLabel,next){
-    if(setupStep>0)setupActions.appendChild(setupBtn('← Retour',function(){setupStep--;renderSetup();}));
+    if(setupStep>(runningAsWebApp?1:0))setupActions.appendChild(setupBtn('← Retour',function(){setupStep--;renderSetup();}));
     setupActions.appendChild(setupBtn(nextLabel,next,true));
   }
   function setupResultRow(parent,name,subtext,actions){
@@ -3349,8 +3415,24 @@ html[data-theme="light"] .tools-modal .ipad-advice-optional{background:#d4e9f9;c
     }).catch(function(){status.textContent='Recherche indisponible ou accès à la position refusé. Tu peux choisir les radios manuellement.';});
   }
   function renderSetup(){
-    if(setupStep===0){
-      setupHeading('Bienvenue 👋','Configurez votre radio, votre météo et votre horloge en quelques clics.');
+    if(setupStep===0&&!runningAsWebApp){
+      setupHeading('D’abord, installez la webapp','Une seule installation suffit pour retrouver votre radio-réveil comme une application iPad.');
+      var install=make('section','setup-install-first');setupBody.appendChild(install);
+      install.appendChild(make('h3','','📱 Ajouter à l’écran d’accueil'));
+      install.appendChild(make('p','','Pour éviter de devoir autoriser la localisation une fois dans Safari, puis à nouveau dans la webapp, effectuez d’abord l’installation depuis Safari.'));
+      var guide=make('div','setup-install-guide');install.appendChild(guide);
+      function installStep(symbol,label){var step=make('div','setup-install-step');var pict=make('span','setup-step-symbol');if(typeof symbol==='string')pict.textContent=symbol;else pict.appendChild(symbol);step.appendChild(pict);step.appendChild(make('span','',label));guide.appendChild(step);}
+      var shareSvg=make('span','setup-share');shareSvg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M12 15V2m-4 4 4-4 4 4"/></svg>';
+      installStep(shareSvg,'Touchez Partager dans Safari');
+      installStep('⊞','Choisissez « Sur l’écran d’accueil »');
+      installStep('✓','Touchez Ajouter, puis ouvrez l’icône');
+      install.appendChild(make('p','setup-install-footnote','Une fois ouverte depuis l’écran d’accueil, la webapp vous guidera pour restaurer une sauvegarde ou régler radios, météo et horloge. La position ne sera demandée que si vous choisissez une fonction locale.'));
+      setupBody.appendChild(make('p','setup-muted','Déjà installée ? Fermez cet onglet Safari et ouvrez l’icône de la webapp. Sur ordinateur ou si vous préférez le navigateur, vous pouvez aussi continuer ici.'));
+      setupActions.appendChild(setupBtn('Continuer dans Safari (sans installer)',function(){setupStep=1;renderSetup();}));
+      return;
+    }
+    if(setupStep===1){
+      setupHeading('Bienvenue 👋','Restaurez une sauvegarde ou configurez radio, météo et horloge en quelques clics.');
       setupBody.appendChild(make('h3','','Vous avez déjà une sauvegarde ?'));
       setupBody.appendChild(make('p','','Restaurez tout en une fois : favoris radio, villes, ordre, thème et horloge. Sinon, choisissez une configuration rapide.'));
       var options=make('div','setup-options');setupBody.appendChild(options);
@@ -3359,23 +3441,23 @@ html[data-theme="light"] .tools-modal .ipad-advice-optional{background:#d4e9f9;c
       var f=make('input','manager-import');f.type='file';f.accept='.json,application/json';restore.appendChild(f);
       var status=make('p','setup-feedback','');restore.appendChild(status);
       restore.appendChild(setupBtn('Restaurer mon fichier',function(){f.click();},true));
-      f.addEventListener('change',function(){var file=f.files&&f.files[0];if(!file)return;importBackupFile(file,function(ok,msg){status.textContent=msg;if(ok){setupRestored=true;setupStep=2;renderSetup();}});f.value='';});
+      f.addEventListener('change',function(){var file=f.files&&f.files[0];if(!file)return;importBackupFile(file,function(ok,msg){status.textContent=msg;if(ok){setupRestored=true;setupStep=3;renderSetup();}});f.value='';});
       var start=make('div','setup-option');start.appendChild(make('strong','','Nouvelle configuration'));
       start.appendChild(make('p','','Rechercher les radios et la météo, puis choisir l’apparence.'));
-      start.appendChild(setupBtn('Configurer',function(){setupStep=1;renderSetup();},true));
+      start.appendChild(setupBtn('Configurer',function(){setupStep=2;renderSetup();},true));
       options.appendChild(restore);options.appendChild(start);
-    } else if(setupStep===1){
+    } else if(setupStep===2){
       setupHeading('Vos préférences','Choisissez uniquement ce qui vous intéresse : vous pourrez tout modifier plus tard.');
       var options=make('div','setup-options');setupBody.appendChild(options);
       var radio=make('div','setup-option');options.appendChild(radio);
       radio.appendChild(make('strong','','📻 Radios'));
       radio.appendChild(make('p','','Rechercher près de vous ou sélectionner des stations manuellement. Rien n’est ajouté sans votre accord.'));
-      var radioBtns=make('div','setup-inline');radio.appendChild(radioBtns);
+      var radioBtns=make('div','setup-inline setup-choice-buttons');radio.appendChild(radioBtns);
       var radioStatus=make('p','setup-feedback','');
       var radioList=make('div','');radio.appendChild(radioStatus);radio.appendChild(radioList);
       radioBtns.appendChild(setupBtn('Près de moi',function(){radioList.textContent='';setupNearbySearch(radioList,radioStatus);}));
       radioBtns.appendChild(setupBtn('Sélection manuelle',function(){radioList.textContent='';setupRadioRecommendations(radioList,suggestedRadioList);}));
-      var rs=make('div','setup-inline');rs.appendChild(make('span','setup-muted','Autres radios :'));
+      var rs=make('div','setup-inline setup-sort-row');rs.appendChild(make('span','setup-muted','Autres radios :'));
       var rselect=make('select','');[['manual','Manuel ☰'],['alpha','Alphabétique'],['added','Ordre d’ajout']].forEach(function(v){var o=make('option','',v[1]);o.value=v[0];rselect.appendChild(o);});
       rselect.value=radioOtherSort;rselect.setAttribute('aria-label','Classement des autres radios');
       rselect.addEventListener('change',function(){radioOtherSort=rselect.value;store('radio.other.sort.v1',radioOtherSort);render();});
@@ -3383,7 +3465,7 @@ html[data-theme="light"] .tools-modal .ipad-advice-optional{background:#d4e9f9;c
       var weather=make('div','setup-option');options.appendChild(weather);
       weather.appendChild(make('strong','','☀️ Météo'));
       weather.appendChild(make('p','','Utiliser la localisation de l’iPad ou rechercher une ville.'));
-      var weatherBtns=make('div','setup-inline');weather.appendChild(weatherBtns);
+      var weatherBtns=make('div','setup-inline setup-choice-buttons');weather.appendChild(weatherBtns);
       var weatherStatus=make('p','setup-feedback','');weather.appendChild(weatherStatus);
       weatherBtns.appendChild(setupBtn('Position actuelle',function(){weatherStatus.textContent='Recherche de votre position…';requestLocalWeather(function(msg){weatherStatus.textContent=msg;});setupWeatherChosen=true;}));
       weatherBtns.appendChild(setupBtn('Choisir une ville',function(){
@@ -3402,37 +3484,30 @@ html[data-theme="light"] .tools-modal .ipad-advice-optional{background:#d4e9f9;c
             }}]);});
           }).catch(function(){weatherStatus.textContent='Recherche indisponible. Réessayez plus tard.';});
         });
-        query.focus();
       }));
-      var ws=make('div','setup-inline');ws.appendChild(make('span','setup-muted','Villes favorites :'));
+      var ws=make('div','setup-inline setup-sort-row');ws.appendChild(make('span','setup-muted','Villes favorites :'));
       var wselect=make('select','');[['manual','Manuel ☰'],['alpha','Alphabétique'],['added','Ordre d’ajout']].forEach(function(v){var o=make('option','',v[1]);o.value=v[0];wselect.appendChild(o);});
       wselect.value=weatherSortMode;wselect.setAttribute('aria-label','Classement des villes météo');
       wselect.addEventListener('change',function(){weatherSortMode=wselect.value;store('weather.sort.v1',weatherSortMode);displayWeatherCities();});
       ws.appendChild(wselect);weather.appendChild(ws);
       var line=make('div','setup-option');setupBody.appendChild(line);
-      line.appendChild(make('strong','','🕒 Horloge et apparence'));
+      var clockHead=make('div','setup-clock-head');clockHead.appendChild(make('strong','','🕒 Horloge et apparence'));clockHead.appendChild(setupBtn('Personnaliser…',function(){openTools('clockPrefs');}));line.appendChild(clockHead);
       line.appendChild(make('p','','Choisissez un style et un thème ; les polices, couleurs, secondes et autres détails restent personnalisables dans les réglages.'));
-      var chooseLine=make('div','setup-inline');line.appendChild(chooseLine);
-      var style=make('select','');[['classic','Classique'],['flip','Réveil à volets']].forEach(function(opt){var o=make('option','',opt[1]);o.value=opt[0];style.appendChild(o);});style.value=clockStyle;
-      var theme=make('select','');[['dark','Thème sombre'],['light','Thème clair'],['auto','Automatique']].forEach(function(opt){var o=make('option','',opt[1]);o.value=opt[0];theme.appendChild(o);});theme.value=autoTheme?'auto':activeTheme;
+      var chooseLine=make('div','setup-select-pair');line.appendChild(chooseLine);
+      function setupSelect(title){var wrap=make('div','setup-select-group');var label=make('label','',title),select=make('select','');wrap.appendChild(label);wrap.appendChild(select);chooseLine.appendChild(wrap);return select;}
+      var style=setupSelect('Style de l’horloge');[['classic','Classique'],['flip','Réveil à volets']].forEach(function(opt){var o=make('option','',opt[1]);o.value=opt[0];style.appendChild(o);});style.value=clockStyle;
+      var theme=setupSelect('Thème');[['dark','Sombre'],['light','Clair'],['auto','Automatique']].forEach(function(opt){var o=make('option','',opt[1]);o.value=opt[0];theme.appendChild(o);});theme.value=autoTheme?'auto':activeTheme;
       style.addEventListener('change',function(){clockStyle=style.value;store('radio.clock.style',clockStyle);refreshFlipMode();applyClockPreferences();});
       theme.addEventListener('change',function(){autoTheme=theme.value==='auto';store('radio.theme.mode',autoTheme?'auto':'manual');if(!autoTheme){store('radio.theme',theme.value);setTheme(theme.value);}else applyAutoTheme();});
-      chooseLine.appendChild(style);chooseLine.appendChild(theme);
-      line.appendChild(setupBtn('Personnalisation avancée…',function(){openTools('clockPrefs');}));
-      setupActionsFor('Continuer →',function(){setupStep=2;renderSetup();});
+      setupActionsFor('Continuer →',function(){setupStep=3;renderSetup();});
     }else{
-      setupHeading('Ajouter à l’écran d’accueil','Dernière étape : retrouvez la radio comme une véritable application.');
-      var info=make('div','setup-install');setupBody.appendChild(info);
-      info.appendChild(make('h3','','📱 Cette application est une webapp'));
-      info.appendChild(make('p','','Dans Safari sur iPad : touchez le bouton Partager, puis choisissez « Sur l’écran d’accueil » et validez « Ajouter ». Son icône apparaîtra parmi vos apps.'));
-      var share=make('span','setup-share');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M12 15V2m-4 4 4-4 4 4"/></svg>';
-      var line=make('p','');line.appendChild(make('strong','','Safari : '));line.appendChild(share);line.appendChild(make('span','',' Partager → Sur l’écran d’accueil → Ajouter'));info.appendChild(line);
-      info.appendChild(make('p','','Si vous lisez ceci dans la webapp déjà installée, cette étape est évidemment inutile.'));
+      setupHeading('Votre iPad est prêt','Quelques réglages facultatifs pour profiter au mieux de votre tableau de bord.');
+      if(setupRestored){var restored=make('div','setup-install');restored.appendChild(make('strong','','✓ Sauvegarde restaurée'));restored.appendChild(make('p','','Radios, villes et préférences ont été récupérées. Vous pouvez modifier ces choix à tout moment.'));setupBody.appendChild(restored);}
       renderIpadAdvice(setupBody);
       var note=make('div','setup-install');setupBody.appendChild(note);
       note.appendChild(make('strong','','↻ Mises à jour et nouveautés'));
-      note.appendChild(make('p','','La webapp peut recevoir régulièrement des améliorations. Lorsqu’elle est ouverte et connectée, elle vérifie discrètement les mises à jour au maximum une fois par jour et affiche une alerte si une nouvelle version est disponible. Aucune actualisation ne coupera la radio sans votre accord.'));
-      if(setupRestored)note.appendChild(make('p','','Votre sauvegarde est restaurée : aucun autre choix n’est nécessaire.'));
+      note.appendChild(make('p','','La webapp peut recevoir des améliorations. Lorsqu’elle est ouverte et connectée, elle vérifie les mises à jour au plus une fois par jour, puis vous prévient si une nouvelle version est disponible. La radio ne sera jamais coupée sans votre accord.'));
+      if(!runningAsWebApp)note.appendChild(make('p','','Vous êtes toujours dans Safari : pour éviter une nouvelle autorisation de localisation à l’avenir, ajoutez cette page à l’écran d’accueil avant d’utiliser la météo locale.'));
       setupActionsFor('Terminer et découvrir l’aide',finishSetup);
     }
   }
@@ -3451,6 +3526,7 @@ html[data-theme="light"] .tools-modal .ipad-advice-optional{background:#d4e9f9;c
       if(read('radio.setup.weatherReady.v1','')!=='yes')store('radio.setup.weatherReady.v1','yes');
       return;
     }
+    if(runningAsWebApp&&setupStep===0)setupStep=1;
     if(!inProgress){
       store('radio.setup.started.v1','yes');store('radio.setup.weatherReady.v1','no');
       // Les stations préinstallées ne deviennent pas des favoris d'un nouvel utilisateur.
