@@ -1266,6 +1266,33 @@ html[data-theme="light"] .clock-custom-field .clock-color-editor{background:#e8f
 html[data-theme="light"] .clock-color-hint,html[data-theme="light"] .clock-color-slider-row{color:#365a76}
 html[data-theme="light"] .clock-custom-field input.clock-hex-input{background:white;color:#1a3b53;border-color:#aac3d5}
 
+/* V28 – harmonisation du studio horloge, flèches visibles et minuteur libre. */
+.clock-custom-presets-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:10px 0 16px}
+.clock-custom-presets{display:flex;gap:8px;flex-wrap:wrap;margin:0;flex:1 1 auto}
+.clock-custom-presets-bar .smallbutton,.clock-custom-presets .smallbutton{min-height:44px}
+.clock-custom-inline-reset{margin-left:auto;white-space:nowrap}
+.clock-custom-field select,.manager-country,.custom-duration-input,.custom-duration-launch{min-height:48px}
+.clock-custom-field select,.manager-country,.custom-duration-input{appearance:none;-webkit-appearance:none;background-repeat:no-repeat;background-position:right 12px center;background-size:14px 10px;padding-right:38px}
+.clock-custom-field select,.manager-country,.custom-duration-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 10'%3E%3Cpath d='M2 2l5 5 5-5' fill='none' stroke='%23d7ecff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+html[data-theme="light"] .clock-custom-field select,html[data-theme="light"] .manager-country,html[data-theme="light"] .custom-duration-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 10'%3E%3Cpath d='M2 2l5 5 5-5' fill='none' stroke='%23315979' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.clock-custom-field label+select,.clock-custom-field label+input,.clock-custom-checkbox{min-height:48px}
+.clock-custom-checkbox{justify-content:flex-start}
+.clock-custom-field.full-span{grid-column:1 / -1}
+.clock-custom-field.compact-note > label{margin-bottom:-2px}
+.clock-custom-field .clock-color-editor{min-height:164px}
+.clock-custom-grid.tight{align-items:start}
+.clock-custom-grid.tight .clock-custom-checkbox{margin-top:auto}
+.clock-custom-subtle{font-size:12px;color:#a9c2d8;line-height:1.4;margin-top:4px}
+html[data-theme="light"] .clock-custom-subtle{color:#5d7d97}
+.timer-custom-row{display:grid;grid-template-columns:minmax(0,1fr) 148px;gap:10px;margin-top:10px}
+.timer-custom-row .custom-duration-input{width:100%;border:1px solid #6b8caa;border-radius:12px;background:#19314b;color:#fff;padding:10px 14px;font:inherit}
+.timer-custom-row .custom-duration-launch{border:1px solid #597c98;border-radius:12px;background:#29465f;color:#fff;font-size:15px;font-weight:800;padding:10px 14px}
+.timer-custom-help{font-size:12px;color:#b5cbdd;margin-top:8px;line-height:1.4}
+html[data-theme="light"] .timer-custom-row .custom-duration-input{background:#fff;color:#244563;border-color:#adcadf}
+html[data-theme="light"] .timer-custom-row .custom-duration-launch{background:#e2eff9;color:#214866;border-color:#a9c5d8}
+html[data-theme="light"] .timer-custom-help{color:#5f7f97}
+@media(max-width:700px){.clock-custom-presets-bar{align-items:stretch}.clock-custom-inline-reset{width:100%}.timer-custom-row{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -2294,7 +2321,12 @@ html[data-theme="light"] .clock-custom-field input.clock-hex-input{background:wh
     box.appendChild(make('div','insight-headline',showerDeadline?'Temps restant : '+showerLabel():'Aucun minuteur actif.')).id='showerCount';
     var options=make('div','timer-options');
     [3,5,10,15,20].forEach(function(minutes){options.appendChild(actionButton(minutes+' min',function(){startShower(minutes);},'timer-option'));});
-    var cancel=actionButton('Annuler',function(){startShower(0);},'timer-option cancel');cancel.disabled=!showerDeadline;options.appendChild(cancel);box.appendChild(options);
+    var customRow=make('div','timer-custom-row');
+    var customInput=make('input','custom-duration-input');customInput.type='number';customInput.min='1';customInput.max='240';customInput.step='1';customInput.inputMode='numeric';customInput.placeholder='Durée personnalisée (min)';customInput.setAttribute('aria-label','Durée personnalisée en minutes');
+    var launch=make('button','custom-duration-launch','Lancer');launch.type='button';launch.addEventListener('click',function(){var minutes=Math.round(Number(customInput.value||0));if(minutes>=1&&minutes<=240){startShower(minutes);}else{showToast('Choisis une durée entre 1 et 240 minutes.',3500);customInput.focus();}});
+    customInput.addEventListener('keydown',function(ev){if(ev.key==='Enter'){launch.click();}});
+    customRow.appendChild(customInput);customRow.appendChild(launch);box.appendChild(options);box.appendChild(customRow);box.appendChild(make('div','timer-custom-help','Tu peux aussi saisir une durée personnalisée entre 1 et 240 minutes.'));
+    var cancel=actionButton('Annuler',function(){startShower(0);},'timer-option cancel');cancel.disabled=!showerDeadline;cancel.style.marginTop='10px';cancel.style.width='100%';box.appendChild(cancel);
     box.appendChild(make('p','manager-note','Sur iPadOS, un verrouillage ou une mise en arrière-plan peut suspendre le son et le minuteur. À la reprise, le temps écoulé est vérifié, mais le signal sonore n’est pas garanti.'));
   }
 
@@ -2422,7 +2454,9 @@ html[data-theme="light"] .clock-custom-field input.clock-hex-input{background:wh
       preview.style.background=clockStyle==='flip'?'#292e37':'#12243b';
       preview.style.borderColor=clockStyle==='flip'?'#687282':'#5d7996';
     }
-    var presets=make('div','clock-custom-presets');box.appendChild(presets);
+    var presetsBar=make('div','clock-custom-presets-bar');
+    var presets=make('div','clock-custom-presets');presetsBar.appendChild(presets);
+    function resetClockCustomizer(){clockStyle='classic';clockPrefs=cleanClockSettings({});store('radio.clock.style',clockStyle);saveClockPrefs();refreshFlipMode();applyClockPreferences();renderClockCustomizer();}
     function preset(label,style,prefs){presets.appendChild(actionButton(label,function(){
       clockStyle=style;store('radio.clock.style',style);clockPrefs=cleanClockSettings(prefs);
       saveClockPrefs();refreshFlipMode();applyClockPreferences();renderClockCustomizer();
@@ -2431,29 +2465,32 @@ html[data-theme="light"] .clock-custom-field input.clock-hex-input{background:wh
     preset('Minimal','classic',{font:'fine',weight:400,size:105,color:'white',format:'24',blink:false,date:true});
     preset('Digital','classic',{font:'mono',size:100,color:'ice',format:'24',blink:true,date:true});
     preset('Réveil rétro','flip',{font:'rounded',size:100,color:'default',format:'24',blink:true,date:true});
-    var grid=make('div','clock-custom-grid');box.appendChild(grid);
-    function field(label){var wrap=make('div','clock-custom-field');wrap.appendChild(make('label','',label));grid.appendChild(wrap);return wrap;}
-    function choose(label,current,opts,callback){var wrap=field(label),sel=make('select','');
+    var resetInline=actionButton('Réinitialiser',resetClockCustomizer,'warn');
+    resetInline.classList.add('clock-custom-inline-reset');
+    presetsBar.appendChild(resetInline);box.appendChild(presetsBar);
+    var grid=make('div','clock-custom-grid tight');box.appendChild(grid);
+    function field(label,extraClass){var wrap=make('div','clock-custom-field'+(extraClass?' '+extraClass:''));wrap.appendChild(make('label','',label));grid.appendChild(wrap);return wrap;}
+    function choose(label,current,opts,callback,extraClass){var wrap=field(label,extraClass),sel=make('select','');
       opts.forEach(function(v){var o=make('option','',v[1]);o.value=v[0];sel.appendChild(o);});
-      sel.value=current;sel.addEventListener('change',function(){callback(sel.value);saveClockPrefs();refreshFlipMode();applyClockPreferences();updatePreview();});wrap.appendChild(sel);return sel;
+      sel.value=current;sel.addEventListener('change',function(){callback(sel.value);saveClockPrefs();refreshFlipMode();applyClockPreferences();updatePreview();});wrap.appendChild(sel);return {wrap:wrap,select:sel};
     }
     choose('Style de l’horloge',clockStyle,[['classic','Chiffres classiques'],['flip','Volets basculants']],function(v){clockStyle=v;store('radio.clock.style',v);});
     choose('Police',clockPrefs.font,[['rounded','Arrondie'],['system','Apple classique'],['fine','Fine'],['mono','Monospace (Menlo)'],['avenir','Avenir Next — moderne'],['helvetica','Helvetica Neue — élégante'],['futura','Futura — géométrique'],['verdana','Verdana — lisible'],['georgia','Georgia — à empattements'],['times','Times New Roman — classique'],['courier','Courier New — rétro']],function(v){clockPrefs.font=v;});
     choose('Épaisseur',String(clockPrefs.weight),[['400','Fine'],['600','Moyenne'],['700','Épaisse'],['800','Très épaisse'],['900','Extra épaisse']],function(v){clockPrefs.weight=Number(v);});
-    var colorSel=choose('Couleur des chiffres',clockPrefs.color,[['default','Selon le thème'],['white','Blanc'],['ice','Bleu glacier'],['amber','Ambre'],['red','Rouge'],['custom','Personnalisée']],function(v){clockPrefs.color=v;customWrap.style.display=v==='custom'?'':'none';});
-    var customWrap=field('Palette libre de l’horloge');clockColorEditor(customWrap,clockPrefs.customColor,function(hex){clockPrefs.customColor=hex;clockPrefs.color='custom';colorSel.value='custom';saveClockPrefs();applyClockPreferences();updatePreview();});customWrap.style.display=clockPrefs.color==='custom'?'':'none';
-    var sizeWrap=field('Taille des chiffres : '+clockPrefs.size+' %'),slider=make('input','');slider.type='range';slider.min='75';slider.max='120';slider.step='5';slider.value=clockPrefs.size;slider.addEventListener('input',function(){clockPrefs.size=Number(slider.value);sizeWrap.firstChild.textContent='Taille des chiffres : '+slider.value+' %';saveClockPrefs();applyClockPreferences();updatePreview();});sizeWrap.appendChild(slider);
+    var colorSelObj=choose('Couleur des chiffres',clockPrefs.color,[['default','Selon le thème'],['white','Blanc'],['ice','Bleu glacier'],['amber','Ambre'],['red','Rouge'],['custom','Personnalisée']],function(v){clockPrefs.color=v;customWrap.style.display=v==='custom'?'':'none';});
+    var colorSel=colorSelObj.select;
+    var customWrap=field('Palette libre de l’horloge','full-span');clockColorEditor(customWrap,clockPrefs.customColor,function(hex){clockPrefs.customColor=hex;clockPrefs.color='custom';colorSel.value='custom';saveClockPrefs();applyClockPreferences();updatePreview();});customWrap.style.display=clockPrefs.color==='custom'?'':'none';
+    var sizeWrap=field('Taille des chiffres : '+clockPrefs.size+' %','compact-note'),slider=make('input','');slider.type='range';slider.min='75';slider.max='120';slider.step='5';slider.value=clockPrefs.size;slider.addEventListener('input',function(){clockPrefs.size=Number(slider.value);sizeWrap.firstChild.textContent='Taille des chiffres : '+slider.value+' %';saveClockPrefs();applyClockPreferences();updatePreview();});sizeWrap.appendChild(slider);
     choose('Format horaire',clockPrefs.format,[['24','24 heures'],['12','12 heures (AM/PM)']],function(v){clockPrefs.format=v;});
     function check(label,prop){var row=make('label','clock-custom-checkbox');var cb=make('input','');cb.type='checkbox';cb.checked=clockPrefs[prop];cb.addEventListener('change',function(){clockPrefs[prop]=cb.checked;saveClockPrefs();applyClockPreferences();updatePreview();});row.appendChild(cb);row.appendChild(make('span','',label));grid.appendChild(row);}
     check('Afficher les secondes', 'seconds');check('Faire clignoter les deux-points','blink');check('Afficher la date','date');
     sectionTitle(box,'Horloge XXL');
-    var bigGrid=make('div','clock-custom-grid');grid=bigGrid;box.appendChild(bigGrid);
+    var bigGrid=make('div','clock-custom-grid tight');grid=bigGrid;box.appendChild(bigGrid);
     choose('Fond XXL',clockPrefs.xxlBackground,[['auto','Selon le thème'],['dark','Bleu nuit'],['black','Noir'],['light','Clair']],function(v){clockPrefs.xxlBackground=v;});
     choose('Couleur en XXL',clockPrefs.xxlColor,[['default','Selon le fond'],['white','Blanc'],['ice','Bleu glacier'],['amber','Ambre'],['red','Rouge'],['custom','Personnalisée']],function(v){clockPrefs.xxlColor=v;xxlWrap.style.display=v==='custom'?'':'none';});
-    var xxlWrap=field('Palette libre XXL');clockColorEditor(xxlWrap,clockPrefs.xxlCustomColor,function(hex){clockPrefs.xxlColor='custom';clockPrefs.xxlCustomColor=hex;saveClockPrefs();applyClockPreferences();});xxlWrap.style.display=clockPrefs.xxlColor==='custom'?'':'none';
+    var xxlWrap=field('Palette libre XXL','full-span');clockColorEditor(xxlWrap,clockPrefs.xxlCustomColor,function(hex){clockPrefs.xxlColor='custom';clockPrefs.xxlCustomColor=hex;saveClockPrefs();applyClockPreferences();});xxlWrap.style.display=clockPrefs.xxlColor==='custom'?'':'none';
     choose('Disposition XXL',clockPrefs.xxlAlign,[['center','Au centre'],['high','En haut']],function(v){clockPrefs.xxlAlign=v;});
-    var footer=make('div','clock-custom-footer');footer.appendChild(make('span','manager-note','Enregistré automatiquement · les tailles sont limitées pour éviter les débordements.'));
-    footer.appendChild(actionButton('Rétablir l’horloge d’origine',function(){clockStyle='classic';clockPrefs=cleanClockSettings({});store('radio.clock.style',clockStyle);saveClockPrefs();refreshFlipMode();applyClockPreferences();renderClockCustomizer();},'warn'));box.appendChild(footer);
+    var footer=make('div','clock-custom-footer');footer.appendChild(make('span','manager-note','Enregistré automatiquement · les tailles sont limitées pour éviter les débordements.'));box.appendChild(footer);
     updatePreview();
   }
   function managerRow(title,detail){
