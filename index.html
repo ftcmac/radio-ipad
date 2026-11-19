@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.19.05">
-<meta name="radio-app-release-notes" content="Installation sur l’écran d’accueil avant la configuration|Assistant plus cohérent sur iPad en portrait et paysage|Localisation demandée après l’installation, uniquement si souhaitée">
+<meta name="radio-app-release" content="2026.11.19.06">
+<meta name="radio-app-release-notes" content="Installation sur l’écran d’accueil désormais obligatoire avant la configuration|Assistant réservé à la webapp lancée depuis son icône|Aucune demande de localisation préalable dans Safari">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -1547,6 +1547,15 @@ html[data-theme="light"] .tools-modal .ipad-advice-optional{background:#d4e9f9;c
 .setup-head,.setup-steps,.setup-actions{flex-shrink:0}
 .setup-pane{min-height:0;flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1px 5px 10px 1px}
 .setup-actions{position:static;box-shadow:none;background:transparent}
+
+
+/* V32.1 — installation obligatoire : aucun bouton ne contourne cette étape. */
+.setup-install-required{padding:14px 16px;border:1px solid #6287a6;background:rgba(122,175,219,.11);border-radius:13px;display:flex;flex-direction:column;gap:6px}
+.setup-install-required strong{font-size:14px;font-weight:800;color:#d4edff}
+.setup-install-required p{margin:0;font-size:13px;line-height:1.5;color:#c6dbeb}
+html[data-theme=light] .setup-install-required{background:#e5f2fb;border-color:#a8c8dd}
+html[data-theme=light] .setup-install-required strong{color:#244766}
+html[data-theme=light] .setup-install-required p{color:#3d5c74}
 
 </style>
 </head>
@@ -3362,10 +3371,11 @@ html[data-theme="light"] .tools-modal .ipad-advice-optional{background:#d4e9f9;c
   }
   function setupBtn(label,fn,primary){var b=make('button','setup-btn'+(primary?' primary':''),label);b.type='button';b.addEventListener('click',fn);return b;}
   function setupHeading(title,subtitle){set('setupTitle',title);set('setupSubtitle',subtitle);setupBody.textContent='';setupActions.textContent='';
-    var bar=el('setupSteps');bar.textContent='';var total=runningAsWebApp?3:4,stepIndex=runningAsWebApp?setupStep-1:setupStep;for(var i=0;i<total;i++){var dot=make('span',i===stepIndex?'current':'');bar.appendChild(dot);}
+    var bar=el('setupSteps');bar.textContent='';var total=runningAsWebApp?3:1,stepIndex=runningAsWebApp?setupStep-1:0;for(var i=0;i<total;i++){var dot=make('span',i===stepIndex?'current':'');bar.appendChild(dot);}
     var dialog=setupOverlay.querySelector('.setup-dialog');if(dialog)dialog.scrollTop=0;
   }
   function setupActionsFor(nextLabel,next){
+    if(!runningAsWebApp)return; // Pas de configuration depuis Safari : installer et relancer la webapp.
     if(setupStep>(runningAsWebApp?1:0))setupActions.appendChild(setupBtn('← Retour',function(){setupStep--;renderSetup();}));
     setupActions.appendChild(setupBtn(nextLabel,next,true));
   }
@@ -3415,6 +3425,7 @@ html[data-theme="light"] .tools-modal .ipad-advice-optional{background:#d4e9f9;c
     }).catch(function(){status.textContent='Recherche indisponible ou accès à la position refusé. Tu peux choisir les radios manuellement.';});
   }
   function renderSetup(){
+    if(!runningAsWebApp)setupStep=0; // Bloque les étapes tant que l'app n'est pas ouverte depuis l'écran d'accueil.
     if(setupStep===0&&!runningAsWebApp){
       setupHeading('D’abord, installez la webapp','Une seule installation suffit pour retrouver votre radio-réveil comme une application iPad.');
       var install=make('section','setup-install-first');setupBody.appendChild(install);
@@ -3427,8 +3438,10 @@ html[data-theme="light"] .tools-modal .ipad-advice-optional{background:#d4e9f9;c
       installStep('⊞','Choisissez « Sur l’écran d’accueil »');
       installStep('✓','Touchez Ajouter, puis ouvrez l’icône');
       install.appendChild(make('p','setup-install-footnote','Une fois ouverte depuis l’écran d’accueil, la webapp vous guidera pour restaurer une sauvegarde ou régler radios, météo et horloge. La position ne sera demandée que si vous choisissez une fonction locale.'));
-      setupBody.appendChild(make('p','setup-muted','Déjà installée ? Fermez cet onglet Safari et ouvrez l’icône de la webapp. Sur ordinateur ou si vous préférez le navigateur, vous pouvez aussi continuer ici.'));
-      setupActions.appendChild(setupBtn('Continuer dans Safari (sans installer)',function(){setupStep=1;renderSetup();}));
+      var mandatory=make('div','setup-install-required');
+      mandatory.appendChild(make('strong','','🔒 Installation nécessaire pour continuer'));
+      mandatory.appendChild(make('p','','La configuration reste volontairement bloquée dans Safari. Après avoir ajouté l’icône sur l’écran d’accueil, fermez cet onglet et lancez la webapp depuis cette icône : l’assistant s’ouvrira automatiquement.'));
+      setupBody.appendChild(mandatory);
       return;
     }
     if(setupStep===1){
@@ -3512,6 +3525,7 @@ html[data-theme="light"] .tools-modal .ipad-advice-optional{background:#d4e9f9;c
     }
   }
   function finishSetup(){
+    if(!runningAsWebApp){setupStep=0;renderSetup();return;}
     store('radio.setup.complete.v1','yes');store('radio.setup.started.v1','');
     setupOverlay.classList.remove('open');setupOverlay.setAttribute('aria-hidden','true');
     if(read('radio.setup.weatherReady.v1','')==='yes')updateWeather();
