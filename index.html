@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.19.06">
-<meta name="radio-app-release-notes" content="Installation sur l’écran d’accueil désormais obligatoire avant la configuration|Assistant réservé à la webapp lancée depuis son icône|Aucune demande de localisation préalable dans Safari">
+<meta name="radio-app-release" content="2026.11.19.07">
+<meta name="radio-app-release-notes" content="Assistant plus clair et aligné : radios et météo équilibrées|Résultats sur toute la largeur, sans masquer les autres réglages|Recherche radio améliorée : Sud Radio et Radio Contact disponibles en suggestions|Filtre régional assoupli pour ne plus masquer les grandes stations">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -1557,6 +1557,51 @@ html[data-theme=light] .setup-install-required{background:#e5f2fb;border-color:#
 html[data-theme=light] .setup-install-required strong{color:#244766}
 html[data-theme=light] .setup-install-required p{color:#3d5c74}
 
+
+/* V33 – assistant équilibré sur iPad Air 2 ; résultats pleine largeur et fenêtres réellement défilantes. */
+.setup-dialog{width:min(920px,calc(100vw - 26px));max-height:calc(100vh - 36px);max-height:calc(100dvh - 36px);padding:21px 23px;}
+.setup-pane{overflow-y:auto;overflow-x:hidden;padding:2px 8px 20px 2px;min-height:0;}
+.setup-options{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:12px;}
+.setup-option{min-width:0;display:flex;flex-direction:column;}
+.setup-option>strong{min-height:22px;}
+.setup-option .setup-choice-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:8px;}
+.setup-option .setup-choice-buttons .setup-btn{width:100%;min-width:0;min-height:46px;line-height:1.2;padding:9px 6px;font-size:13px;}
+.setup-option .setup-sort-row{display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px;margin-top:auto;align-items:center;min-height:46px;}
+.setup-option .setup-sort-row select{width:100%;min-height:46px;}
+.setup-discovery{display:none;min-width:0;padding:13px 15px 15px;background:#1c3650;border:1px solid #537a99;border-radius:14px;}
+.setup-discovery.visible{display:block;}
+.setup-discovery-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.setup-discovery-head strong{font-size:14px;color:#e5f6ff;}
+.setup-discovery-head .setup-btn{min-height:36px;padding:6px 12px;font-size:12px;}
+.setup-discovery .setup-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-height:225px;overflow:auto;padding:2px 5px 5px 1px;}
+.setup-discovery .setup-result{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:7px;padding:10px;min-width:0;}
+.setup-discovery .setup-result>span{grid-column:1/-1;font-size:13px;line-height:1.3;min-height:20px;}
+.setup-discovery .setup-result .setup-btn{min-width:0!important;width:100%!important;min-height:39px;flex:none!important;padding:7px 5px;font-size:12px;}
+.setup-discovery .setup-feedback{min-height:0;margin:6px 0 10px;}
+.setup-dialog .setup-actions{background:#1b3048;border-top:1px solid #486680;padding:13px 1px 3px;margin-top:3px;}
+.tools-window{width:min(920px,calc(100% - 6px));height:min(89vh,790px);max-height:89vh;max-height:89dvh;overflow:hidden;}
+.tools-heading{flex:0 0 auto;}
+.tools-body{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+.manager-search .manager-input{min-width:0;}
+.manager-geo-row{display:flex;align-items:stretch;gap:9px;flex-wrap:wrap;}
+.manager-geo-row>*{min-width:180px;flex:1 1 180px;}
+@media(max-width:760px){
+ .setup-dialog{width:calc(100vw - 20px);max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px);padding:16px 15px;}
+ .setup-pane .setup-options{grid-template-columns:1fr;}
+ .setup-discovery .setup-results{grid-template-columns:1fr;max-height:240px;}
+ .setup-option .setup-sort-row{grid-template-columns:110px minmax(0,1fr);}
+ .tools-modal{padding:8px;}
+ .tools-window{width:100%;height:calc(100vh - 20px);height:calc(100dvh - 20px);max-height:none;}
+}
+@media(max-height:650px){.setup-dialog{max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px)}.setup-head{margin-bottom:6px}.setup-steps{margin:7px 0}.setup-dialog .setup-actions{padding-top:8px}}
+html[data-theme="light"] .setup-discovery{background:#e5f3ff;border-color:#a4c9df;color:#28475f;}
+html[data-theme="light"] .setup-discovery-head strong{color:#1d425e;}
+/* Pendant la sélection, afficher un écran clair plutôt que des colonnes coupées au défilement. */
+.setup-pane.setup-discovery-active>.setup-options,.setup-pane.setup-discovery-active>.setup-option{display:none!important}
+.setup-pane.setup-discovery-active>.setup-discovery{display:block!important;min-height:230px}
+.setup-pane.setup-discovery-active .setup-results{max-height:min(47vh,370px)}
+
+
 </style>
 </head>
 <body>
@@ -2361,7 +2406,7 @@ html[data-theme=light] .setup-install-required p{color:#3d5c74}
   }
   updateDimButton();
   function openTools(tool){
-    activeTool=tool;clearDim();toolsModal.style.zIndex=setupOverlay&&setupOverlay.classList.contains('open')?'130':'';el('toolsBody').classList.toggle('clock-studio',tool==='clockPrefs');toolsModal.classList.add('open');toolsModal.setAttribute('aria-hidden','false');
+    activeTool=tool;clearDim();toolsModal.style.zIndex=setupOverlay&&setupOverlay.classList.contains('open')?'130':'';el('toolsBody').classList.toggle('clock-studio',tool==='clockPrefs');el('toolsBody').scrollTop=0;toolsModal.classList.add('open');toolsModal.setAttribute('aria-hidden','false');
     if(tool==='hourly'){set('toolsTitle','Prévisions · '+(activeCity==='local'?(localCityName||'Météo locale'):currentPlace().name));renderHourlyTool();}
     else if(tool==='timer'){set('toolsTitle','Sommeil · arrêt de la radio');renderTimerTool();}
     else if(tool==='cities'){set('toolsTitle','Mes villes météo');renderCitiesTool();}
@@ -3169,9 +3214,45 @@ html[data-theme=light] .setup-install-required p{color:#3d5c74}
       .then(function(r){if(!r.ok)throw Error('Annuaire indisponible');return r.json();})
       .catch(function(err){if(i+1<hosts.length)return radioBrowserFetch(params,i+1);throw err;});
   }
+  // Une station peut être absente de l’annuaire, mal géolocalisée ou rangée sous une
+  // autre région. Ces flux déjà proposés par l’app servent de suggestions complémentaires,
+  // jamais de favoris ajoutés automatiquement.
+  function recommendedBelgianRadios(){
+    return suggestedRadioList.map(function(s){return safeStation(s);}).filter(Boolean);
+  }
+  function normalizeRadioTerm(value){
+    return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  }
+  function radioRelevance(st,query,region){
+    var name=normalizeRadioTerm(st.name),q=normalizeRadioTerm(query),r=normalizeRadioTerm(region);
+    // « Radio Contact » doit passer avant « Contact MAX » pour la recherche « Contact ».
+    var coreName=name.replace(/^radio /,'');
+    var rank=!q?1:(name===q||coreName===q)?0:(name.indexOf(q)===0||coreName.indexOf(q)===0)?1:name.indexOf(q)>=0?2:10;
+    if(r&&normalizeRadioTerm((st.subregion||'')+' '+(st.region||'')).indexOf(r)>=0)rank-=.2;
+    return rank;
+  }
+  function blendRadioResults(entries,query,country,region,limit){
+    var known=country&&country!=='BE'?[]:recommendedBelgianRadios();
+    var q=normalizeRadioTerm(query),r=normalizeRadioTerm(region);
+    if(q)known=known.filter(function(st){return normalizeRadioTerm(st.name).indexOf(q)>=0;});
+    else if(r)known=known.filter(function(st){return normalizeRadioTerm(st.region+' '+(st.subregion||'')).indexOf(r)>=0;});
+    var collected=known.concat((entries||[]).map(radioSearchResult).filter(Boolean));
+    var used={};
+    collected=collected.filter(function(st){
+      var key=normalizeRadioTerm(st.name)+'|'+st.url.toLowerCase();
+      if(used[key])return false;used[key]=true;
+      return !q||normalizeRadioTerm(st.name).indexOf(q)>=0;
+    });
+    collected.sort(function(a,b){
+      var x=radioRelevance(a,query,region)-radioRelevance(b,query,region);
+      return x||a.name.localeCompare(b.name,'fr',{sensitivity:'base'});
+    });
+    return collected.slice(0,limit||30);
+  }
   function stationKm(a,b,latitude,longitude){
+    if(a==null||b==null||a===''||b==='')return Infinity;
     var lat=Number(a),lon=Number(b);
-    if(!isFinite(lat)||!isFinite(lon))return Infinity;
+    if(!isFinite(lat)||!isFinite(lon)||Math.abs(lat)>90||Math.abs(lon)>180)return Infinity;
     var rad=Math.PI/180,phi1=latitude*rad,phi2=lat*rad;
     var deltaPhi=(lat-latitude)*rad,deltaLambda=(lon-longitude)*rad;
     var h=Math.sin(deltaPhi/2)*Math.sin(deltaPhi/2)+Math.cos(phi1)*Math.cos(phi2)*Math.sin(deltaLambda/2)*Math.sin(deltaLambda/2);
@@ -3222,18 +3303,36 @@ html[data-theme=light] .setup-install-required p{color:#3d5c74}
     var results=make('div','manager-list');box.appendChild(results);
     var state=feedbackLine(box);
     box.appendChild(make('p','manager-note','Tu peux chercher par nom, par pays, par région/province, ou combiner ces critères. Les régions dépendent des informations publiées par les radios.'));
-    function showStations(data,near,position){
-      results.textContent='';var used={};
-      var matches=data.filter(function(entry){
-        if(!near)return true;
-        // L’annuaire ne géolocalise pas toutes les radios.
-        return stationKm(entry.geo_lat,entry.geo_long,position.latitude,position.longitude)<=60;
-      }).sort(function(a,b){return near?stationKm(a.geo_lat,a.geo_long,position.latitude,position.longitude)-stationKm(b.geo_lat,b.geo_long,position.latitude,position.longitude):0;})
-      .map(radioSearchResult).filter(function(st){if(!st||used[st.url])return false;used[st.url]=true;return true;}).slice(0,22);
-      state(matches.length?(near?'Stations répertoriées à moins de 60 km (selon les positions déclarées) :':'Stations recensées :')+' teste les flux avant de les ajouter.':(near?'Aucune radio géolocalisée à proximité dans cet annuaire. Essaie une recherche par province.':'Aucun flux HTTPS MP3/AAC compatible trouvé pour cette recherche.'));
+    function showStations(data,near,position,searchName,searchCountry,searchRegion){
+      results.textContent='';
+      var nearResults=[];
+      if(near){
+        nearResults=(data||[]).filter(function(entry){return stationKm(entry.geo_lat,entry.geo_long,position.latitude,position.longitude)<=60;})
+          .sort(function(a,b){return stationKm(a.geo_lat,a.geo_long,position.latitude,position.longitude)-stationKm(b.geo_lat,b.geo_long,position.latitude,position.longitude);})
+          .map(radioSearchResult).filter(Boolean);
+      }
+      // Les suggestions belges ne sont PAS présentées comme des stations vérifiées à 60 km.
+      var inBelgium=position&&position.latitude>49.4&&position.latitude<51.6&&position.longitude>2.4&&position.longitude<6.5;
+      var matches=near?nearResults.slice(0,24):blendRadioResults(data,searchName,searchCountry,searchRegion,30);
+      if(near&&inBelgium){
+        var known=recommendedBelgianRadios(),seen={};
+        matches.forEach(function(st){seen[st.url]=true;});
+        known.forEach(function(st){if(!seen[st.url]){st._unlocatedSuggestion=true;matches.push(st);seen[st.url]=true;}});
+      }
+      state(matches.length?(near?'Les résultats géolocalisés et les suggestions belges sont séparés. Teste chaque flux avant de l’enregistrer.':'Résultats : les stations intégrées sont aussi proposées si l’annuaire les ignore.'):('Aucun flux compatible trouvé. Essaie sans filtre régional ou utilise une adresse HTTPS connue.'));
+      var firstUnlocated=true;
       matches.forEach(function(st){
+        if(near&&st._unlocatedSuggestion&&firstUnlocated){
+          firstUnlocated=false;
+          results.appendChild(make('div','manager-heading','Suggestions belges · proximité non vérifiée'));
+          results.appendChild(make('p','manager-note','Ces stations sont proposées parce qu’elles diffusent en Belgique, pas parce que l’annuaire les situe à moins de 60 km.'));
+        }
         var exists=all.some(function(x){return x.url===st.url||x.id===st.id;});
-        var item=managerRow(st.name,([st.region,st.subregion].filter(Boolean).join(' · ')||'Radio')+' · Flux à confirmer sur iPad');
+        var detail=[st.region,st.subregion].filter(Boolean).join(' · ')||'Radio';
+        if(st._unlocatedSuggestion)detail+=' · Suggestion non géolocalisée';
+        else if(recommendedBelgianRadios().some(function(k){return k.url===st.url;}))detail+=' · Catalogue intégré';
+        else detail+=' · Annuaire communautaire';
+        var item=managerRow(st.name,detail+' · Flux à confirmer sur iPad');
         var img=logo(st);img.className='logo-wrap manager-logo';item.row.insertBefore(img,item.row.firstChild);
         item.actions.appendChild(actionButton('▶ Tester',function(){previewRadio(st);state('Essai : '+st.name+' · utilise Power pour arrêter.');}));
         var add=actionButton(exists?'Enregistrée':'+ Enregistrer',function(){
@@ -3252,7 +3351,7 @@ html[data-theme=light] .setup-install-required p{color:#3d5c74}
         var latitude=pos.coords.latitude,longitude=pos.coords.longitude;
         var params='limit=250&hidebroken=true&order=votes&reverse=true&is_https=true&geo_lat='+latitude+'&geo_long='+longitude+'&geo_distance=60000';
         radioBrowserFetch(params).then(function(data){
-          nearby.disabled=false;showStations(data,true,{latitude:latitude,longitude:longitude});
+          nearby.disabled=false;showStations(data,true,{latitude:latitude,longitude:longitude},'',country.value,region.value);
         }).catch(function(){nearby.disabled=false;state('Recherche locale indisponible. Essaie par pays/région.');});
       },function(){nearby.disabled=false;state('Position non autorisée. Choisis un pays et une province ci-dessous.');},{enableHighAccuracy:false,timeout:12000,maximumAge:600000});
     },'primary');
@@ -3263,12 +3362,13 @@ html[data-theme=light] .setup-install-required p{color:#3d5c74}
       if(q.length===1){state('Saisis au moins deux caractères du nom, ou laisse ce champ vide.');return;}
       if(!q&&!rgn&&!country.value){state('Choisis au moins un pays, une région ou un nom de radio.');return;}
       results.textContent='';submit.disabled=true;state('Recherche des stations…');
-      var params='limit=80&hidebroken=true&order=votes&reverse=true&is_https=true';
+      // Le champ « state » de Radio Browser est libre et peu fiable : ne pas imposer
+      // Hainaut, Mons, etc. comme filtre serveur, sinon Contact et Sud Radio disparaissent.
+      var params='limit=250&order=votes&reverse=true';
       if(q)params+='&name='+encodeURIComponent(q);
       if(country.value)params+='&countrycode='+encodeURIComponent(country.value);
-      if(rgn)params+='&state='+encodeURIComponent(rgn);
-      radioBrowserFetch(params).then(function(data){submit.disabled=false;showStations(data,false,null);})
-        .catch(function(){submit.disabled=false;state('Annuaire temporairement indisponible. Essaie plus tard ou ajoute une adresse HTTPS directement.');});
+      radioBrowserFetch(params).then(function(data){submit.disabled=false;showStations(data,false,null,q,country.value,rgn);})
+        .catch(function(){submit.disabled=false;showStations([],false,null,q,country.value,rgn);state('Annuaire indisponible : affichage des suggestions intégrées, à tester sur l’iPad.');});
     });
     sectionTitle(box,'Ajouter une adresse de diffusion connue');
     var manual=make('form','manager-search');
@@ -3418,11 +3518,16 @@ html[data-theme=light] .setup-install-required p{color:#3d5c74}
       status.textContent='Recherche des stations voisines dans l’annuaire…';
       var query='limit=200&hidebroken=true&order=votes&reverse=true&is_https=true&geo_lat='+pos.latitude+'&geo_long='+pos.longitude+'&geo_distance=60000';
       return radioBrowserFetch(query).then(function(entries){
-        var matches=entries.filter(function(x){return stationKm(x.geo_lat,x.geo_long,pos.latitude,pos.longitude)<=60;}).map(radioSearchResult).filter(Boolean).slice(0,14);
-        status.textContent=matches.length?'Choisis les stations qui t’intéressent (aucun ajout automatique).':'Aucun résultat géolocalisé. Essaie la sélection manuelle.';
+        var matches=entries.filter(function(x){return stationKm(x.geo_lat,x.geo_long,pos.latitude,pos.longitude)<=60;}).map(radioSearchResult).filter(Boolean).slice(0,10);
+        var inBelgium=pos.latitude>49.4&&pos.latitude<51.6&&pos.longitude>2.4&&pos.longitude<6.5;
+        if(inBelgium){
+          var known=recommendedBelgianRadios(),used={};matches.forEach(function(st){used[st.url]=true;});
+          known.forEach(function(st){if(!used[st.url]){st._unlocatedSuggestion=true;matches.push(st);}});
+        }
+        status.textContent=matches.length?'Choisis les stations souhaitées. Les suggestions belges ne sont pas nécessairement situées dans un rayon de 60 km. Rien n’est ajouté automatiquement.':'Aucune station géolocalisée trouvée. Essaie la sélection manuelle.';
         host.textContent='';setupRadioRecommendations(host,matches);
       });
-    }).catch(function(){status.textContent='Recherche indisponible ou accès à la position refusé. Tu peux choisir les radios manuellement.';});
+    }).catch(function(){status.textContent='Recherche indisponible ou accès à la position refusé. Utilise « Sélection manuelle » : elle contient notamment Sud Radio et Radio Contact.';});
   }
   function renderSetup(){
     if(!runningAsWebApp)setupStep=0; // Bloque les étapes tant que l'app n'est pas ouverte depuis l'écran d'accueil.
@@ -3467,9 +3572,9 @@ html[data-theme=light] .setup-install-required p{color:#3d5c74}
       radio.appendChild(make('p','','Rechercher près de vous ou sélectionner des stations manuellement. Rien n’est ajouté sans votre accord.'));
       var radioBtns=make('div','setup-inline setup-choice-buttons');radio.appendChild(radioBtns);
       var radioStatus=make('p','setup-feedback','');
-      var radioList=make('div','');radio.appendChild(radioStatus);radio.appendChild(radioList);
-      radioBtns.appendChild(setupBtn('Près de moi',function(){radioList.textContent='';setupNearbySearch(radioList,radioStatus);}));
-      radioBtns.appendChild(setupBtn('Sélection manuelle',function(){radioList.textContent='';setupRadioRecommendations(radioList,suggestedRadioList);}));
+      var radioList=make('div','');radio.appendChild(radioStatus);
+      radioBtns.appendChild(setupBtn('Près de moi',function(){openDiscovery('Suggestions de stations');setupNearbySearch(radioList,radioStatus);}));
+      radioBtns.appendChild(setupBtn('Sélection manuelle',function(){openDiscovery('Choisir mes stations');radioStatus.textContent='Sélectionne seulement les stations qui t’intéressent.';setupRadioRecommendations(radioList,suggestedRadioList);}));
       var rs=make('div','setup-inline setup-sort-row');rs.appendChild(make('span','setup-muted','Autres radios :'));
       var rselect=make('select','');[['manual','Manuel ☰'],['alpha','Alphabétique'],['added','Ordre d’ajout']].forEach(function(v){var o=make('option','',v[1]);o.value=v[0];rselect.appendChild(o);});
       rselect.value=radioOtherSort;rselect.setAttribute('aria-label','Classement des autres radios');
@@ -3482,9 +3587,10 @@ html[data-theme=light] .setup-install-required p{color:#3d5c74}
       var weatherStatus=make('p','setup-feedback','');weather.appendChild(weatherStatus);
       weatherBtns.appendChild(setupBtn('Position actuelle',function(){weatherStatus.textContent='Recherche de votre position…';requestLocalWeather(function(msg){weatherStatus.textContent=msg;});setupWeatherChosen=true;}));
       weatherBtns.appendChild(setupBtn('Choisir une ville',function(){
+        openDiscovery('Rechercher une ville');
         var form=make('form','setup-inline'),query=make('input','');query.type='search';query.placeholder='Nom de la ville';query.setAttribute('aria-label','Nom de ville');
         var submit=make('button','setup-btn','Rechercher');submit.type='submit';form.appendChild(query);form.appendChild(submit);
-        var results=make('div','setup-results');weather.appendChild(form);weather.appendChild(results);
+        var results=make('div','setup-results');radioList.appendChild(form);radioList.appendChild(results);
         form.addEventListener('submit',function(e){e.preventDefault();var q=query.value.trim();if(q.length<2)return;
           weatherStatus.textContent='Recherche de villes…';results.textContent='';
           fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=15&language=fr&format=json')
@@ -3493,7 +3599,7 @@ html[data-theme=light] .setup-install-required p{color:#3d5c74}
             hits.forEach(function(loc){setupResultRow(results,loc.name,loc.admin1+' · '+loc.country,[{label:'Choisir',primary:true,run:function(){
               var id='geo-'+loc.id;
               if(!weatherPlaces.some(function(p){return p.id===id;}))weatherPlaces.push({id:id,name:loc.name,country:loc.country_code,countryName:loc.country,region:loc.admin1||'',lat:loc.latitude,lon:loc.longitude});
-              weatherSave();chooseCity(id);setupWeatherChosen=true;weatherStatus.textContent='Météo : '+loc.name+' sélectionnée.';results.textContent='';
+              weatherSave();chooseCity(id);setupWeatherChosen=true;weatherStatus.textContent='Météo : '+loc.name+' sélectionnée.';results.textContent='';discovery.classList.remove('visible');setupBody.classList.remove('setup-discovery-active');
             }}]);});
           }).catch(function(){weatherStatus.textContent='Recherche indisponible. Réessayez plus tard.';});
         });
@@ -3503,6 +3609,18 @@ html[data-theme=light] .setup-install-required p{color:#3d5c74}
       wselect.value=weatherSortMode;wselect.setAttribute('aria-label','Classement des villes météo');
       wselect.addEventListener('change',function(){weatherSortMode=wselect.value;store('weather.sort.v1',weatherSortMode);displayWeatherCities();});
       ws.appendChild(wselect);weather.appendChild(ws);
+      // Le choix des stations ou villes prend toute la largeur, sans agrandir une
+      // colonne ni cacher visuellement l’autre sur un iPad en paysage.
+      var discovery=make('div','setup-discovery');
+      var discoveryHead=make('div','setup-discovery-head'),discoveryTitle=make('strong','','Choisir');
+      discoveryHead.appendChild(discoveryTitle);
+      discoveryHead.appendChild(setupBtn('← Retour aux préférences',function(){discovery.classList.remove('visible');setupBody.classList.remove('setup-discovery-active');radioList.textContent='';}));
+      discovery.appendChild(discoveryHead);discovery.appendChild(radioList);
+      setupBody.appendChild(discovery);
+      function openDiscovery(title){
+        discoveryTitle.textContent=title;radioList.textContent='';discovery.classList.add('visible');
+        setupBody.classList.add('setup-discovery-active');setupBody.scrollTop=0;
+      }
       var line=make('div','setup-option');setupBody.appendChild(line);
       var clockHead=make('div','setup-clock-head');clockHead.appendChild(make('strong','','🕒 Horloge et apparence'));clockHead.appendChild(setupBtn('Personnaliser…',function(){openTools('clockPrefs');}));line.appendChild(clockHead);
       line.appendChild(make('p','','Choisissez un style et un thème ; les polices, couleurs, secondes et autres détails restent personnalisables dans les réglages.'));
