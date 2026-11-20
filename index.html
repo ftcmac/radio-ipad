@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.20.03">
-<meta name="radio-app-release-notes" content="Minuteur indépendant agrandi en bas de l’horloge|Réglages déplacés en haut à droite|Météo nettement plus lisible en paysage|Recherche radio et favoris conservés">
+<meta name="radio-app-release" content="2026.11.20.04">
+<meta name="radio-app-release-notes" content="Boutons de réorganisation sans encadré|Réglages allégés dans le panneau horloge|Lever et coucher du soleil plus bas|Date descendue sous l’horloge|Recherche radio plus tolérante aux espaces et tirets">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -1702,6 +1702,42 @@ html[data-theme="light"] .clock-panel #clockTimerButton{
   .weather-panel .weather-icon{width:62px;height:62px;flex:0 0 62px}
   .weather-panel .weather-icon svg{width:62px!important;height:62px!important}
   .weather-panel .temperature{font-size:70px;line-height:.96}
+}
+
+
+/* V27 — boutons épurés et petits ajustements d'alignement. */
+.drag-handle{
+  border:0!important;background:transparent!important;box-shadow:none!important;
+  color:#a9ccdf;font-size:25px;opacity:.79;min-height:44px;
+  border-radius:10px;flex:0 0 38px
+}
+.drag-handle:active,.drag-handle:focus-visible{
+  background:rgba(147,198,233,.16)!important;opacity:1
+}
+html[data-theme="light"] .drag-handle{
+  color:#4d7794;background:transparent!important;border:0!important
+}
+.clock-panel #themeToggle{
+  border:1px solid transparent!important;background:transparent!important;
+  box-shadow:none!important;color:#b7d0e4;opacity:.9;border-radius:13px
+}
+.clock-panel #themeToggle:hover,.clock-panel #themeToggle:focus-visible{
+  background:rgba(129,188,231,.1)!important;opacity:1
+}
+.clock-panel #themeToggle .theme-icon,
+.clock-panel #themeToggle .theme-icon svg{
+  width:27px;height:27px;display:block
+}
+html[data-theme="light"] .clock-panel #themeToggle{
+  background:transparent!important;border:1px solid transparent!important;color:#456d8b
+}
+@media (orientation:landscape) and (min-width:761px) and (max-width:1100px){
+  .clock-panel .date-row .date{transform:translateY(12px)}
+  .weather-panel .weather-solar-row{position:relative;top:8px}
+}
+@media (orientation:portrait) and (min-width:600px) and (max-width:1100px){
+  .clock-panel .date-row .date{transform:translateY(5px)}
+  .weather-panel .weather-solar-row{position:relative;top:5px}
 }
 
 </style>
@@ -3552,10 +3588,27 @@ html[data-theme="light"] .clock-panel #clockTimerButton{
     box.insertBefore(localTools,form);
     box.appendChild(make('p','manager-note',
       'Seules les stations avec coordonnées connues figurent dans les résultats locaux. Une langue absente ou mal renseignée dans l’annuaire peut fausser le filtre.'));
+
     function searchRequest(q,chosenCountry){
-      var params='limit=500&order=votes&reverse=true&name='+encodeURIComponent(q);
+      var params='limit=350&order=votes&reverse=true&name='+encodeURIComponent(q);
       if(chosenCountry)params+='&countrycode='+encodeURIComponent(chosenCountry);
       return radioBrowserFetch(params);
+    }
+    // Essayer les graphies avec espaces, tirets et caractères accolés,
+    // sans table d'exceptions liée à des stations particulières.
+    function radioQueryForms(text){
+      var original=String(text||'').trim();
+      var spaced=normalizeRadioTerm(original);
+      var joined=spaced.replace(/\s+/g,'');
+      var candidates=[original,spaced,joined];
+      // Par exemple une lettre précédant "radio" peut être écrite avec ou sans espace.
+      if(/^[a-z]radio$/i.test(joined))candidates.push(joined.slice(0,1)+' radio');
+      var seen={};
+      return candidates.filter(function(v){
+        var key=v.toLowerCase();
+        if(v.length<2||seen[key])return false;
+        seen[key]=true;return true;
+      });
     }
     form.addEventListener('submit',function(e){
       e.preventDefault();
@@ -3563,20 +3616,38 @@ html[data-theme="light"] .clock-panel #clockTimerButton{
       if(q.length===1){state('Saisis au moins deux caractères.');return;}
       if(!q&&!chosen){state('Saisis un nom de radio ou choisis un pays.');return;}
       results.textContent='';submit.disabled=true;state('Recherche dans l’annuaire mondial…');
-      var params=q?'limit=500&order=votes&reverse=true&name='+encodeURIComponent(q):
-        'limit=500&order=votes&reverse=true';
-      if(chosen)params+='&countrycode='+encodeURIComponent(chosen);
-      radioBrowserFetch(params).then(function(data){
-        if(q.length>=5&&blendRadioResults(data,q,chosen,rgn,60).length===0){
-          // Deux graphies possibles : "YouFM" et "You FM".
-          var prefix=normalizeRadioTerm(q).replace(/\s+/g,'').slice(0,3);
-          if(prefix.length===3){
-            return searchRequest(prefix,chosen).then(function(more){
-              return renderFoundStations(more,false,null,q,chosen,rgn);
-            });
+      // Les variantes sont interrogées indépendamment : un miroir qui répond mal
+      // ne doit pas faire disparaître les résultats des autres variantes.
+      var ok=0;
+      function tryQuery(variant){
+        return searchRequest(variant,chosen).then(function(rows){
+          ok++;return Array.isArray(rows)?rows:[];
+        }).catch(function(){return [];});
+      }
+      var job;
+      if(q){
+        var variants=radioQueryForms(q);
+        job=Promise.all(variants.map(tryQuery)).then(function(groups){
+          var merged=[].concat.apply([],groups);
+          if(blendRadioResults(merged,q,chosen,rgn,60).length){
+            return merged;
           }
-        }
-        return renderFoundStations(data,false,null,q,chosen,rgn);
+          // Recherche plus large uniquement lorsque les graphies normales échouent :
+          // elle retrouve notamment les noms coupés par un espace invisible.
+          var compact=normalizeRadioTerm(q).replace(/\s+/g,'');
+          if(compact.length<4)return merged;
+          return tryQuery(compact.slice(0,3)).then(function(more){
+            return merged.concat(more);
+          });
+        });
+      }else{
+        var params='limit=350&order=votes&reverse=true';
+        if(chosen)params+='&countrycode='+encodeURIComponent(chosen);
+        job=radioBrowserFetch(params).then(function(rows){ok++;return rows;});
+      }
+      job.then(function(data){
+        if(!ok)throw Error('Annuaire indisponible');
+        renderFoundStations(data,false,null,q,chosen,rgn);
       }).catch(function(){
         state('Annuaire inaccessible. Cela ne signifie pas que la station n’existe pas.');
       }).then(function(){submit.disabled=false;});
