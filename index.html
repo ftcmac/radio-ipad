@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.19.07">
-<meta name="radio-app-release-notes" content="Assistant plus clair et aligné : radios et météo équilibrées|Résultats sur toute la largeur, sans masquer les autres réglages|Recherche radio améliorée : Sud Radio et Radio Contact disponibles en suggestions|Filtre régional assoupli pour ne plus masquer les grandes stations">
+<meta name="radio-app-release" content="2026.11.20.01">
+<meta name="radio-app-release-notes" content="Recherche mondiale par nom sans filtre belge caché|Recherche locale francophone avec choix des langues|Stations indisponibles identifiables et non masquées|Favoris et préférences préservés">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -3187,15 +3187,30 @@ html[data-theme="light"] .setup-discovery-head strong{color:#1d425e;}
     if(isSelected){selected=all.length?all[0].id:'';store('radio.st',selected);}
     if(wasPlaying)stop();render();renderRadiosTool();
   }
+
+  // Les stations sont visibles même si le dernier contrôle de l'annuaire a échoué.
   function radioSearchResult(entry){
-    var url=(entry.url_resolved||entry.url||'').trim();
-    if(!httpsUrl(url))return null;
-    var codec=String(entry.codec||'').toUpperCase();
-    if(codec && ['MP3','AAC','AAC+','MPEG',''].indexOf(codec)===-1)return null;
-    if(entry.lastcheckok===0||entry.lastcheckok===false)return null;
-    var name=String(entry.name||'').trim();if(!name)return null;
-    var uuid=String(entry.stationuuid||'').slice(0,100);
-    return safeStation({id:'rb-'+uuid,name:name,region:entry.country||'',subregion:entry.state||'',logo:entry.favicon||'',logoBackup:officialSiteIcon(entry.homepage||''),mark:name.slice(0,3),url:url,home:entry.homepage||'https://www.radio-browser.info/'});
+    if(!entry||!String(entry.name||'').trim())return null;
+    var name=String(entry.name).trim().slice(0,85);
+    var url=String(entry.url_resolved||entry.url||'').trim();
+    if(!httpsUrl(url)&&httpsUrl(entry.url))url=entry.url.trim();
+    var home=imageLink(entry.homepage)||'https://www.radio-browser.info/';
+    var info={id:'rb-'+String(entry.stationuuid||name).slice(0,100),
+      name:name,region:String(entry.country||'').slice(0,55),
+      subregion:String(entry.state||'').slice(0,75),
+      logo:imageLink(entry.favicon),logoBackup:officialSiteIcon(home),
+      mark:name.slice(0,3),url:url,home:home};
+    var st=httpsUrl(url)?safeStation(info):info;
+    if(!st)return null;
+    st._canPlay=httpsUrl(url);
+    st._codec=String(entry.codec||'').toUpperCase();
+    st._bitrate=Number(entry.bitrate)||0;
+    st._votes=Number(entry.votes)||0;
+    st._language=String(entry.language||'');
+    st._languageCodes=String(entry.languagecodes||'');
+    st._countrycode=String(entry.countrycode||'').toUpperCase();
+    st._lastCheckFailed=entry.lastcheckok===0||entry.lastcheckok===false;
+    return st;
   }
   function editStationLogo(id){
     var s=storedRadioById(id);if(!s)return;
@@ -3223,31 +3238,51 @@ html[data-theme="light"] .setup-discovery-head strong{color:#1d425e;}
   function normalizeRadioTerm(value){
     return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
   }
+
+  function radioNameMatches(st,query){
+    var name=normalizeRadioTerm(st.name),q=normalizeRadioTerm(query);
+    return !q||name.indexOf(q)>=0||
+      name.replace(/\s+/g,'').indexOf(q.replace(/\s+/g,''))>=0;
+  }
   function radioRelevance(st,query,region){
-    var name=normalizeRadioTerm(st.name),q=normalizeRadioTerm(query),r=normalizeRadioTerm(region);
-    // « Radio Contact » doit passer avant « Contact MAX » pour la recherche « Contact ».
-    var coreName=name.replace(/^radio /,'');
-    var rank=!q?1:(name===q||coreName===q)?0:(name.indexOf(q)===0||coreName.indexOf(q)===0)?1:name.indexOf(q)>=0?2:10;
-    if(r&&normalizeRadioTerm((st.subregion||'')+' '+(st.region||'')).indexOf(r)>=0)rank-=.2;
-    return rank;
+    var name=normalizeRadioTerm(st.name),q=normalizeRadioTerm(query);
+    var core=name.replace(/^radio /,'');
+    var flat=name.replace(/\s+/g,''),flatQ=q.replace(/\s+/g,'');
+    var score=!q?1:(name===q||core===q||flat===flatQ)?0:
+      (name.indexOf(q)===0||core.indexOf(q)===0||flat.indexOf(flatQ)===0)?1:
+      radioNameMatches(st,q)?2:10;
+    var r=normalizeRadioTerm(region);
+    if(r&&normalizeRadioTerm((st.subregion||'')+' '+(st.region||'')).indexOf(r)>=0)score-=.15;
+    if(st._canPlay===false)score+=.4;
+    if(st._lastCheckFailed)score+=.2;
+    return score;
+  }
+  function radioLanguageClass(st){
+    var values=normalizeRadioTerm((st._language||'')+' '+(st._languageCodes||''));
+    var words=' '+values+' ';
+    if(/ (french|francais|francophone|fr|fra|fre) /.test(words))return 'fr';
+    if(/ (dutch|nederlands|nederlandse|flamand|flamande|nl|nld|dut) /.test(words))return 'nl';
+    return values?'other':'unknown';
+  }
+  function radioLanguageLabel(st){
+    var lang=radioLanguageClass(st);
+    return lang==='fr'?'Français':lang==='nl'?'Néerlandais':
+      lang==='unknown'?'Langue non renseignée':(st._language||'Autre langue');
   }
   function blendRadioResults(entries,query,country,region,limit){
-    var known=country&&country!=='BE'?[]:recommendedBelgianRadios();
-    var q=normalizeRadioTerm(query),r=normalizeRadioTerm(region);
-    if(q)known=known.filter(function(st){return normalizeRadioTerm(st.name).indexOf(q)>=0;});
-    else if(r)known=known.filter(function(st){return normalizeRadioTerm(st.region+' '+(st.subregion||'')).indexOf(r)>=0;});
-    var collected=known.concat((entries||[]).map(radioSearchResult).filter(Boolean));
-    var used={};
+    var used={},collected=(entries||[]).map(radioSearchResult).filter(Boolean);
     collected=collected.filter(function(st){
-      var key=normalizeRadioTerm(st.name)+'|'+st.url.toLowerCase();
-      if(used[key])return false;used[key]=true;
-      return !q||normalizeRadioTerm(st.name).indexOf(q)>=0;
+      var key=normalizeRadioTerm(st.name)+'|'+String(st.url).toLowerCase();
+      if(used[key])return false;
+      used[key]=true;
+      if(country&&st._countrycode&&st._countrycode!==country)return false;
+      return radioNameMatches(st,query);
     });
     collected.sort(function(a,b){
-      var x=radioRelevance(a,query,region)-radioRelevance(b,query,region);
-      return x||a.name.localeCompare(b.name,'fr',{sensitivity:'base'});
+      var delta=radioRelevance(a,query,region)-radioRelevance(b,query,region);
+      return delta||b._votes-a._votes||a.name.localeCompare(b.name,'fr',{sensitivity:'base'});
     });
-    return collected.slice(0,limit||30);
+    return collected.slice(0,limit||60);
   }
   function stationKm(a,b,latitude,longitude){
     if(a==null||b==null||a===''||b==='')return Infinity;
@@ -3292,83 +3327,157 @@ html[data-theme="light"] .setup-discovery-head strong{color:#1d425e;}
       item.actions.appendChild(actionButton('Supprimer',function(){removeStation(s.id);},'warn'));
       extras.appendChild(item.row);
     });
-    sectionTitle(box,'Chercher une station dans le monde');
+
+    sectionTitle(box,'Rechercher une station par son nom');
     var form=make('form','manager-search');
-    var input=make('input','manager-input');input.type='search';input.placeholder='Nom (facultatif si pays choisi)';input.autocomplete='off';input.setAttribute('aria-label','Nom de la radio');
-    var country=countryPicker('Filtrer les radios par pays');country.value='BE';
-    var region=make('input','manager-input');region.type='search';region.placeholder='Région / province : Hainaut…';region.setAttribute('aria-label','Filtrer les radios par région ou province');
+    var input=make('input','manager-input');
+    input.type='search';input.placeholder='Ex. YouFM, Sud Radio, Radio Contact…';
+    input.autocomplete='off';input.setAttribute('aria-label','Nom de la radio');
+    var country=countryPicker('Pays (facultatif)');
+    country.value=''; // Ne jamais imposer la Belgique à une recherche par nom.
+    var region=make('input','manager-input');region.type='search';
+    region.placeholder='Région / province (facultatif)';
+    region.setAttribute('aria-label','Privilégier cette région');
     var geo=make('div','manager-geo-row');geo.appendChild(country);geo.appendChild(region);
     var submit=make('button','manager-btn primary','Rechercher');submit.type='submit';
     form.appendChild(input);form.appendChild(submit);box.appendChild(form);box.appendChild(geo);
     var results=make('div','manager-list');box.appendChild(results);
     var state=feedbackLine(box);
-    box.appendChild(make('p','manager-note','Tu peux chercher par nom, par pays, par région/province, ou combiner ces critères. Les régions dépendent des informations publiées par les radios.'));
-    function showStations(data,near,position,searchName,searchCountry,searchRegion){
+    box.appendChild(make('p','manager-note',
+      'Recherche par nom dans le monde entier. Le pays est facultatif ; la région privilégie les résultats pertinents, sans éliminer les stations mal renseignées.'));
+    function renderFoundStations(data,near,position,searchName,searchCountry,searchRegion){
       results.textContent='';
-      var nearResults=[];
+      var matches=[];
       if(near){
-        nearResults=(data||[]).filter(function(entry){return stationKm(entry.geo_lat,entry.geo_long,position.latitude,position.longitude)<=60;})
-          .sort(function(a,b){return stationKm(a.geo_lat,a.geo_long,position.latitude,position.longitude)-stationKm(b.geo_lat,b.geo_long,position.latitude,position.longitude);})
-          .map(radioSearchResult).filter(Boolean);
-      }
-      // Les suggestions belges ne sont PAS présentées comme des stations vérifiées à 60 km.
-      var inBelgium=position&&position.latitude>49.4&&position.latitude<51.6&&position.longitude>2.4&&position.longitude<6.5;
-      var matches=near?nearResults.slice(0,24):blendRadioResults(data,searchName,searchCountry,searchRegion,30);
-      if(near&&inBelgium){
-        var known=recommendedBelgianRadios(),seen={};
-        matches.forEach(function(st){seen[st.url]=true;});
-        known.forEach(function(st){if(!seen[st.url]){st._unlocatedSuggestion=true;matches.push(st);seen[st.url]=true;}});
-      }
-      state(matches.length?(near?'Les résultats géolocalisés et les suggestions belges sont séparés. Teste chaque flux avant de l’enregistrer.':'Résultats : les stations intégrées sont aussi proposées si l’annuaire les ignore.'):('Aucun flux compatible trouvé. Essaie sans filtre régional ou utilise une adresse HTTPS connue.'));
-      var firstUnlocated=true;
-      matches.forEach(function(st){
-        if(near&&st._unlocatedSuggestion&&firstUnlocated){
-          firstUnlocated=false;
-          results.appendChild(make('div','manager-heading','Suggestions belges · proximité non vérifiée'));
-          results.appendChild(make('p','manager-note','Ces stations sont proposées parce qu’elles diffusent en Belgique, pas parce que l’annuaire les situe à moins de 60 km.'));
+        var pref=language.value;
+        matches=(data||[]).filter(function(entry){
+          return stationKm(entry.geo_lat,entry.geo_long,position.latitude,position.longitude)<=60;
+        }).map(function(entry){
+          var station=radioSearchResult(entry);
+          if(station)station._distance=stationKm(entry.geo_lat,entry.geo_long,position.latitude,position.longitude);
+          return station;
+        }).filter(Boolean);
+        if(pref==='fr'){
+          matches=matches.filter(function(st){return radioLanguageClass(st)==='fr';});
+        }else if(pref==='fr-unknown'){
+          matches=matches.filter(function(st){
+            var lang=radioLanguageClass(st);
+            return lang==='fr'||lang==='unknown';
+          });
         }
+        matches.sort(function(a,b){
+          if(pref==='all'||pref==='fr-priority'){
+            var rank=function(st){
+              var lang=radioLanguageClass(st);
+              return lang==='fr'?0:lang==='unknown'?1:lang==='nl'?3:2;
+            };
+            var diff=rank(a)-rank(b);
+            if(diff)return diff;
+          }
+          return a._distance-b._distance||b._votes-a._votes;
+        });
+        matches=matches.slice(0,60);
+      }else matches=blendRadioResults(data,searchName,searchCountry,searchRegion,60);
+      if(!matches.length){
+        state(near?'Aucune station trouvée dans un rayon de 60 km pour ces langues. Essaie toutes les langues ou la recherche par nom.':
+          'Aucun résultat dans cet annuaire pour ces critères. Essaie sans pays ou avec un autre nom.');
+        return 0;
+      }
+      state(matches.length+' station'+(matches.length>1?'s':'')+
+        (near?' géolocalisée'+(matches.length>1?'s':'')+' à moins de 60 km':' trouvée'+(matches.length>1?'s':''))+
+        ' · teste le flux avant de l’enregistrer.');
+      matches.forEach(function(st){
         var exists=all.some(function(x){return x.url===st.url||x.id===st.id;});
-        var detail=[st.region,st.subregion].filter(Boolean).join(' · ')||'Radio';
-        if(st._unlocatedSuggestion)detail+=' · Suggestion non géolocalisée';
-        else if(recommendedBelgianRadios().some(function(k){return k.url===st.url;}))detail+=' · Catalogue intégré';
-        else detail+=' · Annuaire communautaire';
-        var item=managerRow(st.name,detail+' · Flux à confirmer sur iPad');
-        var img=logo(st);img.className='logo-wrap manager-logo';item.row.insertBefore(img,item.row.firstChild);
-        item.actions.appendChild(actionButton('▶ Tester',function(){previewRadio(st);state('Essai : '+st.name+' · utilise Power pour arrêter.');}));
+        var detail=[st.region,st.subregion].filter(Boolean).join(' · ')||'Pays non renseigné';
+        detail+=' · '+radioLanguageLabel(st);
+        if(near&&isFinite(st._distance))detail+=' · '+Math.round(st._distance)+' km';
+        if(st._codec)detail+=' · '+st._codec+(st._bitrate?' '+st._bitrate+' kb/s':'');
+        if(st._lastCheckFailed)detail+=' · Dernier contrôle en échec';
+        if(!st._canPlay)detail+=' · Flux non HTTPS : non lisible dans la webapp';
+        var item=managerRow(st.name,detail),img=logo(st);
+        img.className='logo-wrap manager-logo';item.row.insertBefore(img,item.row.firstChild);
+        var test=actionButton('▶ Tester',function(){
+          if(!st._canPlay)return;
+          previewRadio(st);state('Essai : '+st.name+' · utilise Power pour arrêter.');
+        });
+        test.disabled=!st._canPlay;item.actions.appendChild(test);
         var add=actionButton(exists?'Enregistrée':'+ Enregistrer',function(){
-          if(addStation(st)){add.textContent='Enregistrée';add.disabled=true;state(st.name+' ajoutée aux autres stations. Tu peux la promouvoir en favorite.');}
-          else state('Cette station est déjà enregistrée ou la limite est atteinte.');
-        },exists?'':'primary');add.disabled=exists;item.actions.appendChild(add);
-        results.appendChild(item.row);
+          if(!st._canPlay)return;
+          if(addStation(st)){
+            add.textContent='Enregistrée';add.disabled=true;
+            state(st.name+' ajoutée aux autres stations. Tu peux la promouvoir en favorite.');
+          }else state('Cette station est déjà enregistrée ou la limite est atteinte.');
+        },exists?'':'primary');
+        add.disabled=exists||!st._canPlay;
+        item.actions.appendChild(add);results.appendChild(item.row);
       });
+      return matches.length;
     }
     var localTools=make('div','manager-local-search');
+    var language=make('select','manager-country');
+    language.setAttribute('aria-label','Langue des stations à proximité');
+    [
+      ['fr-unknown','Français + langue non précisée'],
+      ['fr','Français uniquement (déclaré)'],
+      ['fr-priority','Français en priorité, toutes langues'],
+      ['all','Toutes les langues']
+    ].forEach(function(pair){
+      var opt=make('option','',pair[1]);opt.value=pair[0];language.appendChild(opt);
+    });
+    language.value='fr-unknown';
     var nearby=actionButton('Stations près de moi · 60 km',function(){
       results.textContent='';state('Recherche de la position de cet iPad…');nearby.disabled=true;
-      if(!navigator.geolocation){nearby.disabled=false;state('La géolocalisation n’est pas disponible. Utilise le filtre pays/région.');return;}
+      if(!navigator.geolocation){
+        nearby.disabled=false;state('Géolocalisation indisponible. Cherche une station par nom.');return;
+      }
       navigator.geolocation.getCurrentPosition(function(pos){
-        state('Recherche des radios géolocalisées dans l’annuaire…');
+        state('Recherche des stations dont la géolocalisation est renseignée…');
         var latitude=pos.coords.latitude,longitude=pos.coords.longitude;
-        var params='limit=250&hidebroken=true&order=votes&reverse=true&is_https=true&geo_lat='+latitude+'&geo_long='+longitude+'&geo_distance=60000';
+        // Rayon réel, sans limiter aux frontières de Belgique.
+        var params='limit=500&order=votes&reverse=true&geo_lat='+latitude+
+          '&geo_long='+longitude+'&geo_distance=60000';
         radioBrowserFetch(params).then(function(data){
-          nearby.disabled=false;showStations(data,true,{latitude:latitude,longitude:longitude},'',country.value,region.value);
-        }).catch(function(){nearby.disabled=false;state('Recherche locale indisponible. Essaie par pays/région.');});
-      },function(){nearby.disabled=false;state('Position non autorisée. Choisis un pays et une province ci-dessous.');},{enableHighAccuracy:false,timeout:12000,maximumAge:600000});
+          nearby.disabled=false;
+          renderFoundStations(data,true,{latitude:latitude,longitude:longitude},'',country.value,region.value);
+        }).catch(function(){
+          nearby.disabled=false;state('Annuaire indisponible. Réessaie ou cherche une station par nom.');
+        });
+      },function(){
+        nearby.disabled=false;state('Localisation refusée. Utilise la recherche par nom.');
+      },{enableHighAccuracy:false,timeout:12000,maximumAge:600000});
     },'primary');
-    localTools.appendChild(nearby);box.insertBefore(localTools,form);
-    box.appendChild(make('p','manager-note','La recherche locale utilise la position de l’iPad uniquement pour interroger l’annuaire. Les stations non géolocalisées peuvent manquer : utilise aussi le filtre pays/province.'));
+    localTools.appendChild(nearby);localTools.appendChild(language);
+    box.insertBefore(localTools,form);
+    box.appendChild(make('p','manager-note',
+      'Seules les stations avec coordonnées connues figurent dans les résultats locaux. Une langue absente ou mal renseignée dans l’annuaire peut fausser le filtre.'));
+    function searchRequest(q,chosenCountry){
+      var params='limit=500&order=votes&reverse=true&name='+encodeURIComponent(q);
+      if(chosenCountry)params+='&countrycode='+encodeURIComponent(chosenCountry);
+      return radioBrowserFetch(params);
+    }
     form.addEventListener('submit',function(e){
-      e.preventDefault();var q=input.value.trim(),rgn=region.value.trim();
-      if(q.length===1){state('Saisis au moins deux caractères du nom, ou laisse ce champ vide.');return;}
-      if(!q&&!rgn&&!country.value){state('Choisis au moins un pays, une région ou un nom de radio.');return;}
-      results.textContent='';submit.disabled=true;state('Recherche des stations…');
-      // Le champ « state » de Radio Browser est libre et peu fiable : ne pas imposer
-      // Hainaut, Mons, etc. comme filtre serveur, sinon Contact et Sud Radio disparaissent.
-      var params='limit=250&order=votes&reverse=true';
-      if(q)params+='&name='+encodeURIComponent(q);
-      if(country.value)params+='&countrycode='+encodeURIComponent(country.value);
-      radioBrowserFetch(params).then(function(data){submit.disabled=false;showStations(data,false,null,q,country.value,rgn);})
-        .catch(function(){submit.disabled=false;showStations([],false,null,q,country.value,rgn);state('Annuaire indisponible : affichage des suggestions intégrées, à tester sur l’iPad.');});
+      e.preventDefault();
+      var q=input.value.trim(),rgn=region.value.trim(),chosen=country.value;
+      if(q.length===1){state('Saisis au moins deux caractères.');return;}
+      if(!q&&!chosen){state('Saisis un nom de radio ou choisis un pays.');return;}
+      results.textContent='';submit.disabled=true;state('Recherche dans l’annuaire mondial…');
+      var params=q?'limit=500&order=votes&reverse=true&name='+encodeURIComponent(q):
+        'limit=500&order=votes&reverse=true';
+      if(chosen)params+='&countrycode='+encodeURIComponent(chosen);
+      radioBrowserFetch(params).then(function(data){
+        if(q.length>=5&&blendRadioResults(data,q,chosen,rgn,60).length===0){
+          // Deux graphies possibles : "YouFM" et "You FM".
+          var prefix=normalizeRadioTerm(q).replace(/\s+/g,'').slice(0,3);
+          if(prefix.length===3){
+            return searchRequest(prefix,chosen).then(function(more){
+              return renderFoundStations(more,false,null,q,chosen,rgn);
+            });
+          }
+        }
+        return renderFoundStations(data,false,null,q,chosen,rgn);
+      }).catch(function(){
+        state('Annuaire inaccessible. Cela ne signifie pas que la station n’existe pas.');
+      }).then(function(){submit.disabled=false;});
     });
     sectionTitle(box,'Ajouter une adresse de diffusion connue');
     var manual=make('form','manager-search');
