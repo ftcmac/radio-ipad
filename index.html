@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.21.02">
-<meta name="radio-app-release-notes" content="Météo Air 2 : structure du panneau rééquilibrée|Température et pictogramme sans chevauchement|Bandeaux de pluie et air dégagés|Prévisions centrées verticalement dans les tuiles|Aucune modification des radios ni des réglages">
+<meta name="radio-app-release" content="2026.11.21.03">
+<meta name="radio-app-release-notes" content="Affichage adapté aux iPad mini en paysage|Tous les panneaux visibles selon la hauteur de l’écran|Météo et radio préservées|Bascule portrait-paysage plus fiable|Air 2 et Pro inchangés">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -1872,6 +1872,150 @@ html[data-theme="light"] .clock-panel #themeToggle{
   .weather-panel .temperature{font-size:60px}
   .weather-panel .weather-detail{padding:3px 5px;font-size:10px}
   .weather-panel .forecasts .forecast{padding:3px 2px}
+}
+
+
+/* V31 — iPad mini 6/7 et écrans paysage de largeur intermédiaire.
+   Ces appareils ont souvent ~1133 CSS px : l'ancien seuil 1100px
+   les classait à tort parmi les grandes tablettes. */
+@media (orientation:landscape) and (min-width:1101px) and (max-width:1180px) and (max-height:820px){
+  html,body{height:100%;overflow:hidden}
+  .shell{
+    width:100%;max-width:100%;
+    height:var(--app-height,100vh);
+    min-height:0;max-height:100%;
+    overflow-x:hidden;overflow-y:auto;
+    gap:8px;
+    padding-top:calc(10px + env(safe-area-inset-top,0px));
+    padding-right:max(14px,env(safe-area-inset-right,0px));
+    padding-bottom:calc(5px + env(safe-area-inset-bottom,0px));
+    padding-left:max(14px,env(safe-area-inset-left,0px));
+  }
+  .dashboard{
+    flex:1 1 0;min-height:282px;
+    grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);
+    gap:9px;
+  }
+  .clock-panel,.weather-panel{height:100%;min-height:0}
+  .clock-panel{padding:19px 20px}
+  .clock-panel #date{
+    left:14px;right:111px;bottom:24px;
+    font-size:clamp(19px,2.1vw,25px);
+  }
+  .clock-panel #themeToggle{top:12px;right:15px;width:42px;height:42px;min-width:42px;min-height:42px}
+  .clock-panel #clockTimerButton{
+    bottom:12px;right:15px;width:80px;height:60px;min-width:80px;min-height:60px;
+    border-radius:14px;
+  }
+  .clock-panel #clockTimerButton svg{width:25px;height:25px;flex-basis:25px}
+  .clock-panel .clock-timer-caption{font-size:11px}
+  .clock-panel #themeMenu{top:62px;right:15px}
+  .weather-panel{
+    display:grid;grid-template-columns:minmax(0,1fr);
+    grid-template-rows:36px 24px 62px 20px 16px 31px minmax(72px,1fr);
+    gap:3px;padding:9px 15px 8px;align-content:stretch;
+  }
+  .weather-panel .weather-title{height:100%;min-height:0;align-items:center;gap:6px}
+  .weather-panel .weather-title .eyebrow{font-size:10px;padding-top:2px}
+  .weather-panel .weather-solar-row{
+    position:static;top:auto;height:100%;min-height:0;
+    margin:0;padding:0 2px;align-self:center;
+  }
+  .weather-panel .solar-point{font-size:12px;gap:5px}
+  .weather-panel .solar-point svg{width:22px;height:22px;flex:0 0 22px}
+  .weather-panel .weather-current{
+    height:100%;min-height:0;margin:0;transform:none;
+    display:flex;justify-content:center;align-items:center;gap:15px;
+  }
+  .weather-panel .weather-icon{width:55px;height:55px;flex:0 0 55px}
+  .weather-panel .weather-icon svg{width:55px!important;height:55px!important}
+  .weather-panel .temperature{font-size:63px;line-height:.98}
+  .weather-panel .weather-summary{height:100%;min-height:0;margin:0;font-size:14px;line-height:20px}
+  .weather-panel .facts{height:100%;min-height:0;margin:0;font-size:11px;line-height:16px}
+  .weather-panel .weather-details{
+    width:100%;height:100%;min-height:0;margin:0;
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:7px;
+  }
+  .weather-panel .weather-detail{
+    min-height:0;height:100%;padding:4px 6px;
+    gap:4px;font-size:10.5px;line-height:1.15;
+  }
+  .weather-panel .forecast-rail{height:100%;min-height:0;margin:0;padding:0;align-self:stretch}
+  .weather-panel .forecasts{height:100%;min-height:0;margin:0;padding:0;gap:5px;align-items:stretch}
+  .weather-panel .forecasts .forecast{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    height:100%;min-height:0;padding:4px 2px;gap:1px;
+    font-size:11px;line-height:1.1;
+  }
+  .weather-panel .forecast .icon{width:23px;height:23px;margin:2px auto;flex:0 0 23px}
+  .weather-panel .forecast .temp{font-size:14px;line-height:1.1}
+  .weather-panel .forecast .chance{font-size:10px;margin:0}
+  .alertbar{
+    flex:0 0 56px;min-height:0;
+    gap:7px;padding:8px 14px;
+  }
+  .alertname{font-size:13px;gap:7px}
+  .alertbuttons{gap:6px}
+  .alertbuttons .smallbutton{padding:8px 10px;font-size:12px}
+  .radio-layout{
+    flex:0 0 clamp(228px,34vh,260px);
+    height:clamp(228px,34vh,260px);
+    min-height:0;
+    grid-template-columns:minmax(0,1fr) 208px;
+    padding:10px;gap:10px;
+  }
+  .station-grid{height:100%;grid-template-rows:repeat(2,minmax(0,1fr));gap:8px}
+  .station,.more-tile{height:100%;min-height:0;padding:7px;gap:7px}
+  .logo-wrap{width:61px;min-width:61px;height:57px}
+  .station-name,.more-label{font-size:14px}
+  .station-region,.more-current{font-size:11px}
+  .controls{height:100%;min-height:0;gap:8px}
+  .power{min-height:0;flex:1 1 0;font-size:20px}
+  .power-symbol{width:56px;height:56px}
+  .power-symbol svg{width:53px;height:53px}
+  .now{flex:0 0 53px;min-height:0;padding:8px 10px}
+  .now-name{font-size:13px}
+  .now-status{font-size:10px}
+  .concept-credit{flex:0 0 13px;line-height:13px;font-size:10px;top:-3px}
+}
+/* iPad mini avec barre de navigateur plus haute : compacter sans couper. */
+@media (orientation:landscape) and (min-width:1101px) and (max-width:1180px) and (max-height:700px){
+  .shell{
+    gap:6px;
+    padding-top:calc(7px + env(safe-area-inset-top,0px));
+    padding-bottom:calc(3px + env(safe-area-inset-bottom,0px));
+  }
+  .dashboard{min-height:258px;gap:7px}
+  .alertbar{flex-basis:50px;padding:6px 11px}
+  .radio-layout{
+    flex-basis:clamp(205px,33vh,230px);
+    height:clamp(205px,33vh,230px);
+    padding:8px;gap:8px;
+  }
+  .weather-panel{
+    grid-template-rows:31px 21px 54px 18px 15px 28px minmax(64px,1fr);
+    gap:2px;padding:8px 13px 7px;
+  }
+  .weather-panel .weather-icon{width:49px;height:49px;flex-basis:49px}
+  .weather-panel .weather-icon svg{width:49px!important;height:49px!important}
+  .weather-panel .temperature{font-size:57px}
+  .weather-panel .weather-summary{font-size:12px;line-height:18px}
+  .weather-panel .facts{font-size:10px;line-height:15px}
+  .weather-panel .weather-detail{padding:3px 5px;font-size:10px}
+  .weather-panel .forecasts .forecast{padding:2px 1px}
+  .radio-layout .logo-wrap{width:51px;min-width:51px;height:47px}
+  .station-name,.more-label{font-size:12px}
+  .station-region,.more-current{font-size:10px}
+  .power{font-size:17px}
+  .concept-credit{flex-basis:12px;line-height:12px}
+}
+/* Si fenêtre extrêmement basse ou texte agrandi, garder la page défilable
+   plutôt que d'en masquer silencieusement une partie. */
+@media (orientation:landscape) and (min-width:1101px) and (max-width:1180px) and (max-height:600px){
+  html,body{height:auto;min-height:100%;overflow:auto}
+  .shell{height:auto;min-height:var(--app-height,100vh);max-height:none;overflow:visible}
+  .dashboard{min-height:258px}
 }
 
 </style>
