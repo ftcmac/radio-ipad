@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.21.01">
-<meta name="radio-app-release-notes" content="Météo paysage rééquilibrée sur iPad Air 2|Température et picto remontés|Plus d’espace pour les informations pluie et qualité de l’air|Prévisions horaires contenues dans le cadre|Autres fonctions conservées">
+<meta name="radio-app-release" content="2026.11.21.02">
+<meta name="radio-app-release-notes" content="Météo Air 2 : structure du panneau rééquilibrée|Température et pictogramme sans chevauchement|Bandeaux de pluie et air dégagés|Prévisions centrées verticalement dans les tuiles|Aucune modification des radios ni des réglages">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -1786,47 +1786,92 @@ html[data-theme="light"] .clock-panel #themeToggle{
 }
 
 
-/* V29 — iPad Air 2 paysage : dégager le bas de la zone météo.
-   L'icône et la température restent grandes, mais leur ligne occupe moins
-   de hauteur ; la tendance et la qualité de l'air respirent davantage. */
+
+/* V30 — refonte de la répartition verticale météo sur iPad Air 2.
+   On ne déplace plus les éléments par transformation : leurs lignes ont
+   des hauteurs cohérentes et les prévisions utilisent le reste de l'espace. */
 @media (orientation:landscape) and (min-width:761px) and (max-width:1100px) and (max-height:820px){
   .weather-panel{
-    grid-template-rows:40px 24px 50px 20px 18px 34px minmax(0,1fr);
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:39px 26px 64px 21px 17px 34px minmax(76px,1fr);
+    gap:3px;
+    padding:11px 16px 9px;
+    min-height:0;
+    align-content:stretch;
+  }
+  .weather-panel .weather-title{
+    height:100%;min-height:0;align-self:center;
+  }
+  .weather-panel .weather-solar-row{
+    height:100%;min-height:0;margin:0;top:auto;
+    position:static;align-self:center;
   }
   .weather-panel .weather-current{
-    height:50px;
-    min-height:0;
-    margin:0;
-    transform:translateY(-7px);
+    height:100%;min-height:0;margin:0;
+    transform:none;
+    justify-content:center;align-items:center;gap:15px;
+  }
+  .weather-panel .weather-icon{
+    width:56px;height:56px;flex:0 0 56px;
+  }
+  .weather-panel .weather-icon svg{
+    width:56px!important;height:56px!important;
+  }
+  .weather-panel .temperature{
+    font-size:65px;line-height:.98;
   }
   .weather-panel .weather-summary{
-    height:20px;
-    line-height:20px;
-    margin:0;
+    height:100%;min-height:0;margin:0;
+    font-size:14px;line-height:21px;
   }
   .weather-panel .facts{
-    height:18px;
-    line-height:18px;
-    margin:0;
-    font-size:11.5px;
+    height:100%;min-height:0;margin:0;
+    font-size:11px;line-height:17px;
   }
   .weather-panel .weather-details{
-    height:34px;
-    min-height:0;
-    margin:0;
-    gap:7px;
+    height:100%;min-height:0;
+    margin:0;gap:7px;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
   }
   .weather-panel .weather-detail{
-    height:34px;
-    min-height:0;
-    padding:5px 7px;
-    font-size:11px;
+    height:100%;min-height:0;
+    padding:4px 6px;gap:4px;
+    font-size:10.5px;line-height:1.15;
   }
-  .weather-panel .forecast-rail,
+  .weather-panel .forecast-rail{
+    height:100%;min-height:0;align-self:stretch;
+    margin:0;padding:0;
+  }
   .weather-panel .forecasts{
-    min-height:0;
-    margin:0;
+    height:100%;min-height:0;margin:0;padding:0;
+    gap:6px;align-items:stretch;
   }
+  .weather-panel .forecasts .forecast{
+    min-height:0;height:100%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:4px 2px;gap:1px;
+    font-size:11px;line-height:1.1;
+  }
+  .weather-panel .forecast .icon{
+    width:24px;height:24px;margin:2px auto;
+    flex:0 0 24px;
+  }
+  .weather-panel .forecast .temp{font-size:15px;line-height:1.12}
+  .weather-panel .forecast .chance{margin:0;font-size:10.5px}
+}
+/* Gestion des hauteurs plus faibles sans masquer le bas des prévisions. */
+@media (orientation:landscape) and (min-width:761px) and (max-width:1100px) and (max-height:700px){
+  .weather-panel{
+    grid-template-rows:35px 23px 59px 20px 16px 30px minmax(68px,1fr);
+    gap:2px;padding:9px 15px 8px;
+  }
+  .weather-panel .weather-icon,.weather-panel .weather-icon svg{
+    width:52px!important;height:52px!important;
+  }
+  .weather-panel .temperature{font-size:60px}
+  .weather-panel .weather-detail{padding:3px 5px;font-size:10px}
+  .weather-panel .forecasts .forecast{padding:3px 2px}
 }
 
 </style>
