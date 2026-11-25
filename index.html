@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.21.03">
-<meta name="radio-app-release-notes" content="Affichage adapté aux iPad mini en paysage|Tous les panneaux visibles selon la hauteur de l’écran|Météo et radio préservées|Bascule portrait-paysage plus fiable|Air 2 et Pro inchangés">
+<meta name="radio-app-release" content="2026.11.25.02">
+<meta name="radio-app-release-notes" content="Sommeil démarre la radio et programme son arrêt|Titre et artiste affichés lorsqu’ils sont disponibles|Texte radio agrandi et commandes tactiles préservées|Horloge et météo inchangées|Vérification renforcée des métadonnées diffusées">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -2018,6 +2018,207 @@ html[data-theme="light"] .clock-panel #themeToggle{
   .dashboard{min-height:258px}
 }
 
+
+/* V32 — Commandes rapprochées de leur fonction. */
+.shell > .alertbar{display:none!important}
+.clock-panel{position:relative;padding-top:52px}
+.clock-toolbar{
+ position:absolute;top:10px;left:15px;right:70px;z-index:5;
+ display:flex;align-items:center;gap:7px;min-height:36px;
+}
+.clock-panel .clock-toolbar .clock-dim{
+ display:inline-flex;align-items:center;justify-content:center;gap:6px;
+ min-height:35px;min-width:0;padding:5px 9px;border-radius:11px;
+ border:1px solid rgba(147,201,238,.22);background:rgba(124,172,211,.1);
+ color:#d9ebff;font-size:11px;white-space:nowrap;
+}
+.clock-panel .clock-toolbar .clock-dim.selected-tool{
+ background:rgba(117,182,228,.21);border-color:rgba(160,211,244,.48);
+}
+.clock-panel .clock-toolbar .clock-dim .ui-icon{
+ display:inline-flex;align-items:center;justify-content:center;
+ width:17px;height:17px;flex:0 0 17px;margin:0;
+}
+.clock-panel .clock-toolbar .clock-dim .ui-icon svg{width:17px;height:17px}
+.clock-panel .clock-toolbar .help-open{
+ margin:0;width:34px;height:34px;min-width:34px;min-height:34px;flex:0 0 34px;font-size:19px
+}
+.clock-panel .clock-toolbar .connection-state{
+ width:10px;min-width:10px;flex:0 0 10px;gap:0;font-size:0;overflow:hidden
+}
+.clock-panel .clock-toolbar .connection-state:before{width:8px;height:8px;flex:0 0 8px}
+.clock-panel .clock-toolbar .app-update-hint{padding:5px 7px;font-size:10px;min-height:28px}
+.clock-panel #themeToggle{z-index:6}
+.weather-panel .air-detail{
+ cursor:pointer;touch-action:manipulation;
+ border-color:rgba(159,207,240,.38)
+}
+.weather-panel .air-detail:active,.weather-panel .air-detail:focus-visible{
+ background:rgba(125,190,233,.22);outline:2px solid #a4deff;outline-offset:1px
+}
+.radio-layout .radio-primary-buttons{
+ flex:1 1 0;min-height:0;display:grid;
+ grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+ gap:8px;align-items:stretch
+}
+.radio-layout .radio-primary-buttons .power{
+ width:100%;height:100%;min-width:0;min-height:0!important;
+ flex:0 0 auto;padding:8px 4px;border-radius:15px;
+ font-size:clamp(13px,1.8vw,19px);gap:5px
+}
+.radio-layout .radio-primary-buttons .power-symbol{
+ width:clamp(35px,4.8vw,57px);height:clamp(35px,4.8vw,57px);
+ display:flex;align-items:center;justify-content:center
+}
+.radio-layout .radio-primary-buttons .power-symbol svg{width:100%;height:100%;max-width:57px;max-height:57px}
+.radio-layout .radio-sleep{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:5px;min-width:0;width:100%;height:100%;padding:8px 4px;min-height:0;
+ background:#29465f;color:#e1f4ff;border:1px solid #6c99bc;
+ border-radius:15px;text-align:center;
+ font-size:clamp(12px,1.6vw,17px);font-weight:750;line-height:1.12
+}
+.radio-layout .radio-sleep .ui-icon{
+ display:flex;align-items:center;justify-content:center;
+ flex:0 0 auto;margin:0;width:clamp(30px,4vw,48px);height:clamp(30px,4vw,48px)
+}
+.radio-layout .radio-sleep .ui-icon svg{width:100%;height:100%}
+.radio-layout .radio-sleep .sleep-duration{
+ display:block;max-width:100%;font-size:clamp(10px,1.25vw,14px);
+ font-weight:700;color:#bfdbf0
+}
+.radio-layout .radio-sleep.sleep-active{
+ color:#fff;background:#355d78;border-color:#b1e3ff;
+ box-shadow:inset 0 0 0 1px rgba(172,224,255,.24)
+}
+.radio-layout .radio-sleep.sleep-active .sleep-duration{color:#c6f1ff}
+.radio-layout .radio-sleep.sleep-unavailable{opacity:.76}
+html[data-theme="light"] .clock-toolbar .clock-dim{
+ background:#dbeef9;color:#244d6b;border-color:#aecfe3
+}
+html[data-theme="light"] .radio-layout .radio-sleep{
+ background:#dfedf7;color:#224d68;border-color:#aacbe1
+}
+html[data-theme="light"] .radio-layout .radio-sleep.sleep-active{
+ background:#c2e1f6;border-color:#5e9bc7
+}
+html[data-theme="light"] .radio-layout .radio-sleep .sleep-duration{color:#3b6984}
+@media (orientation:landscape) and (min-width:761px) and (max-height:820px){
+ .clock-panel{padding-top:49px}
+ .clock-toolbar{top:9px;left:14px;right:65px;gap:6px}
+ .clock-panel .clock-toolbar .clock-dim{min-height:33px;padding:5px 8px;font-size:10.5px}
+ .clock-panel .clock-toolbar .help-open{width:30px;height:30px;min-width:30px;min-height:30px;flex-basis:30px}
+ .radio-layout .radio-primary-buttons .power{font-size:clamp(12px,1.6vw,17px)}
+ .radio-layout .radio-sleep{font-size:clamp(12px,1.5vw,16px);gap:3px}
+}
+@media (orientation:landscape) and (min-width:1101px) and (max-width:1180px) and (max-height:820px){
+ .clock-panel{padding-top:46px}
+ .radio-layout .radio-primary-buttons{gap:7px}
+}
+@media (orientation:portrait) and (min-width:600px) and (max-width:1100px){
+ .clock-panel{padding-top:54px}
+ .clock-toolbar{top:13px;left:18px;right:68px}
+}
+@media (max-width:760px){
+ .clock-panel{padding-top:54px}
+ .clock-toolbar{top:9px;left:10px;right:54px;gap:5px}
+ .clock-panel .clock-toolbar .clock-dim{padding:4px 5px;min-height:30px;font-size:10px}
+ .clock-panel .clock-toolbar .clock-dim .ui-icon{width:14px;height:14px;flex-basis:14px}
+ .clock-panel .clock-toolbar .clock-dim .ui-icon svg{width:14px;height:14px}
+ .clock-panel .clock-toolbar .help-open{width:28px;height:28px;min-width:28px;min-height:28px;flex-basis:28px}
+ .radio-layout .radio-primary-buttons{gap:6px}
+}
+
+
+/* V33 — chanson en cours dans le cartouche de station active. */
+.radio-layout .now{min-width:0}
+.radio-layout .now-song{
+  display:block;min-width:0;max-width:100%;
+  font-size:11px;color:#e8f7ff;font-weight:650;line-height:1.22;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.radio-layout .song-artist{
+  display:block;min-width:0;max-width:100%;
+  font-size:10px;color:#c2daee;line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.radio-layout .song-credit{
+  display:none;align-self:flex-start;
+  font-size:9px;color:#9dc9e8;text-decoration:underline;text-underline-offset:2px;
+  white-space:nowrap
+}
+.radio-layout .song-credit.is-visible{display:inline}
+.radio-layout .now{gap:2px;padding:7px 10px}
+.radio-layout .now-name{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.radio-layout .now-status{font-size:10px}
+@media (orientation:landscape) and (min-width:761px) and (max-height:820px){
+ .radio-layout .now{flex:0 0 75px;min-height:75px;padding:5px 9px;gap:1px}
+ .radio-layout .now-name{font-size:11px}
+ .radio-layout .now-status{font-size:9px}
+ .radio-layout .now-song{font-size:10px}
+ .radio-layout .song-artist{font-size:9px}
+ .radio-layout .song-credit{font-size:8px}
+}
+@media (orientation:landscape) and (min-width:1101px) and (max-width:1180px) and (max-height:700px){
+ .radio-layout .now{flex-basis:76px;min-height:0}
+}
+@media (orientation:portrait) and (min-width:600px) and (max-width:1100px){
+ .radio-layout .now{flex:0 0 84px;min-height:84px}
+}
+html[data-theme="light"] .radio-layout .now-song{color:#244b65}
+html[data-theme="light"] .radio-layout .song-artist{color:#426b84}
+html[data-theme="light"] .radio-layout .song-credit{color:#286997}
+
+
+/* V33.1 — lecture radio lisible : texte prioritaire, boutons vraiment tactiles. */
+.radio-layout .now{
+  position:relative;min-width:0;min-height:96px;flex:0 0 96px;
+  gap:3px;padding:7px 11px;overflow:hidden
+}
+.radio-layout .now-name{font-size:12.5px;line-height:1.16;font-weight:790}
+.radio-layout .now-status{font-size:11px;line-height:1.18}
+.radio-layout .now-song{
+  font-size:13px;line-height:1.18;font-weight:740;
+  white-space:normal;display:-webkit-box;
+  -webkit-box-orient:vertical;-webkit-line-clamp:2;
+  overflow:hidden;min-height:0
+}
+.radio-layout .song-artist{
+  font-size:11.5px;line-height:1.17;
+  text-overflow:ellipsis;white-space:nowrap
+}
+.radio-layout .song-credit{font-size:9px;line-height:1.05}
+.radio-layout .radio-primary-buttons{
+  min-height:74px;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px
+}
+.radio-layout .radio-primary-buttons .power,.radio-layout .radio-sleep{
+  min-height:74px;touch-action:manipulation;
+}
+@media (orientation:landscape) and (min-width:761px) and (max-height:820px){
+  .radio-layout .now{min-height:96px;flex-basis:96px;padding:6px 9px;gap:2px}
+  .radio-layout .now-name{font-size:12px}
+  .radio-layout .now-status{font-size:10.5px}
+  .radio-layout .now-song{font-size:12.5px}
+  .radio-layout .song-artist{font-size:11px}
+  .radio-layout .song-credit{font-size:9px}
+}
+@media (orientation:landscape) and (min-width:1101px) and (max-width:1180px) and (max-height:700px){
+  .radio-layout .now{min-height:88px;flex-basis:88px;padding:5px 8px}
+  .radio-layout .now-name{font-size:11.5px}
+  .radio-layout .now-status{font-size:10px}
+  .radio-layout .now-song{font-size:12px;-webkit-line-clamp:1}
+  .radio-layout .song-artist{font-size:11px}
+  .radio-layout .radio-primary-buttons,
+  .radio-layout .radio-primary-buttons .power,
+  .radio-layout .radio-sleep{min-height:72px}
+}
+@media (orientation:portrait) and (min-width:600px) and (max-width:1100px){
+  .radio-layout .now{min-height:100px;flex-basis:100px;padding:8px 10px}
+  .radio-layout .now-song{font-size:13.5px}
+  .radio-layout .song-artist{font-size:12px}
+}
+
 </style>
 </head>
 <body>
@@ -2091,6 +2292,9 @@ html[data-theme="light"] .clock-panel #themeToggle{
       <div class="now" role="status">
         <div class="now-name" id="selectedName">VivaCité · Hainaut</div>
         <div class="now-status" id="playStatus">Radio éteinte</div>
+        <div class="now-song" id="songTitle" aria-live="off">Titre non disponible</div>
+        <div class="song-artist" id="songArtist"></div>
+        <a class="song-credit" id="songCredit" href="https://tuneping.com/" target="_blank" rel="noopener noreferrer">Data by Tuneping</a>
         <a id="radioLink" href="#" target="_blank" rel="noopener noreferrer" style="display:none">Ouvrir le site de la station</a>
       </div>
     </div>
@@ -2128,6 +2332,45 @@ html[data-theme="light"] .clock-panel #themeToggle{
 <script>
 (function(){
   'use strict';
+
+  // Déplacer les commandes existantes sans dupliquer les IDs ou les actions.
+  function elBoot(id){return document.getElementById(id);}
+  var clockToolbar=document.createElement('div');
+  clockToolbar.className='clock-toolbar';
+  clockToolbar.setAttribute('role','group');
+  clockToolbar.setAttribute('aria-label','Veille douce, aide et connexion');
+  elBoot('clockPanel').appendChild(clockToolbar);
+  var dimControl=elBoot('dimButton');
+  dimControl.classList.add('clock-dim');
+  clockToolbar.appendChild(dimControl);
+  clockToolbar.appendChild(elBoot('helpOpen'));
+  clockToolbar.appendChild(elBoot('connectionState'));
+  clockToolbar.appendChild(elBoot('appUpdateHint'));
+  var radioButtons=document.createElement('div');
+  radioButtons.className='radio-primary-buttons';
+  var radioControls=elBoot('power').parentNode;
+  radioControls.insertBefore(radioButtons,elBoot('power'));
+  radioButtons.appendChild(elBoot('power'));
+  var sleepControl=elBoot('timerButton');
+  sleepControl.classList.remove('smallbutton');
+  sleepControl.classList.add('radio-sleep');
+  radioButtons.appendChild(sleepControl);
+  var sleepDuration=document.createElement('span');
+  sleepDuration.id='sleepDuration';
+  sleepDuration.className='sleep-duration';
+  sleepDuration.textContent='Arrêt auto';
+  sleepControl.appendChild(sleepDuration);
+  var airControl=document.querySelector('#weatherPanel .air-detail');
+  if(airControl){
+    airControl.setAttribute('role','button');
+    airControl.setAttribute('tabindex','0');
+    airControl.setAttribute('aria-label','Ouvrir le détail Air et pollens');
+    airControl.title='Ouvrir Air & pollens';
+    airControl.addEventListener('click',function(){openTools('insights');});
+    airControl.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();openTools('insights');}
+    });
+  }
   var previousUserInstallation=false;
   try{previousUserInstallation=!!(localStorage.getItem('radio.library.v1')||localStorage.getItem('radio.theme')||localStorage.getItem('weather.favorites.v1')||localStorage.getItem('radio.clock.settings.v1')||localStorage.getItem('radio.st'));}catch(e){}
   var fav=[
@@ -2510,7 +2753,7 @@ html[data-theme="light"] .clock-panel #themeToggle{
     select.addEventListener('change',function(){if(this.value==='__manage__'){openTools('radios');this.value=previewStation?'':(otherActive?selected:'');}else if(this.value)choose(this.value);});tile.appendChild(select);grid.appendChild(tile);
     set('selectedName',current().name+(current().region?' · '+current().region:'')+(previewStation?' · Essai':''));
   }
-  function powerUI(){el('power').classList.toggle('on',playing);el('power').setAttribute('aria-pressed',String(playing));el('power').setAttribute('aria-label',playing?'Éteindre la radio':'Allumer la radio');set('powerLabel',playing?'Éteindre':'Allumer');}
+  function powerUI(){el('power').classList.toggle('on',playing);el('power').setAttribute('aria-pressed',String(playing));el('power').setAttribute('aria-label',playing?'Éteindre la radio':'Allumer la radio');set('powerLabel',playing?'Éteindre':'Allumer');el('timerButton').classList.toggle('sleep-unavailable',!playing);}
   function choose(id){
     // La station effectivement écoutée et le favori mémorisé peuvent différer
     // pendant l'essai d'une radio non enregistrée.
@@ -2529,6 +2772,7 @@ html[data-theme="light"] .clock-panel #themeToggle{
       start();
     }else{
       set('playStatus','Radio éteinte');
+      if(typeof refreshSongForStation==='function')refreshSongForStation();
     }
     render();
   }
@@ -2538,18 +2782,131 @@ html[data-theme="light"] .clock-panel #themeToggle{
     if(!httpsUrl(s.url)){playing=false;powerUI();set('playStatus','Aucun flux disponible.');return;}
     audio.pause();audio.removeAttribute('src');audio.load();el('radioLink').style.display='none';
     audio.src=s.url;playing=true;clearDim();powerUI();set('playStatus','Connexion au direct…');
+    if(typeof refreshSongForStation==='function')refreshSongForStation();
     try{var p=audio.play();if(p&&p.catch)p.catch(function(){if(call===serial){playing=false;powerUI();set('playStatus','Lecture indisponible.');fallback();scheduleDim(20000);}});}
     catch(e){if(call===serial){playing=false;powerUI();set('playStatus','Lecture impossible.');fallback();scheduleDim(20000);}}
   }
-  function stop(){++serial;audio.pause();audio.removeAttribute('src');audio.load();playing=false;previewStation=null;render();if(timerDeadline){timerDeadline=0;updateTimerLabel();}powerUI();set('playStatus','Radio éteinte');el('radioLink').style.display='none';scheduleDim(10000);}
+  function stop(){++serial;audio.pause();audio.removeAttribute('src');audio.load();playing=false;previewStation=null;render();
+    if(typeof refreshSongForStation==='function')refreshSongForStation();if(timerDeadline){timerDeadline=0;updateTimerLabel();}powerUI();set('playStatus','Radio éteinte');el('radioLink').style.display='none';scheduleDim(10000);}
   el('power').addEventListener('click',function(){if(playing)stop();else start();});
   function previewRadio(s){
     previewStation=s;start();render();set('playStatus','Essai non enregistré · appuie sur un favori pour y revenir');
   }
-  audio.addEventListener('playing',function(){playing=true;powerUI();set('playStatus',previewStation?'● En direct · Essai non enregistré':'● En direct');});
+  audio.addEventListener('playing',function(){playing=true;powerUI();set('playStatus',previewStation?'● En direct · Essai non enregistré':'● En direct');refreshSongForStation();});
   audio.addEventListener('waiting',function(){if(playing)set('playStatus','Connexion au direct…');});
   audio.addEventListener('error',function(){if(audio.getAttribute('src')){playing=false;powerUI();set('playStatus','Flux indisponible.');fallback();scheduleDim(20000);}});
   render();powerUI();
+
+  // Métadonnées de morceau : service facultatif Tuneping.
+  // Détecte les titres envoyés par les diffuseurs ; jamais de chanson inventée.
+  // Aucune clé embarquée, aucun traitement de l'audio.
+  var songRequestSerial=0, songMetadataStation='', songRefreshBusy=false,
+      songLastLookup='', songMetadataUUID='', songResolveCache={};
+  function normalizeSongStation(v){
+    return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  }
+  function showSongInfo(title,artist,fromTuneping){
+    var titleNode=el('songTitle'),artistNode=el('songArtist'),credit=el('songCredit');
+    if(!titleNode)return;
+    titleNode.textContent=title||'Titre non disponible';
+    titleNode.title=title||'';
+    artistNode.textContent=artist||'';
+    artistNode.title=artist||'';
+    credit.classList.toggle('is-visible',!!fromTuneping);
+  }
+  function songStationUUID(st){
+    var id=String(st.id||'').replace(/^rb-/,'');
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)?id:'';
+  }
+  function resolveSongStation(st){
+    var uid=songStationUUID(st);
+    if(uid)return Promise.resolve(uid);
+    var key=st.url||st.name;
+    if(Object.prototype.hasOwnProperty.call(songResolveCache,key)){
+      return Promise.resolve(songResolveCache[key]);
+    }
+    // Pas de résultats par similarité seule : il faut le même flux ou
+    // le même nom et un pays cohérent pour éviter d'afficher un autre émetteur.
+    return fetch('https://api.tuneping.com/v1/stations?q='+encodeURIComponent(st.name)+
+      '&limit=50',{headers:{'Accept':'application/json'}})
+      .then(function(response){if(!response.ok)throw Error('annuaire titres');return response.json();})
+      .then(function(json){
+        var list=Array.isArray(json.data)?json.data:[];
+        var want=normalizeSongStation(st.name);
+        var actualHost='';
+        try{actualHost=new URL(st.url).hostname.toLowerCase();}catch(e){}
+        var scored=list.map(function(entry){
+          var entryName=normalizeSongStation(entry.name);
+          var value=0;
+          if(entryName===want)value+=5;
+          else if(entryName.indexOf(want)===0&&want.length>=6)value+=2;
+          var entryURL=String(entry.stream_url||'');
+          if(entryURL===st.url)value+=10;
+          else if(actualHost){try{
+            if(new URL(entryURL).hostname.toLowerCase()===actualHost)value+=4;
+          }catch(e){}}
+          var probableBE=/hainaut|mons|belgique|belgium/i.test((st.region||'')+' '+(st.subregion||''));
+          if(probableBE&&String(entry.country||'').toUpperCase()==='BE')value+=2;
+          else if(probableBE&&String(entry.country||'').toUpperCase()!=='BE')value-=8;
+          return {entry:entry,value:value};
+        }).sort(function(a,b){return b.value-a.value;});
+        var best=scored.length&&scored[0].value>=9?scored[0].entry:null;
+        var answer=best&&songStationUUID({id:best.id})||'';
+        songResolveCache[key]=answer;return answer;
+      });
+  }
+  function retrieveCurrentSong(){
+    if(songRefreshBusy)return;
+    if(!playing){showSongInfo('Titre non disponible','',false);return;}
+    var station=current(),identity=(station.url||'')+'|'+(station.name||'');
+    var requestId=++songRequestSerial;
+    if(songMetadataStation!==identity){
+      songMetadataStation=identity;songMetadataUUID='';
+      showSongInfo('Recherche du morceau…','',false);
+    }
+    songRefreshBusy=true;
+    resolveSongStation(station).then(function(uuid){
+      if(!uuid)throw Error('Station non indexée');
+      if(requestId!==songRequestSerial||current().url!==station.url)return null;
+      songMetadataUUID=uuid;
+      return fetch('https://api.tuneping.com/v1/stations/'+encodeURIComponent(uuid)+
+        '/now-playing',{headers:{'Accept':'application/json'}})
+        .then(function(response){if(!response.ok)throw Error('pas de titre');return response.json();});
+    }).then(function(payload){
+      if(requestId!==songRequestSerial||!playing||current().url!==station.url)return;
+      var row=payload&&(payload.data||payload.now_playing||payload);
+      if(Array.isArray(row))row=row[0]||null;
+      if(!row||typeof row!=='object'||row.is_stale===true||row.classification&&row.classification!=='song'){
+        showSongInfo('Titre non disponible','',false);return;
+      }
+      var observed=row.confirmed_at||row.observed_at||row.last_seen_at||row.last_ok_at;
+      if(observed&&Number.isFinite(Date.parse(observed))&&Date.now()-Date.parse(observed)>4*60*1000){
+        showSongInfo('Titre non disponible','',false);return;
+      }
+      var title=String(row.title||'').trim(),artist=String(row.artist||'').trim();
+      if(!title){
+        var raw=String(row.raw_title||'').trim();
+        var pos=raw.indexOf(' - ');
+        if(pos>0&&raw.length>pos+3){
+          artist=raw.slice(0,pos);title=raw.slice(pos+3);
+        }
+      }
+      if(title)showSongInfo(title.slice(0,170),artist.slice(0,130),true);
+      else showSongInfo('Titre non disponible','',false);
+    }).catch(function(){
+      if(requestId===songRequestSerial)showSongInfo('Titre non disponible','',false);
+    }).then(function(){songRefreshBusy=false;});
+  }
+  function refreshSongForStation(){
+    songRequestSerial++;
+    songMetadataStation='';
+    songRefreshBusy=false;
+    if(!playing){showSongInfo('Titre non disponible','',false);return;}
+    retrieveCurrentSong();
+  }
+  // Limiter le service à une requête environ toutes les 90 s en lecture.
+  setInterval(function(){if(playing&&!document.hidden)retrieveCurrentSong();},90000);
 
   // Icônes météo SVG : tracés légers et palette douce, utilisables en clair comme en sombre.
   function weatherSVG(kind){
@@ -2810,7 +3167,7 @@ html[data-theme="light"] .clock-panel #themeToggle{
 
   // Modales créées dans la page : indépendantes des sites tiers.
   var toolsModal=el('toolsModal'),activeTool='';
-  var timerDeadline=0, timerTick=null;
+  var timerDeadline=0, timerTick=null, sleepPreset=0;
   var dimEnabled=read('radio.dim','yes')!=='no';
   var dimTimeout=null,dimIsOn=false;
   function clearDim(){
@@ -2877,24 +3234,55 @@ html[data-theme="light"] .clock-panel #themeToggle{
     box.appendChild(grid);
   }
   function timerRemaining(){return timerDeadline?Math.max(0,Math.ceil((timerDeadline-Date.now())/60000)):0;}
+
   function updateTimerLabel(){
     var mins=timerRemaining();
-    set('timerButtonLabel',timerDeadline?('Sommeil · '+mins+' min'):'Sommeil');
     if(timerDeadline&&Date.now()>=timerDeadline){
-      timerDeadline=0;set('timerButtonLabel','Sommeil');
+      timerDeadline=0;sleepPreset=0;
       if(playing)stop();
       if(activeTool==='timer')renderTimerTool();
-      return;
     }
+    if(!timerDeadline)sleepPreset=0;
+    set('timerButtonLabel','Sommeil');
+    var duration=el('sleepDuration'),button=el('timerButton');
+    if(duration)duration.textContent=timerDeadline?(mins+' min'):'Arrêt auto';
+    button.classList.toggle('sleep-active',!!timerDeadline);
+    button.classList.toggle('sleep-unavailable',!playing);
+    button.setAttribute('aria-pressed',String(!!timerDeadline));
+    button.setAttribute('aria-label',timerDeadline?
+      'Sommeil : arrêt dans '+mins+' minutes. Appuyer pour passer à la durée suivante.':
+      'Sommeil : choisir un arrêt automatique de la radio');
     if(activeTool==='timer'){
-      var details=el('timerDetail');if(details)details.textContent=timerDeadline?'Arrêt automatique dans '+mins+' minute'+(mins>1?'s':'')+'.':'Choisis dans combien de temps arrêter la radio.';
+      var details=el('timerDetail');
+      if(details)details.textContent=timerDeadline?
+        'Arrêt automatique dans '+mins+' minute'+(mins>1?'s':'')+'.':
+        'Choisis dans combien de temps arrêter la radio.';
     }
   }
   function startTimer(minutes){
-    if(!minutes){timerDeadline=0;}
-    else{timerDeadline=Date.now()+minutes*60000;}
-    updateTimerLabel();renderTimerTool();
+    sleepPreset=minutes||0;
+    timerDeadline=minutes?Date.now()+minutes*60000:0;
+    updateTimerLabel();
+    if(activeTool==='timer')renderTimerTool();
   }
+  function cycleSleep(){
+    // Sommeil est un mode d'écoute : démarrer la radio si elle est éteinte.
+    // À la fin du cycle (désactivé), la radio continue à jouer.
+    var wasOff=!playing;
+    var sequence=[60,45,30,15,0];
+    var index=sequence.indexOf(sleepPreset);
+    var next=(timerDeadline&&index>=0)?sequence[(index+1)%sequence.length]:60;
+    if(wasOff){
+      if(!current()||!httpsUrl(current().url)){
+        showToast('Aucun flux radio valide pour lancer Sommeil.',3200);
+        return;
+      }
+      start();
+    }
+    startTimer(next);
+    showToast(next?'Sommeil : radio '+(wasOff?'allumée, ':'')+'arrêt dans '+next+' min.':'Sommeil désactivé : la radio continue.',1700);
+  }
+
   function renderTimerTool(){
     var box=el('toolsBody');box.textContent='';
     var info=document.createElement('div');info.className='timer-detail';info.id='timerDetail';
@@ -3981,7 +4369,7 @@ html[data-theme="light"] .clock-panel #themeToggle{
     addBackupSection(box);
   }
 
-  el('timerButton').addEventListener('click',function(){openTools('timer');});
+  el('timerButton').addEventListener('click',cycleSleep);
   el('toolsClose').addEventListener('click',closeTools);
   toolsModal.addEventListener('click',function(e){if(e.target===toolsModal)closeTools();});
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&toolsModal.classList.contains('open')){var palette=toolsModal.querySelector('.clock-palette-backdrop');if(palette)palette.parentNode.removeChild(palette);else closeTools();}});
@@ -3999,13 +4387,13 @@ html[data-theme="light"] .clock-panel #themeToggle{
       {title:'Horloge',body:'Touchez les chiffres pour l’horloge XXL.',x:.5,y:.20},
       {title:'Réglages',body:'Thème, couleurs, polices et volets.',x:.5,y:.34},
       {title:'Météo',body:'Villes, localisation, prévisions et qualité de l’air.',x:.5,y:.51},
-      {title:'Outils',body:'Sommeil, minuteur et veille douce.',x:.5,y:.67},
+      {title:'Commandes',body:'Veille douce et aide sur l’horloge ; Sommeil près de Power.',x:.5,y:.67},
       {title:'Radios',body:'Favorites, recherche et classement des stations.',x:.5,y:.81}
     ]:[
       {title:'Horloge',body:'Touchez les chiffres pour l’affichage XXL.',x:.25,y:.22},
       {title:'Météo',body:'Ville, prévisions et air / pollens.',x:.76,y:.22},
       {title:'Réglages',body:'Thème, polices, couleurs et volets.',x:.25,y:.43},
-      {title:'Outils',body:'Sommeil, minuteur et veille douce.',x:.76,y:.50},
+      {title:'Sommeil',body:'Power lance la radio ; Sommeil passe à 60, 45, 30, 15 min puis arrêt.',x:.76,y:.73},
       {title:'Radios',body:'Favorites et autres stations : ajouter et trier.',x:.39,y:.76}
     ];
     specs.forEach(function(spec){
