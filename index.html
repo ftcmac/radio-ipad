@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.25.06">
-<meta name="radio-app-release-notes" content="Hauteur du dashboard mieux utilisée|Horloge réellement centrée|Prévisions horaires ancrées en bas|Informations radio moins condensées|Recherche de titres renforcée">
+<meta name="radio-app-release" content="2026.11.25.07">
+<meta name="radio-app-release-notes" content="Tableau de bord paysage pleine surface|Horloge adaptée à la taille du cadran|Radio agrandie|Signature ancrée en bas">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -3091,6 +3091,61 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
   }
 }
 
+
+/* V38 — grille paysage pleine surface, Safari 15 */
+@media (orientation:landscape) and (min-width:761px) and (min-height:520px){
+.shell{--deck-gap:clamp(8px,1.15vh,13px);--deck-logo:clamp(48px,6.2vw,92px);display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,3fr) minmax(0,2fr) auto!important;width:100%!important;max-width:none!important;height:var(--app-height,100vh)!important;max-height:var(--app-height,100vh)!important;min-height:0!important;margin:0!important;gap:var(--deck-gap)!important;padding:12px!important;padding-top:max(12px,env(safe-area-inset-top,0px))!important;padding-bottom:max(5px,env(safe-area-inset-bottom,0px))!important;padding-left:max(12px,env(safe-area-inset-left,0px))!important;padding-right:max(12px,env(safe-area-inset-right,0px))!important;align-items:stretch!important;align-content:stretch!important;justify-content:stretch!important}
+.shell>.dashboard,.shell>.radio-layout{width:100%!important;min-width:0!important;height:100%!important;min-height:0!important;max-height:none!important;margin:0!important;align-self:stretch!important}
+.shell>.dashboard{grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr)!important;gap:var(--deck-gap)!important}
+.dashboard>.clock-panel,.dashboard>.weather-panel{width:100%;height:100%!important;min-height:0!important;max-height:none!important}
+.clock-panel #clockDisplay{top:clamp(48px,8.2vh,82px)!important;bottom:clamp(64px,10.8vh,106px)!important;left:12px!important;right:12px!important;height:auto!important;width:auto!important}
+.clock-panel #date{left:12px!important;right:clamp(94px,10vw,142px)!important;bottom:clamp(20px,4vh,41px)!important;font-size:clamp(17px,2.25vw,34px)!important}
+.clock-panel #clockTimerButton{right:clamp(12px,1.4vw,21px)!important;bottom:clamp(12px,1.9vh,20px)!important;width:clamp(78px,8.1vw,120px)!important;min-width:0!important;height:clamp(58px,8.7vh,90px)!important;min-height:0!important}
+.weather-panel{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:clamp(35px,5vh,49px) clamp(23px,3.3vh,33px) minmax(0,1fr) clamp(20px,2.9vh,29px) clamp(16px,2.5vh,24px) clamp(30px,4.6vh,48px) minmax(0,clamp(80px,12.5vh,130px))!important;padding:clamp(10px,1.45vh,16px) clamp(12px,1.5vw,23px)!important;gap:clamp(3px,.65vh,7px)!important;align-content:stretch!important;justify-content:stretch!important}
+.weather-panel .weather-title,.weather-panel .weather-solar-row,.weather-panel .weather-current,.weather-panel .weather-summary,.weather-panel .facts,.weather-panel .weather-details,.weather-panel .forecast-rail{height:100%!important;min-height:0!important;margin:0!important;align-self:stretch!important}
+.weather-panel .weather-solar-row{position:static!important;top:auto!important;align-items:center!important}
+.weather-panel .solar-point{font-size:clamp(12px,1.5vw,19px)}
+.weather-panel .weather-current{transform:none!important;gap:clamp(10px,1.6vw,23px);justify-content:center!important;align-items:center!important}
+.weather-panel .weather-icon,.weather-panel .weather-icon svg{width:clamp(52px,8.5vh,94px)!important;height:clamp(52px,8.5vh,94px)!important;flex:0 0 clamp(52px,8.5vh,94px)!important}
+.weather-panel .temperature{font-size:clamp(59px,10vh,109px)!important;line-height:1}
+.weather-panel .weather-summary{font-size:clamp(14px,1.6vw,21px)!important;line-height:1.2!important;display:flex;align-items:center;justify-content:center;gap:.3em}
+.weather-panel .facts{font-size:clamp(11px,1.25vw,16px)!important;line-height:1.2!important;display:flex;align-items:center;justify-content:center}
+.weather-panel .weather-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.weather-panel .weather-detail{height:100%!important;min-height:0!important;min-width:0;font-size:clamp(10px,1.12vw,15px)!important;padding:4px 6px!important;line-height:1.15}
+.weather-panel .forecast-rail{overflow:hidden;min-height:0!important;padding:0!important}
+.weather-panel .forecasts{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;height:100%!important;min-height:0!important;width:100%;gap:8px!important;padding:0!important;margin:0!important}
+.weather-panel .forecasts .forecast{flex:0 0 calc((100% - 24px)/4)!important;height:100%!important;min-height:0!important;min-width:0!important;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly!important;gap:1px!important;padding:3px 2px!important;font-size:clamp(11px,1.2vw,16px)!important;scroll-snap-align:start}
+.weather-panel .forecasts .forecast .icon{width:clamp(23px,3.6vh,38px)!important;height:clamp(23px,3.6vh,38px)!important;flex:0 0 auto!important;margin:0!important}
+.weather-panel .forecast .temp{font-size:clamp(15px,1.7vw,23px)!important}.weather-panel .forecast .chance{font-size:clamp(10px,1.1vw,14px)!important}
+.shell>.radio-layout{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,32%)!important;gap:var(--deck-gap)!important;padding:clamp(9px,1.15vh,14px)!important}
+.radio-layout .station-grid,.radio-layout .controls{height:100%!important;min-height:0!important;max-height:none!important;grid-template-rows:repeat(2,minmax(0,1fr))!important;gap:var(--deck-gap)!important;align-content:stretch!important;align-items:stretch!important}
+.radio-layout .station-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.radio-layout .station,.radio-layout .more-tile{height:100%!important;min-height:0!important;max-height:none!important;min-width:0!important;padding:clamp(6px,.85vw,13px)!important;gap:clamp(6px,.85vw,13px)!important}
+.radio-layout .station .logo-wrap{width:var(--deck-logo)!important;min-width:var(--deck-logo)!important;height:var(--deck-logo)!important;min-height:0!important;flex:0 0 var(--deck-logo)!important}
+.radio-layout .station-name,.radio-layout .more-label{font-size:clamp(13px,1.55vw,22px)!important;line-height:1.15}.radio-layout .station-region,.radio-layout .more-current{font-size:clamp(11px,1.2vw,16px)!important}
+.radio-layout .radio-primary-buttons{height:100%!important;min-height:0!important;max-height:none!important;gap:var(--deck-gap)!important}
+.radio-layout .radio-primary-buttons .power,.radio-layout .radio-primary-buttons .radio-sleep{height:100%!important;min-height:0!important;max-height:none!important;font-size:clamp(15px,1.8vw,25px)!important;gap:3px}
+.radio-layout .radio-primary-buttons .power-symbol,.radio-layout .radio-sleep .ui-icon{width:clamp(35px,7vh,76px)!important;height:clamp(35px,7vh,76px)!important;flex:0 0 auto!important}
+.radio-layout .radio-primary-buttons .power-symbol svg,.radio-layout .radio-sleep .ui-icon svg{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important}
+.radio-layout .now{height:100%!important;min-height:0!important;max-height:none!important;padding:clamp(7px,1vh,13px)!important;gap:4px!important}.radio-layout .now-name{font-size:clamp(13px,1.5vw,21px)!important}.radio-layout .now-status{font-size:clamp(10px,1.1vw,14px)!important}.radio-layout .now-song{font-size:clamp(12px,1.35vw,18px)!important}.radio-layout .song-artist{font-size:clamp(11px,1.15vw,15px)!important}
+.radio-layout .now-logo,.radio-layout .now-logo .logo-wrap{width:clamp(39px,4.6vw,66px)!important;height:clamp(39px,4.6vw,66px)!important;min-width:clamp(39px,4.6vw,66px)!important;flex:0 0 clamp(39px,4.6vw,66px)!important}
+.shell>.concept-credit{position:static!important;transform:none!important;align-self:end!important;height:auto!important;min-height:0!important;max-height:none!important;line-height:1.15!important;font-size:clamp(10px,1vw,13px)!important;margin:0!important;padding:0!important}
+}
+@media (orientation:landscape) and (min-width:761px) and (min-height:520px) and (max-height:690px){.weather-panel{grid-template-rows:32px 22px minmax(0,1fr) 19px 15px 28px minmax(0,68px)!important;gap:2px!important;padding:7px 10px!important}.weather-panel .weather-icon,.weather-panel .weather-icon svg{width:45px!important;height:45px!important;flex-basis:45px!important}.weather-panel .temperature{font-size:52px!important}.weather-panel .forecasts .forecast .icon{width:20px!important;height:20px!important}.radio-layout .station .logo-wrap{--deck-logo:clamp(42px,5.5vw,68px)}.radio-layout .radio-primary-buttons .power-symbol,.radio-layout .radio-sleep .ui-icon{width:37px!important;height:37px!important}}
+
+@media (orientation:landscape) and (min-width:761px) and (min-height:520px){
+  .shell > .dashboard{overflow:visible!important}
+  .clock-panel .date-row #date{font-size:clamp(16px,2.1vw,32px)!important}
+  .weather-panel .weather-details{width:100%;max-width:none}
+  .weather-panel .weather-title-actions .city,.weather-panel .weather-title-actions .city-manage{height:100%;min-height:0;max-height:100%}
+  .weather-panel .weather-title-actions{height:100%}
+  .weather-panel .weather-summary{display:flex;align-items:center;justify-content:center;gap:.25em}
+  .weather-panel .facts{display:flex;align-items:center;justify-content:center}
+}
+@media (orientation:landscape) and (min-width:761px) and (min-height:520px) and (display-mode:standalone){
+  .shell{padding-top:max(28px,env(safe-area-inset-top,0px))!important}
+}
+
 </style>
 </head>
 <body>
@@ -3559,6 +3614,21 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
   function fitClock(){
     var c=el('clockDisplay'),panel=c.parentElement;
     if(!panel)return;
+    if(window.innerWidth>=761&&window.innerWidth>window.innerHeight&&window.innerHeight>=520){
+      var w=c.clientWidth,h=c.clientHeight;
+      if(w>0&&h>0){
+        c.style.fontSize='100px';
+        var digits=clockStyle==='flip'?el('flipDigits'):el('classicDigits');
+        var rect=digits.getBoundingClientRect();
+        var side=clockStyle==='flip'?el('clockSideInfo').getBoundingClientRect():{width:0,height:0};
+        var usedW=rect.width+side.width+(side.width?10:0),usedH=Math.max(rect.height,side.height);
+        if(usedW>0&&usedH>0){
+          var maxSize=Math.min((w-12)*100/usedW,(h-10)*100/usedH);
+          var pref=Math.max(.45,Math.min(1,Number(clockPrefs.size)/100||1));
+          c.style.fontSize=Math.max(30,Math.floor(maxSize*pref*.99))+'px';return;
+        }
+      }
+    }
     var mobile=window.innerWidth<=760;
     var shortPortrait=window.innerWidth>=600 && window.innerWidth<=1100 && window.innerHeight<=990 && window.innerHeight>window.innerWidth;
     var target=Math.round((shortPortrait?158:(mobile?124:194))*clockPrefs.size/100);
@@ -4865,7 +4935,7 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
   updateShowerTimer();
 
   // Safari 15 peut attribuer à 100vh une hauteur différente de la web app.
-  function updateViewHeight(){document.documentElement.style.setProperty('--app-height',window.innerHeight+'px');}
+  function updateViewHeight(){document.documentElement.style.setProperty('--app-height',window.innerHeight+'px');requestAnimationFrame(fitClock);}
   updateViewHeight();window.addEventListener('resize',updateViewHeight);
   window.addEventListener('orientationchange',function(){setTimeout(updateViewHeight,250);});
 
