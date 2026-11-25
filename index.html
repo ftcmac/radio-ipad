@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.25.02">
-<meta name="radio-app-release-notes" content="Sommeil démarre la radio et programme son arrêt|Titre et artiste affichés lorsqu’ils sont disponibles|Texte radio agrandi et commandes tactiles préservées|Horloge et météo inchangées|Vérification renforcée des métadonnées diffusées">
+<meta name="radio-app-release" content="2026.11.25.03">
+<meta name="radio-app-release-notes" content="Dashboard plus aéré sur grands iPad|Réglages encadrés et commandes alignées|Air & pollens signalé par une flèche|Power et Sommeil moins hauts et plus larges|Nouvelle fenêtre Minuteur|Recherche des titres par identification Radio Browser et Tuneping">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -2219,6 +2219,318 @@ html[data-theme="light"] .radio-layout .song-credit{color:#286997}
   .radio-layout .song-artist{font-size:12px}
 }
 
+
+/* V34 — grille aérée et commandes cohérentes, sans affecter les modales. */
+.clock-panel .clock-toolbar{
+  display:flex;align-items:center;justify-content:flex-start;
+  top:16px;left:20px;right:20px;height:42px;gap:9px;z-index:7;
+}
+.clock-panel .clock-toolbar #dimButton,
+.clock-panel .clock-toolbar #themeToggle,
+.clock-panel .clock-toolbar #helpOpen{
+  height:42px!important;min-height:42px!important;
+  border-radius:12px!important;
+  box-shadow:none!important;opacity:1!important;
+}
+.clock-panel .clock-toolbar #dimButton{
+  padding:8px 12px;font-size:12px;
+  border:1px solid rgba(156,206,241,.46);
+  background:rgba(96,150,194,.18)
+}
+.clock-panel .clock-toolbar #themeToggle{
+  position:relative!important;top:auto!important;right:auto!important;
+  margin:0!important;padding:0!important;
+  width:42px!important;min-width:42px!important;flex:0 0 42px!important;
+  background:rgba(96,150,194,.18)!important;
+  border:1px solid rgba(156,206,241,.46)!important;
+  color:#d8ecff!important;
+  display:flex;align-items:center;justify-content:center
+}
+.clock-panel .clock-toolbar #themeToggle:hover,
+.clock-panel .clock-toolbar #themeToggle:focus-visible{
+  background:rgba(116,181,229,.32)!important;
+  border-color:rgba(187,231,255,.78)!important;
+}
+.clock-panel .clock-toolbar #themeToggle .theme-icon,
+.clock-panel .clock-toolbar #themeToggle .theme-icon svg{
+  width:23px!important;height:23px!important
+}
+.clock-panel .clock-toolbar #helpOpen{
+  margin:0 0 0 auto!important;width:42px!important;min-width:42px!important;
+  flex:0 0 42px!important;
+  border:1px solid rgba(156,206,241,.46)!important;
+  background:rgba(96,150,194,.18)!important;
+  font-size:22px!important;
+}
+.clock-panel .clock-toolbar #connectionState{order:1;margin:0 0 0 0}
+.clock-panel .clock-toolbar #dimButton{order:0}
+.clock-panel .clock-toolbar #themeToggle{order:2}
+.clock-panel .clock-toolbar #appUpdateHint{order:3}
+.clock-panel .clock-toolbar #helpOpen{order:4}
+.clock-panel #themeMenu{top:65px;right:20px;z-index:20}
+.clock-panel{padding-top:68px;padding-bottom:92px}
+.clock-panel #date{
+  bottom:34px;left:20px;right:126px;
+  font-size:clamp(19px,2.3vw,30px);
+}
+.clock-panel #clockTimerButton{right:20px;bottom:20px}
+html[data-theme="light"] .clock-panel .clock-toolbar #themeToggle,
+html[data-theme="light"] .clock-panel .clock-toolbar #helpOpen,
+html[data-theme="light"] .clock-panel .clock-toolbar #dimButton{
+  color:#315c7d!important;
+  background:rgba(198,223,240,.52)!important;
+  border-color:rgba(82,136,175,.38)!important;
+}
+/* Le bandeau Air est une vraie commande avec flèche d'accès aux détails. */
+.weather-panel .air-detail::after{
+  content:'›';flex:0 0 auto;margin-left:auto;
+  font-size:22px;font-weight:550;line-height:1;color:#a4dfff;
+}
+html[data-theme="light"] .weather-panel .air-detail::after{color:#35769d}
+.weather-panel .air-detail{padding-right:10px}
+.weather-panel .weather-title,
+.weather-panel .weather-summary,
+.weather-panel .weather-details,
+.weather-panel .forecast-rail{flex-shrink:0}
+.weather-panel .weather-solar-row{margin-top:4px;margin-bottom:3px}
+.weather-panel .weather-current{margin-top:7px;margin-bottom:6px}
+.weather-panel .weather-summary{margin-top:5px;line-height:1.3}
+.weather-panel .facts{line-height:1.4;margin-bottom:5px}
+.weather-panel .weather-details{margin-top:5px;margin-bottom:6px}
+.weather-panel .forecast-rail{margin-top:7px;flex-shrink:1;min-height:0}
+/* La colonne de contrôle peut gagner de la largeur sans écraser les favoris. */
+.radio-layout{grid-template-columns:minmax(0,1fr) clamp(270px,29vw,390px)}
+.radio-layout .controls{min-width:0;gap:10px}
+.radio-layout .radio-primary-buttons{
+  flex:0 0 clamp(114px,14vh,155px);
+  height:clamp(114px,14vh,155px);
+  min-height:0;max-height:155px;gap:10px;
+}
+.radio-layout .radio-primary-buttons .power,
+.radio-layout .radio-sleep{min-height:0;height:100%;max-height:155px}
+.radio-layout .now{
+  flex:1 1 auto;min-height:89px;max-height:none;
+  justify-content:center;gap:3px;
+  padding:9px 12px;
+}
+.radio-layout .now-name{font-size:clamp(12px,1.3vw,16px)}
+.radio-layout .now-status{font-size:clamp(10px,1.03vw,12px)}
+.radio-layout .now-song{font-size:clamp(12px,1.14vw,15px)}
+.radio-layout .song-artist{font-size:clamp(11px,1.03vw,13px)}
+/* Grands iPad : utiliser la hauteur réelle, sans rajouter une nouvelle barre. */
+@media (orientation:landscape) and (min-width:1181px) and (min-height:830px){
+  .shell{
+    height:var(--app-height,100vh);min-height:0;
+    max-width:1500px;width:100%;
+    padding-top:calc(22px + env(safe-area-inset-top,0px));
+    padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));
+    gap:13px;justify-content:center;
+    overflow:hidden;
+  }
+  .dashboard{flex:1 1 auto;min-height:0;max-height:525px;gap:15px}
+  .clock-panel,.weather-panel{min-height:0;height:100%}
+  .weather-panel{
+    padding:19px 23px 20px;gap:10px;
+    justify-content:space-around;
+  }
+  .weather-panel .weather-title{min-height:39px}
+  .weather-panel .weather-current{min-height:100px}
+  .weather-panel .weather-summary{font-size:18px}
+  .weather-panel .facts{font-size:13px}
+  .weather-panel .weather-detail{min-height:39px;font-size:12px}
+  .weather-panel .forecast-rail{min-height:96px;margin-top:8px}
+  .radio-layout{
+    flex:0 0 clamp(295px,32vh,346px);
+    height:clamp(295px,32vh,346px);min-height:0;
+    padding:14px;gap:15px;
+    grid-template-columns:minmax(0,1fr) clamp(340px,28vw,405px)
+  }
+  .station-grid{min-height:0;height:100%;grid-template-rows:repeat(2,minmax(0,1fr))}
+  .station,.more-tile{height:100%;min-height:0;padding:10px;gap:10px}
+  .controls{height:100%;min-height:0}
+  .radio-primary-buttons{flex:0 0 150px;height:150px}
+  .radio-layout .now{min-height:105px}
+  .concept-credit{flex:0 0 15px;line-height:15px;top:0}
+}
+/* Air 2 : conserver la météo V30, élargir les commandes sans réduire les touches. */
+@media (orientation:landscape) and (min-width:761px) and (max-width:1100px) and (max-height:820px){
+  .clock-panel{padding-top:48px;padding-bottom:64px}
+  .clock-panel .clock-toolbar{top:9px;left:13px;right:13px;height:34px;gap:6px}
+  .clock-panel .clock-toolbar #dimButton,
+  .clock-panel .clock-toolbar #themeToggle,
+  .clock-panel .clock-toolbar #helpOpen{
+    height:34px!important;min-height:34px!important;border-radius:10px!important;
+  }
+  .clock-panel .clock-toolbar #themeToggle,
+  .clock-panel .clock-toolbar #helpOpen{
+    width:34px!important;min-width:34px!important;flex-basis:34px!important;
+  }
+  .clock-panel .clock-toolbar #themeToggle .theme-icon,
+  .clock-panel .clock-toolbar #themeToggle .theme-icon svg{
+    width:19px!important;height:19px!important;
+  }
+  .clock-panel .clock-toolbar #dimButton{padding:5px 8px;font-size:10.5px}
+  .clock-panel #themeMenu{top:49px;right:12px}
+  .clock-panel #date{bottom:22px;right:106px;font-size:clamp(18px,2.4vw,24px)}
+  .clock-panel #clockTimerButton{bottom:12px;right:14px}
+  .weather-panel .weather-title,
+  .weather-panel .weather-summary,
+  .weather-panel .weather-details,
+  .weather-panel .forecast-rail{flex-shrink:initial}
+  .weather-panel .weather-solar-row,
+  .weather-panel .weather-current,
+  .weather-panel .weather-summary,
+  .weather-panel .facts,
+  .weather-panel .weather-details,
+  .weather-panel .forecast-rail{margin-top:0;margin-bottom:0}
+  .radio-layout{grid-template-columns:minmax(0,1fr) clamp(230px,26vw,282px)}
+  .radio-layout .radio-primary-buttons{
+    flex:0 0 clamp(105px,16vh,132px);
+    height:clamp(105px,16vh,132px)
+  }
+  .radio-layout .now{min-height:82px;gap:1px;padding:6px 9px}
+  .radio-layout .now-name{font-size:11px}
+  .radio-layout .now-song{font-size:12px}
+  .radio-layout .song-artist{font-size:10.5px}
+}
+/* Mini 6/7 : garder les règles de hauteur de la V31, boutons seulement plus larges. */
+@media (orientation:landscape) and (min-width:1101px) and (max-width:1180px) and (max-height:820px){
+  .clock-panel{padding-top:45px;padding-bottom:65px}
+  .clock-panel .clock-toolbar{top:8px;left:12px;right:12px;height:34px;gap:6px}
+  .clock-panel .clock-toolbar #dimButton,
+  .clock-panel .clock-toolbar #themeToggle,
+  .clock-panel .clock-toolbar #helpOpen{
+    height:34px!important;min-height:34px!important;
+  }
+  .clock-panel .clock-toolbar #themeToggle,
+  .clock-panel .clock-toolbar #helpOpen{
+    width:34px!important;min-width:34px!important;flex-basis:34px!important;
+  }
+  .clock-panel .clock-toolbar #dimButton{padding:5px 8px;font-size:10.5px}
+  .clock-panel #themeMenu{top:49px;right:12px}
+  .clock-panel #date{bottom:24px;right:107px;font-size:clamp(18px,2vw,24px)}
+  .clock-panel #clockTimerButton{bottom:12px;right:14px}
+  .weather-panel .weather-title,
+  .weather-panel .weather-summary,
+  .weather-panel .weather-details,
+  .weather-panel .forecast-rail{flex-shrink:initial}
+  .weather-panel .weather-solar-row,
+  .weather-panel .weather-current,
+  .weather-panel .weather-summary,
+  .weather-panel .facts,
+  .weather-panel .weather-details,
+  .weather-panel .forecast-rail{margin-top:0;margin-bottom:0}
+  .radio-layout{grid-template-columns:minmax(0,1fr) clamp(235px,26vw,296px)}
+  .radio-layout .radio-primary-buttons{flex:0 0 116px;height:116px}
+  .radio-layout .now{min-height:77px;gap:1px;padding:5px 8px}
+  .radio-layout .now-name{font-size:11px}
+  .radio-layout .now-song{font-size:11.5px}
+  .radio-layout .song-artist{font-size:10px}
+}
+@media (orientation:portrait) and (min-width:600px) and (max-width:1100px){
+  .clock-panel{padding-top:62px;padding-bottom:75px}
+  .clock-panel .clock-toolbar{top:13px;left:14px;right:14px;height:38px}
+  .clock-panel .clock-toolbar #dimButton,
+  .clock-panel .clock-toolbar #themeToggle,
+  .clock-panel .clock-toolbar #helpOpen{
+    height:38px!important;min-height:38px!important
+  }
+  .clock-panel .clock-toolbar #themeToggle,
+  .clock-panel .clock-toolbar #helpOpen{
+    width:38px!important;min-width:38px!important;flex-basis:38px!important
+  }
+  .clock-panel #date{bottom:22px;right:113px;font-size:clamp(18px,2.9vw,25px)}
+  .clock-panel #clockTimerButton{bottom:12px;right:14px}
+  .radio-layout{grid-template-columns:minmax(0,1fr) clamp(200px,27vw,300px)}
+  .radio-layout .radio-primary-buttons{flex-basis:110px;height:110px}
+}
+
+
+/* V34 — fenêtre Minuteur sobre, lisible et entièrement tactile. */
+.tools-modal.shower-open .tools-window{
+  width:min(500px,calc(100vw - 28px));max-height:min(88vh,780px);
+  border-radius:25px;border:1px solid rgba(174,217,246,.33);
+  box-shadow:0 32px 80px rgba(0,0,0,.46);
+}
+.tools-modal.shower-open .tools-heading{
+  border-bottom:0;padding:17px 23px 6px
+}
+.tools-modal.shower-open .tools-heading strong{font-size:20px}
+.tools-modal.shower-open .tools-body{
+  padding:7px 21px 22px;max-height:calc(88vh - 72px);
+  -webkit-overflow-scrolling:touch
+}
+.shower-design{display:flex;flex-direction:column;gap:10px}
+.shower-hero{display:flex;align-items:center;gap:12px;padding:4px 2px}
+.shower-emblem{
+  flex:0 0 44px;width:44px;height:44px;display:flex;align-items:center;
+  justify-content:center;border-radius:14px;
+  background:rgba(124,188,230,.17);color:#b3e6ff
+}
+.shower-emblem svg{width:28px;height:28px}
+.shower-hero-text{min-width:0;display:flex;flex-direction:column;gap:3px}
+.shower-hero-text strong{font-size:15px}
+.shower-hero-text span{font-size:12px;color:#b3c9da;line-height:1.3}
+.shower-count{
+  font-size:clamp(45px,7vw,65px);
+  font-variant-numeric:tabular-nums;letter-spacing:-.04em;
+  font-weight:720;line-height:1.08;text-align:center;
+  padding:7px;color:#f2fbff;
+}
+.shower-state{text-align:center;color:#acd4ee;font-size:12px;margin-top:-8px}
+.shower-section-title{
+  font-size:12px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.12em;color:#a7c8e3;margin-top:7px
+}
+.shower-quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.shower-quick{
+  min-height:55px;padding:10px 5px;border-radius:14px;
+  background:#2b4661;color:#f2fbff;border:1px solid #597f9f;
+  font-size:18px;font-weight:750
+}
+.shower-quick:active,.shower-quick:focus-visible{
+  background:#3c6b8e;border-color:#9cd6fb
+}
+.shower-custom{display:grid;grid-template-columns:1fr 1fr 1.15fr;gap:9px}
+.shower-custom select,.shower-launch{
+  min-width:0;min-height:48px;border-radius:12px;
+  font-size:14px;font-weight:710
+}
+.shower-custom select{
+  border:1px solid #5c7e9b;background-color:#263f59;
+  color:#f2faff;padding:9px 27px 9px 11px
+}
+.shower-launch{
+  background:#a5dcfc;color:#17334c;border:0;padding:9px;font-weight:800
+}
+.shower-cancel{
+  min-height:43px;border:1px solid #6e8192;border-radius:12px;
+  background:transparent;color:#e5eff8;font-size:13px;font-weight:700;
+  margin-top:5px
+}
+.shower-cancel:disabled{opacity:.38}
+.shower-note{
+  margin:0;color:#a5bace;font-size:11px;line-height:1.4
+}
+html[data-theme="light"] .shower-count{color:#1b3b53}
+html[data-theme="light"] .shower-emblem{background:#dfedf9;color:#2e729e}
+html[data-theme="light"] .shower-hero-text span,
+html[data-theme="light"] .shower-note{color:#57748e}
+html[data-theme="light"] .shower-state,
+html[data-theme="light"] .shower-section-title{color:#43779d}
+html[data-theme="light"] .shower-quick{color:#234763;background:#e9f4fb;border-color:#adcfe4}
+html[data-theme="light"] .shower-custom select{color:#254661;background-color:#f0f6fb;border-color:#adcfe4}
+html[data-theme="light"] .shower-cancel{color:#335875;border-color:#b8cada}
+@media(max-width:640px){
+  .tools-modal.shower-open{padding:8px}
+  .tools-modal.shower-open .tools-window{max-height:calc(100dvh - 16px)}
+  .tools-modal.shower-open .tools-body{padding:4px 14px 16px;max-height:calc(100dvh - 78px)}
+  .shower-quick{min-height:47px;font-size:15px}
+  .shower-custom{gap:6px}
+  .shower-custom select,.shower-launch{font-size:12px;min-height:43px}
+  .shower-hero-text span{font-size:11px}
+}
+
 </style>
 </head>
 <body>
@@ -2343,9 +2655,10 @@ html[data-theme="light"] .radio-layout .song-credit{color:#286997}
   var dimControl=elBoot('dimButton');
   dimControl.classList.add('clock-dim');
   clockToolbar.appendChild(dimControl);
-  clockToolbar.appendChild(elBoot('helpOpen'));
   clockToolbar.appendChild(elBoot('connectionState'));
+  clockToolbar.appendChild(elBoot('themeToggle'));
   clockToolbar.appendChild(elBoot('appUpdateHint'));
+  clockToolbar.appendChild(elBoot('helpOpen'));
   var radioButtons=document.createElement('div');
   radioButtons.className='radio-primary-buttons';
   var radioControls=elBoot('power').parentNode;
@@ -2502,7 +2815,7 @@ html[data-theme="light"] .radio-layout .song-credit{color:#286997}
     if(autoTheme){applyAutoTheme();setTheme(activeTheme);}else{store('radio.theme',mode);setTheme(mode);}
     closeThemeMenu();
   });
-  document.addEventListener('click',function(e){if(!el('clockActions').contains(e.target))closeThemeMenu();});
+  document.addEventListener('click',function(e){if(!el('clockActions').contains(e.target)&&!el('themeToggle').contains(e.target))closeThemeMenu();});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeThemeMenu();});
   var audio=el('audio'),selected=read('radio.st','viva'),playing=false,serial=0,previewStation=null;
   if(!all.some(function(s){return s.id===selected;}))selected=all.length?all[0].id:'';
@@ -2782,7 +3095,7 @@ html[data-theme="light"] .radio-layout .song-credit{color:#286997}
     if(!httpsUrl(s.url)){playing=false;powerUI();set('playStatus','Aucun flux disponible.');return;}
     audio.pause();audio.removeAttribute('src');audio.load();el('radioLink').style.display='none';
     audio.src=s.url;playing=true;clearDim();powerUI();set('playStatus','Connexion au direct…');
-    if(typeof refreshSongForStation==='function')refreshSongForStation();
+    showSongInfo('Connexion à la radio…','',false);
     try{var p=audio.play();if(p&&p.catch)p.catch(function(){if(call===serial){playing=false;powerUI();set('playStatus','Lecture indisponible.');fallback();scheduleDim(20000);}});}
     catch(e){if(call===serial){playing=false;powerUI();set('playStatus','Lecture impossible.');fallback();scheduleDim(20000);}}
   }
@@ -2794,14 +3107,15 @@ html[data-theme="light"] .radio-layout .song-credit{color:#286997}
   }
   audio.addEventListener('playing',function(){playing=true;powerUI();set('playStatus',previewStation?'● En direct · Essai non enregistré':'● En direct');refreshSongForStation();});
   audio.addEventListener('waiting',function(){if(playing)set('playStatus','Connexion au direct…');});
-  audio.addEventListener('error',function(){if(audio.getAttribute('src')){playing=false;powerUI();set('playStatus','Flux indisponible.');fallback();scheduleDim(20000);}});
+  audio.addEventListener('error',function(){if(audio.getAttribute('src')){playing=false;powerUI();set('playStatus','Flux indisponible.');refreshSongForStation();fallback();scheduleDim(20000);}});
   render();powerUI();
 
-  // Métadonnées de morceau : service facultatif Tuneping.
-  // Détecte les titres envoyés par les diffuseurs ; jamais de chanson inventée.
-  // Aucune clé embarquée, aucun traitement de l'audio.
-  var songRequestSerial=0, songMetadataStation='', songRefreshBusy=false,
-      songLastLookup='', songMetadataUUID='', songResolveCache={};
+
+  // V34 — Titre en cours : correspondance prudente via Radio Browser UUID
+  // puis annuaire Tuneping. Un titre n'est affiché que lorsqu'il a été
+  // confirmé récemment par la station (aucun morceau déduit du programme).
+  var songRequestSerial=0,songMetadataStation='',songRefreshBusy=false,
+      songLookupCache={},songMetadataUUID='';
   function normalizeSongStation(v){
     return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
       .toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
@@ -2809,104 +3123,183 @@ html[data-theme="light"] .radio-layout .song-credit{color:#286997}
   function showSongInfo(title,artist,fromTuneping){
     var titleNode=el('songTitle'),artistNode=el('songArtist'),credit=el('songCredit');
     if(!titleNode)return;
-    titleNode.textContent=title||'Titre non disponible';
-    titleNode.title=title||'';
-    artistNode.textContent=artist||'';
-    artistNode.title=artist||'';
+    titleNode.textContent=title||'Titre non disponible';titleNode.title=title||'';
+    artistNode.textContent=artist||'';artistNode.title=artist||'';
     credit.classList.toggle('is-visible',!!fromTuneping);
   }
   function songStationUUID(st){
-    var id=String(st.id||'').replace(/^rb-/,'');
+    var id=String(st&&st.id||'').replace(/^rb-/,'');
     return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)?id:'';
   }
-  function resolveSongStation(st){
-    var uid=songStationUUID(st);
-    if(uid)return Promise.resolve(uid);
-    var key=st.url||st.name;
-    if(Object.prototype.hasOwnProperty.call(songResolveCache,key)){
-      return Promise.resolve(songResolveCache[key]);
+  function songHost(url){
+    try{return new URL(String(url||'')).hostname.toLowerCase().replace(/^www\./,'');}
+    catch(e){return '';}
+  }
+  function songCountry(st){
+    var place=String(st.region||'')+' '+String(st.subregion||'');
+    var host=songHost(st.home);
+    if(/belgique|belgium|hainaut|mons|bruxelles|brussels|wallon|liege|liège/i.test(place))return 'BE';
+    if(/france|paris/i.test(place))return 'FR';
+    if(/\.be$/.test(host))return 'BE';
+    if(/\.fr$/.test(host))return 'FR';
+    return '';
+  }
+  function sameSongStation(a,b){
+    var an=normalizeSongStation(a.name),bn=normalizeSongStation(b.name);
+    return an===bn||(an.length>=5&&bn.length>=5&&(an.indexOf(bn)===0||bn.indexOf(an)===0));
+  }
+  function scoreSongStation(st,entry){
+    if(!entry||!songStationUUID(entry))return -100;
+    var original=normalizeSongStation(st.name),
+        candidate=normalizeSongStation(entry.name),
+        score=0;
+    var ourURL=String(st.url||'').trim(),otherURL=String(entry.stream_url||'').trim();
+    var host1=songHost(ourURL),host2=songHost(otherURL);
+    if(ourURL&&otherURL&&ourURL===otherURL)score+=40;
+    else if(host1&&host2&&host1===host2)score+=8;
+    var home1=songHost(st.home),home2=songHost(entry.homepage);
+    if(home1&&home2&&home1===home2)score+=5;
+    if(candidate===original&&original)score+=9;
+    else if(sameSongStation(st,entry))score+=4;
+    var ourCountry=songCountry(st),candidateCountry=String(entry.country||'').toUpperCase();
+    if(ourCountry&&candidateCountry){
+      if(ourCountry!==candidateCountry)return -100;
+      score+=5;
     }
-    // Pas de résultats par similarité seule : il faut le même flux ou
-    // le même nom et un pays cohérent pour éviter d'afficher un autre émetteur.
-    return fetch('https://api.tuneping.com/v1/stations?q='+encodeURIComponent(st.name)+
-      '&limit=50',{headers:{'Accept':'application/json'}})
-      .then(function(response){if(!response.ok)throw Error('annuaire titres');return response.json();})
-      .then(function(json){
-        var list=Array.isArray(json.data)?json.data:[];
-        var want=normalizeSongStation(st.name);
-        var actualHost='';
-        try{actualHost=new URL(st.url).hostname.toLowerCase();}catch(e){}
-        var scored=list.map(function(entry){
-          var entryName=normalizeSongStation(entry.name);
-          var value=0;
-          if(entryName===want)value+=5;
-          else if(entryName.indexOf(want)===0&&want.length>=6)value+=2;
-          var entryURL=String(entry.stream_url||'');
-          if(entryURL===st.url)value+=10;
-          else if(actualHost){try{
-            if(new URL(entryURL).hostname.toLowerCase()===actualHost)value+=4;
-          }catch(e){}}
-          var probableBE=/hainaut|mons|belgique|belgium/i.test((st.region||'')+' '+(st.subregion||''));
-          if(probableBE&&String(entry.country||'').toUpperCase()==='BE')value+=2;
-          else if(probableBE&&String(entry.country||'').toUpperCase()!=='BE')value-=8;
-          return {entry:entry,value:value};
-        }).sort(function(a,b){return b.value-a.value;});
-        var best=scored.length&&scored[0].value>=9?scored[0].entry:null;
-        var answer=best&&songStationUUID({id:best.id})||'';
-        songResolveCache[key]=answer;return answer;
-      });
+    if(st.subregion&&normalizeSongStation(entry.state).indexOf(normalizeSongStation(st.subregion))>=0)score+=3;
+    return score;
+  }
+  function fetchSongDirectory(st){
+    var country=songCountry(st);
+    var query='q='+encodeURIComponent(st.name)+'&limit=100';
+    if(country)query+='&country='+encodeURIComponent(country);
+    return fetch('https://api.tuneping.com/v1/stations?'+query,{
+      headers:{Accept:'application/json'}
+    }).then(function(response){
+      if(!response.ok)throw Error('tuneping-directory-'+response.status);
+      return response.json();
+    }).then(function(body){
+      var rows=Array.isArray(body.data)?body.data:[],
+          ranked=rows.map(function(row){
+            return {station:row,score:scoreSongStation(st,row)};
+          }).sort(function(a,b){return b.score-a.score;});
+      if(!ranked.length||ranked[0].score<9)return '';
+      // Lorsque deux stations restent quasi indiscernables, ne pas
+      // présenter un titre potentiellement issu de la mauvaise radio.
+      if(ranked.length>1&&ranked[1].score>=ranked[0].score&&
+        ranked[1].station.id!==ranked[0].station.id)return '';
+      return songStationUUID(ranked[0].station);
+    });
+  }
+  function findSongUUIDByStream(st){
+    var url=String(st.url||'');
+    if(!url)return Promise.resolve('');
+    var hosts=['https://de1.api.radio-browser.info','https://nl1.api.radio-browser.info'];
+    function request(i){
+      if(i>=hosts.length)return Promise.resolve('');
+      return fetch(hosts[i]+'/json/stations/byurl?url='+encodeURIComponent(url),{
+        headers:{Accept:'application/json'}
+      }).then(function(res){if(!res.ok)throw Error('radio-browser-stream');return res.json();})
+        .then(function(rows){
+          if(!Array.isArray(rows))return '';
+          var exact=rows.filter(function(item){
+            return item.url===url||item.url_resolved===url;
+          })[0];
+          return exact?songStationUUID({id:exact.stationuuid}):'';
+        }).catch(function(){return request(i+1);});
+    }
+    return request(0);
+  }
+  function resolveSongStation(st){
+    var uuid=songStationUUID(st);
+    if(uuid)return Promise.resolve(uuid);
+    var key=st.url+'|'+st.name;
+    var cached=songLookupCache[key];
+    if(cached&&cached.expires>Date.now())return Promise.resolve(cached.uuid);
+    var errorDirectory=null;
+    return fetchSongDirectory(st).catch(function(e){
+      errorDirectory=e;return '';
+    }).then(function(found){
+      if(found)return found;
+      return findSongUUIDByStream(st);
+    }).then(function(found){
+      // Une station absente des deux annuaires est réexaminée plus tard,
+      // au lieu d'être mémorisée comme introuvable pour toute la session.
+      songLookupCache[key]={uuid:found,expires:Date.now()+(found?8*60*60*1000:20*60*1000)};
+      if(!found&&errorDirectory)throw errorDirectory;
+      return found;
+    });
+  }
+  function parseSongResponse(body){
+    var row=body&&(body.data||body.now_playing||body);
+    if(Array.isArray(row))row=row[0]||null;
+    if(!row||typeof row!=='object'||row.is_stale===true||
+       row.classification&&row.classification!=='song')return null;
+    // confirmed_at est la dernière observation positive. observed_at peut
+    // dater du début du morceau et ne doit pas suffire à le juger périmé.
+    var last=row.confirmed_at||row.station&&row.station.metadata&&
+      row.station.metadata.last_ok_at||row.observed_at||row.last_seen_at||'';
+    var timestamp=last?Date.parse(last):NaN;
+    if(!Number.isFinite(timestamp)||Math.abs(Date.now()-timestamp)>6*60*1000)return null;
+    var title=typeof row.title==='string'?row.title.trim():'';
+    var artist=typeof row.artist==='string'?row.artist.trim():
+      row.artist&&typeof row.artist.name==='string'?row.artist.name.trim():'';
+    if(!artist&&typeof row.artist_credit==='string')artist=row.artist_credit.trim();
+    if(!title&&typeof row.raw_title==='string'){
+      var raw=row.raw_title.trim(),pos=raw.indexOf(' - ');
+      if(pos>0&&raw.length>pos+3){
+        artist=artist||raw.slice(0,pos);title=raw.slice(pos+3);
+      }
+    }
+    if(!title)return null;
+    return {title:title.slice(0,165),artist:artist.slice(0,120)};
   }
   function retrieveCurrentSong(){
-    if(songRefreshBusy)return;
-    if(!playing){showSongInfo('Titre non disponible','',false);return;}
-    var station=current(),identity=(station.url||'')+'|'+(station.name||'');
+    if(songRefreshBusy||!playing||document.hidden)return;
+    var station=current(),identity=String(station.url||'')+'|'+String(station.name||'');
     var requestId=++songRequestSerial;
     if(songMetadataStation!==identity){
-      songMetadataStation=identity;songMetadataUUID='';
+      songMetadataStation=identity;
       showSongInfo('Recherche du morceau…','',false);
     }
     songRefreshBusy=true;
     resolveSongStation(station).then(function(uuid){
-      if(!uuid)throw Error('Station non indexée');
       if(requestId!==songRequestSerial||current().url!==station.url)return null;
+      if(!uuid){
+        showSongInfo('Station sans titre disponible','',false);
+        return null;
+      }
       songMetadataUUID=uuid;
-      return fetch('https://api.tuneping.com/v1/stations/'+encodeURIComponent(uuid)+
-        '/now-playing',{headers:{'Accept':'application/json'}})
-        .then(function(response){if(!response.ok)throw Error('pas de titre');return response.json();});
-    }).then(function(payload){
-      if(requestId!==songRequestSerial||!playing||current().url!==station.url)return;
-      var row=payload&&(payload.data||payload.now_playing||payload);
-      if(Array.isArray(row))row=row[0]||null;
-      if(!row||typeof row!=='object'||row.is_stale===true||row.classification&&row.classification!=='song'){
-        showSongInfo('Titre non disponible','',false);return;
-      }
-      var observed=row.confirmed_at||row.observed_at||row.last_seen_at||row.last_ok_at;
-      if(observed&&Number.isFinite(Date.parse(observed))&&Date.now()-Date.parse(observed)>4*60*1000){
-        showSongInfo('Titre non disponible','',false);return;
-      }
-      var title=String(row.title||'').trim(),artist=String(row.artist||'').trim();
-      if(!title){
-        var raw=String(row.raw_title||'').trim();
-        var pos=raw.indexOf(' - ');
-        if(pos>0&&raw.length>pos+3){
-          artist=raw.slice(0,pos);title=raw.slice(pos+3);
-        }
-      }
-      if(title)showSongInfo(title.slice(0,170),artist.slice(0,130),true);
-      else showSongInfo('Titre non disponible','',false);
+      return fetch('https://api.tuneping.com/v1/stations/'+encodeURIComponent(uuid)+'/now-playing',{
+        headers:{Accept:'application/json'}
+      }).then(function(response){
+        if(!response.ok)throw Error('tuneping-now-'+response.status);
+        return response.json();
+      });
+    }).then(function(body){
+      if(requestId!==songRequestSerial||!playing||current().url!==station.url||!body)return;
+      var track=parseSongResponse(body);
+      if(track)showSongInfo(track.title,track.artist,true);
+      else showSongInfo('Titre non transmis','',false);
     }).catch(function(){
-      if(requestId===songRequestSerial)showSongInfo('Titre non disponible','',false);
-    }).then(function(){songRefreshBusy=false;});
+      if(requestId===songRequestSerial&&playing){
+        showSongInfo('Titres momentanément indisponibles','',false);
+      }
+    }).then(function(){
+      if(requestId===songRequestSerial)songRefreshBusy=false;
+    });
   }
   function refreshSongForStation(){
-    songRequestSerial++;
-    songMetadataStation='';
+    ++songRequestSerial;
     songRefreshBusy=false;
-    if(!playing){showSongInfo('Titre non disponible','',false);return;}
+    songMetadataStation='';
+    songMetadataUUID='';
+    if(!playing){showSongInfo('Radio éteinte','',false);return;}
+    showSongInfo('Recherche du morceau…','',false);
     retrieveCurrentSong();
   }
-  // Limiter le service à une requête environ toutes les 90 s en lecture.
-  setInterval(function(){if(playing&&!document.hidden)retrieveCurrentSong();},90000);
+  // Mettre à jour en lecture sans solliciter l'annuaire inutilement.
+  setInterval(function(){if(playing&&!document.hidden)retrieveCurrentSong();},75000);
 
   // Icônes météo SVG : tracés légers et palette douce, utilisables en clair comme en sombre.
   function weatherSVG(kind){
@@ -3201,7 +3594,7 @@ html[data-theme="light"] .radio-layout .song-credit{color:#286997}
   updateDimButton();
   function openTools(tool,preferFavorite){
     pendingFavoriteSlot=(tool==='radios'&&preferFavorite===true);
-    activeTool=tool;clearDim();toolsModal.style.zIndex=setupOverlay&&setupOverlay.classList.contains('open')?'130':'';el('toolsBody').classList.toggle('clock-studio',tool==='clockPrefs');el('toolsBody').scrollTop=0;toolsModal.classList.add('open');toolsModal.setAttribute('aria-hidden','false');
+    activeTool=tool;toolsModal.classList.toggle('shower-open',tool==='shower');clearDim();toolsModal.style.zIndex=setupOverlay&&setupOverlay.classList.contains('open')?'130':'';el('toolsBody').classList.toggle('clock-studio',tool==='clockPrefs');el('toolsBody').scrollTop=0;toolsModal.classList.add('open');toolsModal.setAttribute('aria-hidden','false');
     if(tool==='hourly'){set('toolsTitle','Prévisions · '+(activeCity==='local'?(localCityName||'Météo locale'):currentPlace().name));renderHourlyTool();}
     else if(tool==='timer'){set('toolsTitle','Sommeil · arrêt de la radio');renderTimerTool();}
     else if(tool==='cities'){set('toolsTitle','Mes villes météo');renderCitiesTool();}
@@ -3215,7 +3608,7 @@ html[data-theme="light"] .radio-layout .song-credit{color:#286997}
   function closeTools(){
     var palette=toolsModal.querySelector('.clock-palette-backdrop');if(palette&&palette.parentNode)palette.parentNode.removeChild(palette);
     toolsModal.classList.remove('open');toolsModal.setAttribute('aria-hidden','true');
-    activeTool='';toolsModal.style.zIndex='';scheduleDim(25000);
+    activeTool='';toolsModal.classList.remove('shower-open');toolsModal.style.zIndex='';scheduleDim(25000);
   }
   function renderHourlyTool(){
     var box=el('toolsBody');box.textContent='';
@@ -3498,7 +3891,8 @@ html[data-theme="light"] .radio-layout .song-credit{color:#286997}
     var badge=el('clockTimerBadge');
     if(badge){badge.textContent=showerDeadline?String(Math.ceil(showerLeft()/60)):'';badge.hidden=!showerDeadline;}
     el('clockTimerButton').setAttribute('aria-label',showerDeadline?'Minuteur indépendant : '+showerLabel()+' restantes. Ouvrir':'Ouvrir le minuteur indépendant');
-    if(activeTool==='shower'&&el('showerCount'))set('showerCount',showerDeadline?'Temps restant : '+showerLabel():'Aucun minuteur actif.');
+    if(activeTool==='shower'&&el('showerCount'))set('showerCount',showerDeadline?showerLabel():'00:00');
+    if(activeTool==='shower'&&el('showerState'))set('showerState',showerDeadline?'Minuteur en cours':'Prêt à démarrer');
   }
   function startShower(minutes){
     readyShowerTone();showerDeadline=minutes?Date.now()+minutes*60000:0;
@@ -3506,29 +3900,55 @@ html[data-theme="light"] .radio-layout .song-credit{color:#286997}
     if(minutes){closeTools();showToast('Minuteur de '+minutes+' min lancé.',4500);}
     else renderShowerTool();
   }
+
   function renderShowerTool(){
     var box=el('toolsBody');box.textContent='';
-    box.appendChild(make('p','timer-detail','Un minuteur pour la douche ou autre chose, sans couper la radio. Un signal sonore est tenté à la fin si l’application reste active.'));
-    box.appendChild(make('div','insight-headline',showerDeadline?'Temps restant : '+showerLabel():'Aucun minuteur actif.')).id='showerCount';
-    var options=make('div','timer-options');
-    [3,5,10,15,20].forEach(function(minutes){options.appendChild(actionButton(minutes+' min',function(){startShower(minutes);},'timer-option'));});
-    box.appendChild(options);
-    box.appendChild(make('div','timer-custom-caption','Autre durée'));
-    var customRow=make('div','timer-custom-row');
+    var scene=make('div','shower-design');
+    var intro=make('div','shower-hero');
+    var emblem=make('div','shower-emblem');
+    emblem.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><path d="M12 8v5l3 2M9 2h6M17.8 5l2.2 2.2"></path></svg>';
+    var introText=make('div','shower-hero-text');
+    introText.appendChild(make('strong','',showerDeadline?'Décompte en cours':'À toi de choisir'));
+    introText.appendChild(make('span','', 'Une alerte sonore, sans arrêter la radio.'));
+    intro.appendChild(emblem);intro.appendChild(introText);
+    var display=make('div','shower-count',showerDeadline?showerLabel():'00:00');
+    display.id='showerCount';display.setAttribute('aria-live','off');
+    var status=make('div','shower-state',showerDeadline?'Minuteur en cours':'Prêt à démarrer');
+    status.id='showerState';
+    scene.appendChild(intro);scene.appendChild(display);scene.appendChild(status);
+    scene.appendChild(make('div','shower-section-title','Durée rapide'));
+    var options=make('div','shower-quick-grid');
+    [3,5,10,15,20,30].forEach(function(minutes){
+      var b=actionButton(minutes+' min',function(){startShower(minutes);},'shower-quick');
+      b.setAttribute('aria-label','Démarrer un minuteur de '+minutes+' minutes');
+      options.appendChild(b);
+    });
+    scene.appendChild(options);
+    scene.appendChild(make('div','shower-section-title','Autre durée'));
+    var custom=make('div','shower-custom');
     var hours=make('select','custom-duration-input'),minutes=make('select','custom-duration-input');
-    hours.setAttribute('aria-label','Heures');minutes.setAttribute('aria-label','Minutes');
-    for(var h=0;h<=4;h++){var ho=make('option','',h+' h');ho.value=String(h);hours.appendChild(ho);}
-    for(var m=0;m<=59;m++){var mo=make('option','',m+' min');mo.value=String(m);minutes.appendChild(mo);}
+    hours.setAttribute('aria-label','Heures de la minuterie');
+    minutes.setAttribute('aria-label','Minutes de la minuterie');
+    for(var h=0;h<=4;h++){
+      var ho=make('option','',h+' h');ho.value=String(h);hours.appendChild(ho);
+    }
+    for(var m=0;m<=59;m++){
+      var mo=make('option','',m+' min');mo.value=String(m);minutes.appendChild(mo);
+    }
     hours.value='0';minutes.value='30';
-    var launch=make('button','custom-duration-launch','Lancer');launch.type='button';
-    launch.addEventListener('click',function(){var total=Number(hours.value)*60+Number(minutes.value);
+    var launch=make('button','shower-launch','Démarrer');launch.type='button';
+    launch.addEventListener('click',function(){
+      var total=Number(hours.value)*60+Number(minutes.value);
       if(total>=1&&total<=240)startShower(total);
       else showToast('Choisis une durée entre 1 minute et 4 heures.',3500);
     });
-    customRow.appendChild(hours);customRow.appendChild(minutes);customRow.appendChild(launch);box.appendChild(customRow);
-    box.appendChild(make('div','timer-custom-help','Choisis les heures et les minutes dans les listes, sans faire apparaître le clavier.'));
-    var cancel=actionButton('Annuler',function(){startShower(0);},'timer-option cancel');cancel.disabled=!showerDeadline;cancel.style.marginTop='10px';cancel.style.width='100%';box.appendChild(cancel);
-    box.appendChild(make('p','manager-note','Sur iPadOS, un verrouillage ou une mise en arrière-plan peut suspendre le son et le minuteur. À la reprise, le temps écoulé est vérifié, mais le signal sonore n’est pas garanti.'));
+    custom.appendChild(hours);custom.appendChild(minutes);custom.appendChild(launch);
+    scene.appendChild(custom);
+    var cancel=actionButton('Annuler le minuteur',function(){startShower(0);},'shower-cancel');
+    cancel.disabled=!showerDeadline;scene.appendChild(cancel);
+    scene.appendChild(make('p','shower-note',
+      'iPadOS peut suspendre le minuteur lorsque l’application est fermée ou en arrière-plan. Garde-la ouverte pour l’alerte sonore.'));
+    box.appendChild(scene);
   }
 
   var bigClockOpen=false;
