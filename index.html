@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.25.08">
-<meta name="radio-app-release-notes" content="Météo agrandie et mieux équilibrée|Résumé et détails remontés légèrement|Veille douce à nouveau cliquable dans la barre haute|Radio agrandie|Signature ancrée en bas">
+<meta name="radio-app-release" content="2026.11.25.09">
+<meta name="radio-app-release-notes" content="Badge Sommeil avec compte à rebours en direct|Fin du cycle Sommeil : arrêt immédiat de la radio|Veille douce : superposition corrigée">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -3205,6 +3205,19 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
   .weather-panel .weather-detail{min-height:32px!important;font-size:11px!important;padding:5px 8px!important}
 }
 
+
+/* Sommeil : compte à rebours indépendant, visible sans déplacer le bouton. */
+.radio-layout .radio-sleep{position:relative}
+.radio-layout .radio-sleep .sleep-badge{
+  position:absolute;top:6px;right:7px;z-index:2;
+  padding:3px 7px;border-radius:9px;background:#a9e4ff;color:#14334b;
+  font-size:clamp(10px,1.05vw,14px);font-weight:800;line-height:1.15;
+  font-variant-numeric:tabular-nums;white-space:nowrap;pointer-events:none;
+}
+.radio-layout .radio-sleep .sleep-badge[hidden]{display:none!important}
+/* La veille doit assombrir toutes les commandes, sans intercepter les appuis. */
+.soft-dim{z-index:15;pointer-events:none}
+
 </style>
 </head>
 <body>
@@ -3366,6 +3379,10 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
   sleepDuration.className='sleep-duration';
   sleepDuration.textContent='Arrêt auto';
   sleepControl.appendChild(sleepDuration);
+  var sleepBadge=document.createElement('span');
+  sleepBadge.id='sleepBadge';sleepBadge.className='sleep-badge';
+  sleepBadge.hidden=true;sleepBadge.setAttribute('aria-hidden','true');
+  sleepControl.appendChild(sleepBadge);
   var airControl=document.querySelector('#weatherPanel .air-detail');
   if(airControl){
     airControl.setAttribute('role','button');
@@ -4480,13 +4497,20 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
     var mins=timerRemaining();
     if(timerDeadline&&Date.now()>=timerDeadline){
       timerDeadline=0;sleepPreset=0;
-      if(playing)stop();
+      if(playing||audio.getAttribute('src'))stop();
       if(activeTool==='timer')renderTimerTool();
     }
     if(!timerDeadline)sleepPreset=0;
     set('timerButtonLabel','Sommeil');
     var duration=el('sleepDuration'),button=el('timerButton');
-    if(duration)duration.textContent=timerDeadline?(mins+' min'):'Arrêt auto';
+    if(duration)duration.textContent=timerDeadline?'Arrêt programmé':'Arrêt auto';
+    var badge=el('sleepBadge');
+    if(badge){
+      var seconds=timerDeadline?Math.max(0,Math.ceil((timerDeadline-Date.now())/1000)):0;
+      var mm=Math.floor(seconds/60),ss=seconds%60;
+      badge.textContent=timerDeadline?(mm+':'+(ss<10?'0':'')+ss):'';
+      badge.hidden=!timerDeadline;
+    }
     button.classList.toggle('sleep-active',!!timerDeadline);
     button.classList.toggle('sleep-unavailable',!playing);
     button.setAttribute('aria-pressed',String(!!timerDeadline));
@@ -4508,11 +4532,17 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
   }
   function cycleSleep(){
     // Sommeil est un mode d'écoute : démarrer la radio si elle est éteinte.
-    // À la fin du cycle (désactivé), la radio continue à jouer.
+    // À la fin du cycle (0), arrêter immédiatement la radio.
     var wasOff=!playing;
     var sequence=[60,45,30,15,0];
     var index=sequence.indexOf(sleepPreset);
     var next=(timerDeadline&&index>=0)?sequence[(index+1)%sequence.length]:60;
+    if(next===0){
+      startTimer(0);
+      stop();
+      showToast('Sommeil terminé : radio éteinte.',1700);
+      return;
+    }
     if(wasOff){
       if(!current()||!httpsUrl(current().url)){
         showToast('Aucun flux radio valide pour lancer Sommeil.',3200);
@@ -4521,7 +4551,7 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
       start();
     }
     startTimer(next);
-    showToast(next?'Sommeil : radio '+(wasOff?'allumée, ':'')+'arrêt dans '+next+' min.':'Sommeil désactivé : la radio continue.',1700);
+    showToast('Sommeil : radio '+(wasOff?'allumée, ':'')+'arrêt dans '+next+' min.',1700);
   }
 
   function renderTimerTool(){
