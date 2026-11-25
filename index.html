@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.25.05">
-<meta name="radio-app-release-notes" content="Défilement involontaire bloqué hors listes|Minuteur avec vraie sonnerie répétée et bouton de test|Prévisions météo alignées|Haut-parleur sur la radio réellement en lecture|Logo de station hors favoris affiché|Nom de station agrandi et statut direct vert arrêt gris erreur rouge">
+<meta name="radio-app-release" content="2026.11.25.06">
+<meta name="radio-app-release-notes" content="Hauteur du dashboard mieux utilisée|Horloge réellement centrée|Prévisions horaires ancrées en bas|Informations radio moins condensées|Recherche de titres renforcée">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -2878,6 +2878,219 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
 }
 /* Les modalités réellement très petites restent défilables, jamais coupées. */
 
+
+/* V37 — consolidation : un écran utile, un centre d'horloge, une base de
+   prévisions, une zone de lecture. Les proportions remplacent les anciens
+   plafonds de hauteur sur les grands iPad. */
+@media (orientation:landscape) and (min-width:1181px) and (min-height:830px) {
+  .shell{
+    width:100%!important;max-width:1500px!important;
+    height:var(--app-height,100vh)!important;
+    min-height:0!important;max-height:var(--app-height,100vh)!important;
+    display:flex;flex-direction:column;justify-content:flex-start!important;
+    gap:clamp(9px,1.2vh,15px)!important;
+    padding-top:calc(14px + env(safe-area-inset-top,0px))!important;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))!important;
+    overflow:hidden;
+  }
+  .dashboard{
+    flex:1 1 0!important;min-height:0!important;
+    height:auto!important;max-height:none!important;
+    gap:15px;align-items:stretch;
+  }
+  .clock-panel,.weather-panel{
+    height:100%;min-height:0!important;max-height:none!important;
+  }
+  .radio-layout{
+    flex:0 0 clamp(300px,34vh,370px)!important;
+    height:clamp(300px,34vh,370px)!important;
+    min-height:0!important;max-height:none!important;
+    gap:14px;padding:13px;
+    grid-template-columns:minmax(0,1fr) clamp(340px,27vw,410px);
+  }
+  .concept-credit{
+    flex:0 0 17px!important;height:17px!important;
+    line-height:17px!important;margin:0!important;padding:0!important;
+    position:static!important;
+  }
+  .weather-panel{
+    display:grid;grid-template-columns:minmax(0,1fr);
+    grid-template-rows:44px 31px minmax(92px,1fr) 27px 20px 48px 118px;
+    gap:8px;padding:18px 22px 16px;align-content:stretch;
+  }
+  .weather-panel .weather-title,
+  .weather-panel .weather-solar-row,
+  .weather-panel .weather-summary,
+  .weather-panel .facts,
+  .weather-panel .weather-details{
+    height:100%!important;min-height:0!important;
+    margin:0!important;align-self:stretch;
+  }
+  .weather-panel .weather-solar-row{
+    position:static!important;top:auto!important;
+    align-items:center;
+  }
+  .weather-panel .weather-current{
+    height:100%!important;min-height:0!important;margin:0!important;
+    transform:none!important;justify-content:center;align-items:center;
+    gap:18px;
+  }
+  .weather-panel .weather-icon,.weather-panel .weather-icon svg{
+    width:77px!important;height:77px!important;flex:0 0 77px;
+  }
+  .weather-panel .temperature{font-size:87px;line-height:.98}
+  .weather-panel .weather-summary{line-height:27px;font-size:18px}
+  .weather-panel .facts{line-height:20px;font-size:14px}
+  .weather-panel .weather-detail{
+    height:100%!important;min-height:0!important;
+    font-size:13px;padding:9px 8px;
+  }
+  .weather-panel .forecast-rail{
+    height:118px!important;min-height:0!important;align-self:end!important;
+    margin:0!important;
+  }
+  .weather-panel .forecasts{height:100%!important;min-height:0!important;margin:0!important}
+  .weather-panel .forecasts .forecast{
+    height:100%!important;min-height:0!important;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:4px;
+    padding:7px 3px;
+  }
+  .weather-panel .forecasts .forecast .icon{width:29px;height:29px}
+  .weather-panel .forecast .temp{font-size:18px}
+  .weather-panel .forecast .chance{font-size:12px}
+  .radio-layout .station-grid{
+    height:100%!important;min-height:0!important;
+    grid-template-rows:repeat(2,minmax(0,1fr))!important;
+    gap:11px;
+  }
+  .radio-layout .station,.radio-layout .more-tile{
+    height:100%!important;min-height:0!important;max-height:none!important
+  }
+  .radio-layout .controls{
+    height:100%!important;min-height:0!important;
+    grid-template-rows:repeat(2,minmax(0,1fr));
+    gap:11px;
+  }
+  .radio-layout .now{padding:12px 14px;gap:7px}
+  .radio-layout .now-name{font-size:18px!important;line-height:1.2}
+  .radio-layout .now-status{font-size:12px!important;padding:4px 10px}
+  .radio-layout .now-song{
+    font-size:15px!important;font-weight:760;
+    line-height:1.25;-webkit-line-clamp:2;
+  }
+  .radio-layout .song-artist{font-size:13px!important}
+  .radio-layout .now-logo,.radio-layout .now-logo .logo-wrap{
+    width:59px!important;height:59px!important;
+    min-width:59px!important;flex:0 0 59px;
+  }
+}
+/* Le cadran est centré dans l'espace restant entre les commandes supérieures
+   et le bandeau date/minuteur, indépendamment des volets et de la police. */
+@media (orientation:landscape) and (min-width:761px) {
+  .clock-panel{position:relative;overflow:visible}
+  .clock-panel #clockDisplay{
+    position:absolute!important;
+    top:clamp(49px,7vh,75px);
+    bottom:clamp(67px,10vh,102px);
+    left:15px;right:15px;
+    height:auto!important;width:auto!important;max-width:none!important;
+    min-width:0;display:flex;align-items:center;justify-content:center;
+    margin:0!important;transform:none;
+    text-align:center;
+  }
+  .clock-panel #clockDisplay.flip-active{
+    transform:none!important;
+  }
+  .clock-panel #clockDisplay #classicDigits{transform:scale(1.035,1.055)}
+  .clock-panel #clockDisplay #flipDigits{
+    margin:auto;max-width:100%;
+  }
+  .clock-panel #date{font-weight:560}
+  .weather-panel .forecast-rail{align-self:end!important}
+  .weather-panel .forecasts .forecast{
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center!important;
+  }
+}
+/* Les écrans plus bas conservent les gabarits déjà adaptés, avec une
+   horloge centrée et des prévisions moins sujettes au débordement. */
+@media (orientation:landscape) and (min-width:761px) and (max-height:820px){
+  .clock-panel #clockDisplay{top:48px;bottom:64px;left:11px;right:11px}
+  .weather-panel .forecast-rail{margin-bottom:0!important}
+  .weather-panel .forecasts .forecast{
+    padding-top:2px!important;padding-bottom:2px!important;
+    gap:1px;justify-content:space-evenly!important;
+  }
+}
+/* Le cartouche garde un ordre lisible même en hauteur compacte : logo+station,
+   état, puis morceau et artiste. */
+.radio-layout .now{
+  overflow:hidden;min-width:0;
+  justify-content:center!important;
+}
+.radio-layout .now-identity{min-height:0;flex-shrink:0}
+.radio-layout .now-song{
+  min-height:0;max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;
+}
+.radio-layout .song-artist{
+  max-width:100%;min-height:0;
+}
+@media (orientation:landscape) and (min-width:761px) and (max-height:820px){
+  .radio-layout .now-identity{gap:8px}
+  .radio-layout .now{gap:3px;padding:6px 8px}
+  .radio-layout .now-song{font-size:12px!important}
+  .radio-layout .now-name{font-size:13px!important}
+}
+
+
+/* V37 — messages de titres utiles sans surcharger la carte radio. */
+.radio-layout .now-song{white-space:normal;overflow:hidden;word-break:normal;}
+.radio-layout .now-identity-text{min-width:0;max-width:100%;}
+.radio-layout .song-artist{line-height:1.15;}
+
+
+/* V37 — iPad Pro 11" paysage (hauteur CSS ~834 px) : éviter que le
+   panneau météo plus spacieux ne dépasse sur les écrans Pro compacts. */
+@media (orientation:landscape) and (min-width:1181px) and (min-height:830px) and (max-height:930px){
+  .weather-panel{
+    grid-template-rows:36px 26px minmax(80px,1fr) 23px 18px 40px 102px;
+    gap:5px;padding:12px 17px 12px;
+  }
+  .weather-panel .weather-icon,
+  .weather-panel .weather-icon svg{
+    width:67px!important;height:67px!important;flex:0 0 67px
+  }
+  .weather-panel .temperature{font-size:75px}
+  .weather-panel .weather-summary{font-size:16px;line-height:23px}
+  .weather-panel .facts{font-size:12px;line-height:18px}
+  .weather-panel .weather-detail{padding:6px 7px;font-size:11.5px}
+  .weather-panel .forecast-rail{height:102px!important}
+  .weather-panel .forecast .temp{font-size:16px}
+  .radio-layout .now-name{font-size:16px!important}
+  .radio-layout .now-song{font-size:13px!important}
+}
+
+
+/* V37 — quatre prévisions visibles et défilement latéral des douze heures.
+   Sur Pro, la grille interne ne doit pas neutraliser le scroll horizontal. */
+@media (orientation:landscape) and (min-width:1181px) and (min-height:830px){
+  .weather-panel .forecasts{
+    display:flex!important;flex-wrap:nowrap!important;
+    overflow-x:auto!important;overflow-y:hidden!important;
+    -webkit-overflow-scrolling:touch;
+    scroll-snap-type:x mandatory;
+    height:100%!important;width:100%;gap:9px!important;
+    padding:0!important;margin:0!important;
+  }
+  .weather-panel .forecasts .forecast{
+    flex:0 0 calc((100% - 27px)/4)!important;
+    min-width:0!important;
+    scroll-snap-align:start;align-self:stretch;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3598,14 +3811,9 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
   }
   function fetchSongDirectory(st){
     var country=songCountry(st);
-    var query='q='+encodeURIComponent(st.name)+'&limit=100';
+    var query='q='+encodeURIComponent(st.name)+'&limit=100&has_now_playing=true';
     if(country)query+='&country='+encodeURIComponent(country);
-    return fetch('https://api.tuneping.com/v1/stations?'+query,{
-      headers:{Accept:'application/json'}
-    }).then(function(response){
-      if(!response.ok)throw Error('tuneping-directory-'+response.status);
-      return response.json();
-    }).then(function(body){
+    return fetchSongJSON('https://api.tuneping.com/v1/stations?'+query,6500).then(function(body){
       var rows=Array.isArray(body.data)?body.data:[],
           ranked=rows.map(function(row){
             return {station:row,score:scoreSongStation(st,row)};
@@ -3624,9 +3832,7 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
     var hosts=['https://de1.api.radio-browser.info','https://nl1.api.radio-browser.info'];
     function request(i){
       if(i>=hosts.length)return Promise.resolve('');
-      return fetch(hosts[i]+'/json/stations/byurl?url='+encodeURIComponent(url),{
-        headers:{Accept:'application/json'}
-      }).then(function(res){if(!res.ok)throw Error('radio-browser-stream');return res.json();})
+      return fetchSongJSON(hosts[i]+'/json/stations/byurl?url='+encodeURIComponent(url),5500)
         .then(function(rows){
           if(!Array.isArray(rows))return '';
           var exact=rows.filter(function(item){
@@ -3681,36 +3887,122 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
     if(!title)return null;
     return {title:title.slice(0,165),artist:artist.slice(0,120)};
   }
+
+  function fetchSongJSON(url,timeoutMs){
+    // iPadOS 15 supports AbortController; fail with a finite timeout rather
+    // than freezing metadata polling indefinitely when a host is unreachable.
+    var controller=typeof AbortController!=='undefined'?new AbortController():null;
+    var timer=null;
+    if(controller)timer=setTimeout(function(){controller.abort();},timeoutMs||7500);
+    return fetch(url,{
+      cache:'no-store',headers:{Accept:'application/json'},
+      signal:controller?controller.signal:undefined
+    }).then(function(res){
+      if(!res.ok){
+        var error=new Error('HTTP '+res.status);error.status=res.status;
+        throw error;
+      }
+      return res.json();
+    }).then(function(body){
+      if(timer)clearTimeout(timer);
+      return body;
+    },function(err){
+      if(timer)clearTimeout(timer);
+      throw err;
+    });
+  }
+  function streamMetadataTitle(value,station){
+    var text=String(value||'').trim();
+    if(!text||text.length>260||/^(unknown|no title|live stream|en direct|offline|streaming)$/i.test(text))return null;
+    var normalized=normalizeSongStation(text);
+    if(normalized===normalizeSongStation(station.name)||normalized===normalizeSongStation(station.region))return null;
+    var match=text.match(/^(.{2,120}?)\s+(?:-|–|—)\s+(.{2,120})$/);
+    if(match){
+      return {artist:match[1].trim(),title:match[2].trim(),source:'Flux radio'};
+    }
+    return {artist:'',title:text,source:'Flux radio'};
+  }
+  function parseIcecastSong(body,station){
+    var stats=body&&(body.icestats||body),sources=stats&&stats.source;
+    if(!sources)return null;
+    if(!Array.isArray(sources))sources=[sources];
+    var wanted=String(station.url||''),wantedHost=songHost(wanted),wantedPath='';
+    try{wantedPath=new URL(wanted).pathname.replace(/\/$/,'');}catch(e){}
+    var ranked=sources.map(function(source){
+      var listen=String(source.listenurl||source.listen_url||source.mount||'');
+      var score=0;
+      if(wanted&&listen===wanted)score+=10;
+      else if(listen&&songHost(listen)===wantedHost){
+        score+=3;
+        try{if(new URL(listen).pathname.replace(/\/$/,'')===wantedPath)score+=7;}catch(e){}
+      }else if(listen===wantedPath)score+=9;
+      return {value:source,score:score};
+    }).sort(function(a,b){return b.score-a.score;});
+    if(!ranked.length)return null;
+    // Never use a different mount's title merely because it shares a host.
+    if(sources.length>1&&ranked[0].score<9)return null;
+    var item=ranked[0].value;
+    var raw=item.title||item.yp_currently_playing||item.songtitle||item.current_song;
+    return streamMetadataTitle(raw,station);
+  }
+  function fetchDirectStationSong(station){
+    var src=String(station&&station.url||'');
+    if(!/^https:\/\//i.test(src))return Promise.resolve(null);
+    var link;
+    try{
+      var u=new URL(src);
+      link=u.protocol+'//'+u.host+'/status-json.xsl';
+    }catch(e){return Promise.resolve(null);}
+    return fetchSongJSON(link,5200).then(function(response){
+      return parseIcecastSong(response,station);
+    });
+  }
   function retrieveCurrentSong(){
     if(songRefreshBusy||!playing||document.hidden)return;
     var station=current(),identity=String(station.url||'')+'|'+String(station.name||'');
     var requestId=++songRequestSerial;
     if(songMetadataStation!==identity){
-      songMetadataStation=identity;
-      showSongInfo('Recherche du morceau…','',false);
+      songMetadataStation=identity;showSongInfo('Recherche du morceau…','',false);
     }
     songRefreshBusy=true;
+    var tunepingError=null,tunepingAbsent=false,streamError=null;
     resolveSongStation(station).then(function(uuid){
       if(requestId!==songRequestSerial||current().url!==station.url)return null;
-      if(!uuid){
-        showSongInfo('Station sans titre disponible','',false);
-        return null;
-      }
+      if(!uuid){tunepingAbsent=true;return null;}
       songMetadataUUID=uuid;
-      return fetch('https://api.tuneping.com/v1/stations/'+encodeURIComponent(uuid)+'/now-playing',{
-        headers:{Accept:'application/json'}
-      }).then(function(response){
-        if(!response.ok)throw Error('tuneping-now-'+response.status);
-        return response.json();
-      });
-    }).then(function(body){
-      if(requestId!==songRequestSerial||!playing||current().url!==station.url||!body)return;
-      var track=parseSongResponse(body);
-      if(track)showSongInfo(track.title,track.artist,true);
-      else showSongInfo('Titre non transmis','',false);
+      return fetchSongJSON('https://api.tuneping.com/v1/stations/'+encodeURIComponent(uuid)+'/now-playing',6500)
+        .then(function(body){return parseSongResponse(body);})
+        .catch(function(err){tunepingError=err;return null;});
+    }).catch(function(err){
+      tunepingError=err;return null;
+    }).then(function(track){
+      if(requestId!==songRequestSerial||current().url!==station.url)return null;
+      if(track)return {track:track,fromTuneping:true};
+      // Icecast's public JSON metadata is an independent fallback. This
+      // works only when the stream host permits cross-origin requests.
+      return fetchDirectStationSong(station).then(function(candidate){
+        return candidate?{track:candidate,fromTuneping:false}:null;
+      }).catch(function(err){streamError=err;return null;});
+    }).then(function(result){
+      if(requestId!==songRequestSerial||!playing||current().url!==station.url)return;
+      if(result&&result.track&&result.track.title){
+        showSongInfo(result.track.title,result.track.artist,result.fromTuneping);
+        el('songTitle').title='Source : '+(result.fromTuneping?'Tuneping':'métadonnées du flux');
+        return;
+      }
+      if(tunepingError&&streamError){
+        showSongInfo('Titres non accessibles','',false);
+        el('songTitle').title='Aucune source accessible depuis cet iPad (réseau, CORS ou service indisponible).';
+      }else if(tunepingAbsent){
+        showSongInfo('Aucune source de titre trouvée','',false);
+        el('songTitle').title='Aucun titre confirmé par les sources accessibles. Cela ne prouve pas que la station ne transmet aucun titre.';
+      }else{
+        showSongInfo('Aucun morceau annoncé','',false);
+        el('songTitle').title='Pas de titre musical récent pour cette station.';
+      }
     }).catch(function(){
       if(requestId===songRequestSerial&&playing){
-        showSongInfo('Titres momentanément indisponibles','',false);
+        showSongInfo('Métadonnées indisponibles','',false);
       }
     }).then(function(){
       if(requestId===songRequestSerial)songRefreshBusy=false;
