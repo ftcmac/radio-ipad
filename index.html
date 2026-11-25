@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.25.09">
-<meta name="radio-app-release-notes" content="Badge Sommeil avec compte à rebours en direct|Fin du cycle Sommeil : arrêt immédiat de la radio|Veille douce : superposition corrigée">
+<meta name="radio-app-release" content="2026.11.26.01">
+<meta name="radio-app-release-notes" content="Veille douce : état clairement visible|Croix de fermeture SVG centrée|Recherche des titres en direct et diagnostic des sources">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -3218,6 +3218,21 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
 /* La veille doit assombrir toutes les commandes, sans intercepter les appuis. */
 .soft-dim{z-index:15;pointer-events:none}
 
+
+/* V40 — état de veille explicite, indépendamment du thème et des anciennes règles. */
+html .clock-panel .clock-toolbar #dimButton[aria-pressed="true"]{
+  background:#a1dcf8!important;color:#17374d!important;border-color:#c4edff!important;
+}
+html .clock-panel .clock-toolbar #dimButton[aria-pressed="false"]{
+  background:rgba(128,150,174,.08)!important;color:var(--muted)!important;border-color:rgba(128,150,174,.42)!important;
+}
+#dimStateMark{display:none;flex:0 0 13px;width:13px;height:13px;margin:0;}
+#dimButton[aria-pressed="true"] #dimStateMark{display:block}
+#toolsClose.tools-close{display:flex!important;align-items:center!important;justify-content:center!important;position:relative!important;padding:0!important;line-height:0!important;flex-shrink:0!important}
+#toolsClose.tools-close::before,#toolsClose.tools-close::after{content:none!important;display:none!important}
+#toolsClose.tools-close svg{display:block!important;width:20px!important;height:20px!important;flex:0 0 20px!important;margin:0!important;transform:none!important;pointer-events:none}
+#songTitle[data-diagnostic="true"]{cursor:pointer;touch-action:manipulation}
+
 </style>
 </head>
 <body>
@@ -3276,7 +3291,7 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
     <div class="alertname"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="11" rx="3"></rect><path d="M7 7l8-4M13 12h4M13 15h4"></path><circle cx="8.5" cy="12.5" r="1.6"></circle></svg></span> Outils <span class="connection-state" id="connectionState" role="status" title="Vérification de la connexion" aria-label="Connexion en cours de vérification"></span> <button type="button" id="helpOpen" class="help-open" aria-label="Afficher l’aide des fonctions" title="Comprendre les fonctions">i</button> <button type="button" id="appUpdateHint" class="app-update-hint" aria-label="Une mise à jour est disponible, afficher les détails"><span class="update-dot" aria-hidden="true"></span> Mise à jour</button></div>
     <div class="alertbuttons">
       <button class="smallbutton" id="timerButton" type="button" aria-label="Programmer l'arrêt automatique de la radio (Sommeil)"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.2A7.9 7.9 0 0 1 9.8 4a8.9 8.9 0 1 0 10.2 10.2z"></path><path d="M17 5v4M15 7h4"></path></svg></span><span id="timerButtonLabel">Sommeil</span></button>
-      <button class="smallbutton" id="dimButton" type="button" aria-pressed="true" aria-label="Désactiver la veille douce"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.2A7.9 7.9 0 0 1 9.8 4a8.9 8.9 0 1 0 10.2 10.2z"></path></svg></span><span id="dimButtonLabel">Veille douce</span></button>
+      <button class="smallbutton" id="dimButton" type="button" aria-pressed="true" aria-label="Désactiver la veille douce"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.2A7.9 7.9 0 0 1 9.8 4a8.9 8.9 0 1 0 10.2 10.2z"></path></svg></span><span id="dimButtonLabel">Veille douce</span><svg id="dimStateMark" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8 3 3 7-7"/></svg></button>
       <button class="smallbutton" id="extrasButton" type="button" aria-label="Consulter la qualité de l'air et les pollens"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4C11 4 5 8 5 15a5 5 0 0 0 5 5c7 0 10-7 10-16Z"></path><path d="M5 20c2-5 6-9 11-12"></path></svg></span><span id="extrasLabel">Air &amp; pollens</span></button>
     </div>
   </section>
@@ -3328,7 +3343,7 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
 <div class="soft-dim" id="softDim" aria-hidden="true"></div>
 <div class="tools-modal" id="toolsModal" aria-hidden="true">
   <section class="tools-window" role="dialog" aria-modal="true" aria-labelledby="toolsTitle">
-    <div class="tools-heading"><strong id="toolsTitle">Prévisions</strong><button type="button" id="toolsClose" class="tools-close" aria-label="Fermer la fenêtre" title="Fermer"></button></div>
+    <div class="tools-heading"><strong id="toolsTitle">Prévisions</strong><button type="button" id="toolsClose" class="tools-close" aria-label="Fermer la fenêtre" title="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <div class="tools-body" id="toolsBody"></div>
   </section>
 </div>
@@ -3909,7 +3924,7 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
   function showSongInfo(title,artist,fromTuneping){
     var titleNode=el('songTitle'),artistNode=el('songArtist'),credit=el('songCredit');
     if(!titleNode)return;
-    titleNode.textContent=title||'Titre non disponible';titleNode.title=title||'';
+    titleNode.textContent=title||'Titre non disponible';titleNode.title=title||'';titleNode.removeAttribute('data-diagnostic');
     artistNode.textContent=artist||'';artistNode.title=artist||'';
     credit.classList.toggle('is-visible',!!fromTuneping);
   }
@@ -4086,7 +4101,7 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
     }).sort(function(a,b){return b.score-a.score;});
     if(!ranked.length)return null;
     // Never use a different mount's title merely because it shares a host.
-    if(sources.length>1&&ranked[0].score<9)return null;
+    if(ranked[0].score<9)return null;
     var item=ranked[0].value;
     var raw=item.title||item.yp_currently_playing||item.songtitle||item.current_song;
     return streamMetadataTitle(raw,station);
@@ -4103,6 +4118,42 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
       return parseIcecastSong(response,station);
     });
   }
+  function songNameExact(v){
+    return normalizeSongStation(v).replace(/^rtbf /,'').replace(/ (belgique|belgium)$/,'');
+  }
+  function liveSongMatch(st,entry){
+    if(!entry)return false;
+    var country=songCountry(st),ec=String(entry.country||'').toUpperCase();
+    if(country&&ec&&country!==ec)return false;
+    var a=String(st.url||'').replace(/^https?:/i,'').replace(/\/$/,''),b=String(entry.stream_url||'').replace(/^https?:/i,'').replace(/\/$/,'');
+    if(a&&a===b)return true;
+    var ha=songHost(st.home),hb=songHost(entry.homepage);
+    var na=songNameExact(st.name),nb=songNameExact(entry.name);
+    // Regional broadcasts (VivaCité, Sud Radio, etc.) require the exact stream or UUID.
+    if(/vivacite|sud radio/.test(na))return false;
+    return !!(country&&country===ec&&ha&&ha===hb&&na&&na===nb);
+  }
+  function searchLiveSong(st){
+    var q='q='+encodeURIComponent(st.name)+'&classification=song&max_age_seconds=360&limit=60';
+    var country=songCountry(st);if(country)q+='&country='+encodeURIComponent(country);
+    return fetchSongJSON('https://api.tuneping.com/v1/now-playing/search?'+q,6500).then(function(body){
+      var rows=body&&Array.isArray(body.data)?body.data:[];
+      var matches=rows.filter(function(row){return liveSongMatch(st,row.station);});
+      var tracks=matches.map(function(row){return parseSongResponse(row);}).filter(Boolean);
+      if(!tracks.length)return null;
+      // Multiple streams must agree on the title and artist.
+      if(tracks.some(function(t){return t.title!==tracks[0].title||t.artist!==tracks[0].artist;}))return null;
+      return tracks[0];
+    });
+  }
+  var songDiagnostic='';
+  function reportSongDiagnostic(message){
+    songDiagnostic=message;
+    var node=el('songTitle');node.title=message;node.setAttribute('data-diagnostic','true');
+  }
+  el('songTitle').addEventListener('click',function(){
+    if(this.getAttribute('data-diagnostic')==='true'&&songDiagnostic)window.alert(songDiagnostic);
+  });
   function retrieveCurrentSong(){
     if(songRefreshBusy||!playing||document.hidden)return;
     var station=current(),identity=String(station.url||'')+'|'+String(station.name||'');
@@ -4111,7 +4162,7 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
       songMetadataStation=identity;showSongInfo('Recherche du morceau…','',false);
     }
     songRefreshBusy=true;
-    var tunepingError=null,tunepingAbsent=false,streamError=null;
+    var tunepingError=null,tunepingAbsent=false,streamError=null,liveError=null;
     resolveSongStation(station).then(function(uuid){
       if(requestId!==songRequestSerial||current().url!==station.url)return null;
       if(!uuid){tunepingAbsent=true;return null;}
@@ -4124,6 +4175,11 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
     }).then(function(track){
       if(requestId!==songRequestSerial||current().url!==station.url)return null;
       if(track)return {track:track,fromTuneping:true};
+      return searchLiveSong(station).then(function(candidate){return candidate?{track:candidate,fromTuneping:true}:null;})
+        .catch(function(err){liveError=err;return null;});
+    }).then(function(found){
+      if(requestId!==songRequestSerial||current().url!==station.url)return null;
+      if(found)return found;
       // Icecast's public JSON metadata is an independent fallback. This
       // works only when the stream host permits cross-origin requests.
       return fetchDirectStationSong(station).then(function(candidate){
@@ -4136,16 +4192,10 @@ html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;b
         el('songTitle').title='Source : '+(result.fromTuneping?'Tuneping':'métadonnées du flux');
         return;
       }
-      if(tunepingError&&streamError){
-        showSongInfo('Titres non accessibles','',false);
-        el('songTitle').title='Aucune source accessible depuis cet iPad (réseau, CORS ou service indisponible).';
-      }else if(tunepingAbsent){
-        showSongInfo('Aucune source de titre trouvée','',false);
-        el('songTitle').title='Aucun titre confirmé par les sources accessibles. Cela ne prouve pas que la station ne transmet aucun titre.';
-      }else{
-        showSongInfo('Aucun morceau annoncé','',false);
-        el('songTitle').title='Pas de titre musical récent pour cette station.';
-      }
+      function detail(err){return err?String(err.message||err):'accessible, aucun titre validé';}
+      var diagnostic='Station : '+station.name+'\nAnnuaire / titre : '+(tunepingAbsent?'station non identifiée':detail(tunepingError))+'\nRecherche en direct : '+detail(liveError)+'\nIcecast : '+detail(streamError)+'\nUn échec réseau peut venir du serveur, de la connexion ou des restrictions CORS.';
+      showSongInfo(tunepingError&&liveError&&streamError?'Titres non accessibles':'Titre non confirmé','Toucher pour le diagnostic',false);
+      reportSongDiagnostic(diagnostic);
     }).catch(function(){
       if(requestId===songRequestSerial&&playing){
         showSongInfo('Métadonnées indisponibles','',false);
