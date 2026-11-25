@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.25.03">
-<meta name="radio-app-release-notes" content="Dashboard plus aéré sur grands iPad|Réglages encadrés et commandes alignées|Air & pollens signalé par une flèche|Power et Sommeil moins hauts et plus larges|Nouvelle fenêtre Minuteur|Recherche des titres par identification Radio Browser et Tuneping">
+<meta name="radio-app-release" content="2026.11.25.04">
+<meta name="radio-app-release-notes" content="Menu Réglages ancré au bouton|État météo déplacé hors de l’horloge|Horloge centrée horizontalement|Minuteur compact et commandes agrandies|Météo mieux hiérarchisée sur les grands iPad|Power et Sommeil à hauteur de la carte du titre">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -2531,6 +2531,182 @@ html[data-theme="light"] .shower-cancel{color:#335875;border-color:#b8cada}
   .shower-hero-text span{font-size:11px}
 }
 
+
+/* V35 — répartition par structure, non par déplacements pixel par pixel. */
+.clock-panel #clockDisplay{
+  width:100%;max-width:100%;min-width:0;box-sizing:border-box;
+  display:flex;align-items:center;justify-content:center;
+  margin-left:0!important;text-align:center;
+}
+.clock-panel #classicDigits{display:inline-block;flex:0 0 auto}
+.clock-panel #clockDisplay.flip-active #classicDigits{display:none}
+.clock-panel .clock-toolbar #themeToggle{margin-left:0!important}
+/* Le menu suit exactement l'icône Réglages même en portrait et sur le mini. */
+.clock-panel #themeMenu{
+  position:absolute;left:var(--theme-menu-left,72px)!important;
+  right:auto!important;top:var(--theme-menu-top,62px)!important;
+  max-width:calc(100% - 24px);box-sizing:border-box;
+  transform:none!important;
+}
+.weather-title .eyebrow{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.weather-title .eyebrow .connection-state{
+  width:13px;height:13px;min-width:13px;flex:0 0 13px;
+  display:inline-flex;align-items:center;gap:0;
+  font-size:0;overflow:hidden;letter-spacing:0;
+}
+.weather-title .eyebrow .connection-state::before{
+  width:8px;height:8px;flex:0 0 8px;
+  box-shadow:0 0 0 2px rgba(127,204,190,.12)
+}
+/* Les deux rangées à droite correspondent désormais à celles des favoris. */
+.radio-layout .controls{
+  display:grid;grid-template-rows:minmax(0,1fr) minmax(0,1fr);
+  gap:10px;min-width:0;min-height:0;height:100%;
+}
+.radio-layout .radio-primary-buttons{
+  min-height:0!important;max-height:none!important;
+  height:100%!important;flex:initial!important;
+  align-self:stretch;
+  grid-row:1;
+}
+.radio-layout .radio-primary-buttons .power,
+.radio-layout .radio-primary-buttons .radio-sleep{
+  height:100%!important;max-height:none!important;
+  min-height:0!important;
+}
+.radio-layout .now{
+  min-height:0!important;max-height:none!important;
+  height:100%;flex:initial!important;grid-row:2;
+  justify-content:center;
+}
+.radio-layout .now-song{
+  font-size:clamp(12px,1.25vw,16px);
+  line-height:1.2;
+}
+.radio-layout .song-artist{font-size:clamp(11px,1.12vw,14px)}
+/* Le minuteur s'adapte au contenu : plus de fenêtre vide haute de 790 px. */
+.tools-modal.shower-open .tools-window{
+  width:min(565px,calc(100vw - 28px));
+  height:auto!important;max-height:min(91vh,745px)!important;
+  max-height:min(91dvh,745px)!important;
+  min-height:0!important;
+  align-self:center;justify-content:flex-start;
+}
+.tools-modal.shower-open .tools-heading{
+  flex:0 0 auto;padding:18px 23px 6px;
+}
+.tools-modal.shower-open .tools-body{
+  flex:0 1 auto;min-height:0;
+  max-height:calc(91vh - 65px)!important;
+  max-height:calc(91dvh - 65px)!important;
+  padding:8px 22px 22px;overflow-y:auto;
+}
+.shower-design{gap:12px}
+.shower-count{
+  font-size:clamp(64px,7.6vw,85px);
+  padding:8px 0;line-height:1.1;
+}
+.shower-state{font-size:14px;margin-top:-5px}
+.shower-quick-grid{gap:10px}
+.shower-quick{
+  min-height:70px;border-radius:16px;
+  padding:13px 7px;font-size:21px;
+}
+.shower-section-title{font-size:13px;margin-top:8px}
+.shower-custom select,.shower-launch{min-height:57px;font-size:16px}
+.shower-cancel{min-height:48px;font-size:14px}
+.shower-note{font-size:11px;line-height:1.35}
+/* Grand iPad : température dominante, informations lisibles et prévisions
+   véritablement ancrées en bas, sans allonger leurs tuiles. */
+@media (orientation:landscape) and (min-width:1181px) and (min-height:830px){
+  .dashboard{grid-template-columns:minmax(0,1.07fr) minmax(0,.93fr)}
+  .clock-panel{padding-top:77px;padding-bottom:97px}
+  .clock-panel #date{
+    left:24px;right:128px;bottom:32px;
+    font-size:clamp(24px,2.35vw,33px)
+  }
+  .clock-panel #clockTimerButton{right:23px;bottom:20px}
+  .weather-panel{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:38px 31px minmax(83px,1fr) 26px 18px 47px 112px;
+    gap:7px;padding:18px 22px 16px;
+    align-content:stretch;justify-content:stretch;
+  }
+  .weather-panel .weather-title{min-height:0;height:100%;align-items:center}
+  .weather-panel .weather-solar-row{min-height:0;height:100%;margin:0;position:static}
+  .weather-panel .weather-current{
+    height:100%;min-height:0;margin:0;gap:18px;
+    align-items:center;justify-content:center;
+  }
+  .weather-panel .weather-icon{width:80px;height:80px;flex:0 0 80px}
+  .weather-panel .weather-icon svg{width:80px!important;height:80px!important}
+  .weather-panel .temperature{font-size:89px;line-height:.98}
+  .weather-panel .weather-summary{
+    min-height:0;margin:0;font-size:18px;line-height:26px
+  }
+  .weather-panel .facts{min-height:0;margin:0;font-size:13px;line-height:18px}
+  .weather-panel .weather-details{
+    height:100%;min-height:0;margin:0;gap:10px;
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .weather-panel .weather-detail{
+    height:100%;min-height:0;min-width:0;
+    padding:10px 9px;font-size:14px;
+    line-height:1.22;white-space:nowrap;
+  }
+  .weather-panel .weather-detail .detail-symbol,
+  .weather-panel .weather-detail .detail-symbol svg{
+    width:17px;height:17px;flex:0 0 17px
+  }
+  .weather-panel .forecast-rail{
+    min-height:0!important;height:112px!important;
+    align-self:end;margin:0!important;padding:0;
+    flex:initial;overflow:hidden;
+  }
+  .weather-panel .forecasts{height:100%;min-height:0;align-items:stretch}
+  .weather-panel .forecasts .forecast{
+    min-height:0;height:100%;
+    display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:2px;
+    padding:8px 3px;
+  }
+  .weather-panel .forecast .icon{width:29px;height:29px;margin:4px auto}
+  .weather-panel .forecast .temp{font-size:18px}
+  .weather-panel .forecast .chance{font-size:12px;margin:0}
+  .radio-layout .controls{gap:12px}
+}
+/* Écrans paysage plus bas : conserver les sept lignes météo de V30/V31,
+   mais centrer les commandes radio et réduire la fenêtre du minuteur. */
+@media (orientation:landscape) and (min-width:761px) and (max-height:820px){
+  .radio-layout .controls{gap:8px}
+  .radio-layout .radio-primary-buttons{height:100%!important;max-height:none!important}
+  .radio-layout .now{height:100%;min-height:0!important;padding:6px 9px}
+  .weather-panel .weather-detail{font-size:11px}
+  .shower-count{font-size:clamp(54px,7vw,75px)}
+  .shower-quick{min-height:61px;font-size:18px}
+  .shower-custom select,.shower-launch{min-height:49px;font-size:14px}
+}
+/* Si le petit iPad affiche une hauteur insuffisante, la modal scrolle ;
+   le dashboard garde ses plafonds sans rogner la météo. */
+@media (max-height:700px){
+  .tools-modal.shower-open .tools-window{max-height:calc(100dvh - 16px)!important}
+  .tools-modal.shower-open .tools-body{max-height:calc(100dvh - 80px)!important}
+  .shower-design{gap:8px}
+  .shower-count{font-size:56px}
+  .shower-quick{min-height:51px;font-size:16px}
+  .shower-custom select,.shower-launch{min-height:44px}
+}
+@media (max-width:760px){
+  .radio-layout .controls{
+    display:grid;grid-template-columns:1fr;
+    grid-template-rows:minmax(85px,auto) minmax(70px,auto);
+    height:auto;gap:8px
+  }
+  .radio-layout .radio-primary-buttons{min-height:85px!important}
+  .radio-layout .now{min-height:70px!important}
+}
+
 </style>
 </head>
 <body>
@@ -2655,7 +2831,8 @@ html[data-theme="light"] .shower-cancel{color:#335875;border-color:#b8cada}
   var dimControl=elBoot('dimButton');
   dimControl.classList.add('clock-dim');
   clockToolbar.appendChild(dimControl);
-  clockToolbar.appendChild(elBoot('connectionState'));
+  var weatherHeadingLabel=document.querySelector('#weatherPanel .weather-title .eyebrow');
+  if(weatherHeadingLabel){weatherHeadingLabel.appendChild(elBoot('connectionState'));}
   clockToolbar.appendChild(elBoot('themeToggle'));
   clockToolbar.appendChild(elBoot('appUpdateHint'));
   clockToolbar.appendChild(elBoot('helpOpen'));
@@ -2803,11 +2980,28 @@ html[data-theme="light"] .shower-cancel{color:#335875;border-color:#b8cada}
   el('themeMenuSun').innerHTML=icons.sun;
   el('themeMenuMoon').innerHTML=icons.moon;
   el('themeMenuAuto').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>';
+  function positionThemeMenu(){
+    var panel=el('clockPanel'),button=el('themeToggle'),menu=el('themeMenu');
+    if(!panel||!button||!menu||!menu.classList.contains('open'))return;
+    var panelRect=panel.getBoundingClientRect(),
+        buttonRect=button.getBoundingClientRect(),
+        menuWidth=menu.getBoundingClientRect().width||250;
+    var left=Math.max(12,Math.min(buttonRect.left-panelRect.left,panelRect.width-menuWidth-12));
+    var top=Math.max(8,buttonRect.bottom-panelRect.top+7);
+    panel.style.setProperty('--theme-menu-left',Math.round(left)+'px');
+    panel.style.setProperty('--theme-menu-top',Math.round(top)+'px');
+  }
   el('themeToggle').addEventListener('click',function(){
     var opening=!el('themeMenu').classList.contains('open');
-    if(opening){el('themeMenu').classList.add('open');el('themeToggle').setAttribute('aria-expanded','true');el('clockPanel').classList.add('theme-menu-open');updateThemeChoices();}
-    else closeThemeMenu();
+    if(opening){
+      el('themeMenu').classList.add('open');
+      el('themeToggle').setAttribute('aria-expanded','true');
+      el('clockPanel').classList.add('theme-menu-open');
+      updateThemeChoices();
+      positionThemeMenu();
+    }else closeThemeMenu();
   });
+  window.addEventListener('resize',positionThemeMenu);
   var themeChoices=document.querySelectorAll('[data-theme-choice]');
   for(var tc=0;tc<themeChoices.length;tc++)themeChoices[tc].addEventListener('click',function(){
     var mode=this.getAttribute('data-theme-choice');
