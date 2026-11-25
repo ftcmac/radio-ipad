@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.25.04">
-<meta name="radio-app-release-notes" content="Menu Réglages ancré au bouton|État météo déplacé hors de l’horloge|Horloge centrée horizontalement|Minuteur compact et commandes agrandies|Météo mieux hiérarchisée sur les grands iPad|Power et Sommeil à hauteur de la carte du titre">
+<meta name="radio-app-release" content="2026.11.25.05">
+<meta name="radio-app-release-notes" content="Défilement involontaire bloqué hors listes|Minuteur avec vraie sonnerie répétée et bouton de test|Prévisions météo alignées|Haut-parleur sur la radio réellement en lecture|Logo de station hors favoris affiché|Nom de station agrandi et statut direct vert arrêt gris erreur rouge">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -2707,6 +2707,177 @@ html[data-theme="light"] .shower-cancel{color:#335875;border-color:#b8cada}
   .radio-layout .now{min-height:70px!important}
 }
 
+
+/* V36 — Vraie sonnerie testable et alerte persistante visible. */
+.shower-test-sound{
+  min-height:52px;align-self:stretch;
+  background:rgba(86,155,196,.18);color:#c4eaff;
+  border:1px solid rgba(156,209,247,.55);
+  border-radius:13px;font-size:15px;font-weight:760;
+}
+.shower-sound-state{
+  margin:0;color:#c1d4e6;font-size:11px;line-height:1.4;
+}
+.shower-alarm-notice{
+  position:fixed;z-index:100;
+  left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  width:min(380px,calc(100vw - 32px));
+  max-width:100%;display:none;
+  flex-direction:column;align-items:center;gap:14px;
+  padding:27px 23px 22px;border-radius:23px;
+  background:#26445f;color:white;
+  border:2px solid #a1dcff;
+  box-shadow:0 18px 0 500vmax rgba(4,14,26,.76),0 26px 90px rgba(0,0,0,.4);
+  text-align:center;
+}
+.shower-alarm-notice.open{display:flex}
+.shower-alarm-notice strong{font-size:28px;line-height:1.1}
+.shower-alarm-notice span{font-size:15px;color:#d2ebfb}
+.shower-alarm-stop{
+  min-height:58px;width:100%;font-size:17px;font-weight:800;
+  background:#a6e1ff;color:#17344d;border:0;border-radius:15px;
+}
+html[data-theme="light"] .shower-test-sound{color:#245a7b;background:#e6f4fd;border-color:#9ac8e5}
+html[data-theme="light"] .shower-sound-state{color:#4b718d}
+
+
+/* V36 — Le dashboard est un pupitre tactile fixe. Les modales conservent
+   leurs propres zones défilables, mais pas la page en arrière-plan. */
+html,body{
+  overflow:hidden!important;overscroll-behavior:none;
+  height:100%!important;width:100%;max-width:100%;margin:0;
+}
+body{position:fixed;inset:0}
+.shell{
+  height:var(--app-height,100vh)!important;
+  max-height:var(--app-height,100vh)!important;
+  min-height:0!important;width:100%!important;
+  overflow:hidden!important;overscroll-behavior:none;
+  touch-action:manipulation;
+}
+.shell > .dashboard,.shell > .radio-layout{
+  min-height:0;overflow:hidden;
+}
+.tools-modal .tools-body,.modal .modal-body,
+.tools-modal .manager-list,.tools-modal .manager-scroll{
+  touch-action:pan-y;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+}
+/* Prévisions à heures régulières, alignées sur une base commune. */
+.weather-panel .forecast-rail{
+  align-self:end;min-height:0;
+  margin-bottom:0!important;
+}
+.weather-panel .forecasts{
+  align-items:stretch;
+  grid-auto-rows:minmax(0,1fr);
+  height:100%;
+}
+.weather-panel .forecasts .forecast{
+  display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;
+  min-width:0;min-height:0;height:100%;
+  padding-top:5px;padding-bottom:5px;
+  line-height:1.14;
+}
+.weather-panel .forecasts .forecast .icon{
+  margin:0 auto;flex-shrink:0;
+}
+.weather-panel .forecasts .forecast .temp,
+.weather-panel .forecasts .forecast .chance{
+  margin:0;flex-shrink:0;
+}
+/* Icône speaker visible uniquement lorsque le flux de cette station joue. */
+.station,.more-tile{position:relative}
+.station-speaker{
+  display:none;align-items:center;justify-content:center;
+  position:absolute;top:7px;right:7px;z-index:2;
+  width:32px;height:32px;
+  color:#f7feff;background:rgba(58,122,154,.96);
+  border:1px solid rgba(184,236,255,.8);
+  border-radius:10px;pointer-events:none;
+  box-shadow:0 2px 7px rgba(0,0,0,.2)
+}
+.station-speaker svg{width:21px;height:21px}
+.is-audible > .station-speaker{display:flex}
+.is-audible.station,.is-audible.more-tile{border-color:#8cd6f6}
+/* Une station choisie hors favoris utilise le même logo dans Lecture en cours. */
+.radio-layout .now{gap:4px;min-width:0}
+.radio-layout .now-identity{
+  display:flex;align-items:center;gap:10px;min-width:0;min-height:0;
+}
+.radio-layout .now-logo{
+  width:52px;height:52px;min-width:52px;flex:0 0 52px;
+  display:flex;align-items:center;justify-content:center;
+}
+.radio-layout .now-logo .logo-wrap{
+  width:52px;min-width:52px;height:52px;padding:4px;border-radius:11px;
+}
+.radio-layout .now-identity-text{
+  flex:1 1 auto;min-width:0;
+  display:flex;flex-direction:column;align-items:flex-start;gap:4px;
+}
+.radio-layout .now-name{
+  max-width:100%;font-size:clamp(15px,1.43vw,20px)!important;
+  line-height:1.12;letter-spacing:-.015em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.radio-layout .now-status{
+  display:inline-flex;align-items:center;
+  width:max-content;max-width:100%;
+  border:1px solid transparent;border-radius:99px;
+  padding:3px 9px;
+  font-size:clamp(11px,1.02vw,13px)!important;
+  font-weight:760;line-height:1.12;
+  color:#b4c5d6;background:rgba(132,151,166,.15);
+}
+.radio-layout .now-status.state-live{
+  color:#acf8c5;background:rgba(38,146,98,.25);
+  border-color:rgba(106,213,145,.52)
+}
+.radio-layout .now-status.state-error{
+  color:#ffb8ba;background:rgba(185,55,69,.20);
+  border-color:rgba(243,139,151,.4)
+}
+.radio-layout .now-status.state-off{
+  color:#bbc7d2;background:rgba(134,149,163,.14);
+  border-color:rgba(173,187,201,.24)
+}
+.radio-layout .now-status.state-loading{
+  color:#b5dcff;background:rgba(92,149,198,.16);
+  border-color:rgba(144,190,231,.26)
+}
+.radio-layout .now-song{
+  font-size:clamp(12px,1.18vw,16px)!important;
+  line-height:1.18;
+}
+.radio-layout .song-artist{font-size:clamp(11px,1vw,13px)!important}
+html[data-theme="light"] .radio-layout .now-status.state-live{color:#187345;background:#d5f1df;border-color:#78c99d}
+html[data-theme="light"] .radio-layout .now-status.state-error{color:#9f2833;background:#ffe4e3;border-color:#efabad}
+html[data-theme="light"] .radio-layout .now-status.state-off{color:#5b6b79;background:#e3eaf0;border-color:#c1d0db}
+html[data-theme="light"] .radio-layout .now-status.state-loading{color:#22648f;background:#e0f1fc;border-color:#b3d6ed}
+@media (orientation:landscape) and (min-width:761px) and (max-height:820px){
+  .radio-layout .now-logo,.radio-layout .now-logo .logo-wrap{
+    width:42px;min-width:42px;height:42px;flex-basis:42px;
+  }
+  .radio-layout .now-identity{gap:8px}
+  .radio-layout .now-name{font-size:13.5px!important}
+  .radio-layout .now-status{font-size:10.5px!important;padding:2px 7px}
+  .radio-layout .now-song{font-size:11.5px!important}
+  .radio-layout .song-artist{font-size:10.5px!important}
+  .station-speaker{width:27px;height:27px;right:5px;top:5px}
+  .station-speaker svg{width:19px;height:19px}
+}
+@media (orientation:landscape) and (min-width:1101px) and (max-width:1180px) and (max-height:700px){
+  .radio-layout .now-logo,.radio-layout .now-logo .logo-wrap{
+    width:34px;min-width:34px;height:34px;flex-basis:34px;
+  }
+  .radio-layout .now-name{font-size:12px!important}
+  .radio-layout .now-status{font-size:10px!important}
+  .radio-layout .now-song{font-size:11px!important}
+}
+/* Les modalités réellement très petites restent défilables, jamais coupées. */
+
 </style>
 </head>
 <body>
@@ -2778,8 +2949,13 @@ html[data-theme="light"] .shower-cancel{color:#335875;border-color:#b8cada}
         <span class="power-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v9"></path><path d="M7.05 5.8a8 8 0 1 0 9.9 0"></path></svg></span><span id="powerLabel">Allumer</span>
       </button>
       <div class="now" role="status">
-        <div class="now-name" id="selectedName">VivaCité · Hainaut</div>
-        <div class="now-status" id="playStatus">Radio éteinte</div>
+        <div class="now-identity">
+          <span id="nowLogo" class="now-logo" aria-hidden="true"></span>
+          <div class="now-identity-text">
+            <div class="now-name" id="selectedName">VivaCité · Hainaut</div>
+            <div class="now-status state-off" id="playStatus">Radio éteinte</div>
+          </div>
+        </div>
         <div class="now-song" id="songTitle" aria-live="off">Titre non disponible</div>
         <div class="song-artist" id="songArtist"></div>
         <a class="song-credit" id="songCredit" href="https://tuneping.com/" target="_blank" rel="noopener noreferrer">Data by Tuneping</a>
@@ -2821,6 +2997,19 @@ html[data-theme="light"] .shower-cancel{color:#335875;border-color:#b8cada}
 (function(){
   'use strict';
 
+
+  // iPadOS : bloquer les gestes de défilement sur le tableau de bord,
+  // mais préserver les listes et les sélecteurs qui en ont besoin.
+  var dashboardShell=document.querySelector('.shell');
+  if(dashboardShell){
+    dashboardShell.addEventListener('touchmove',function(e){
+      var target=e.target;
+      var scrollable=target&&target.closest&&target.closest(
+        '.city-choices,.forecast-rail,.forecasts,.more-select,select,[data-scrollable]'
+      );
+      if(!scrollable&&e.cancelable)e.preventDefault();
+    },{passive:false});
+  }
   // Déplacer les commandes existantes sans dupliquer les IDs ou les actions.
   function elBoot(id){return document.getElementById(id);}
   var clockToolbar=document.createElement('div');
@@ -3237,7 +3426,11 @@ html[data-theme="light"] .shower-cancel{color:#335875;border-color:#b8cada}
       var meta=document.createElement('span');meta.className='station-info';
       var name=document.createElement('span');name.className='station-name';name.textContent=s.name;meta.appendChild(name);
       if(s.region){var r=document.createElement('span');r.className='station-region';r.textContent=s.region;meta.appendChild(r);}
-      b.appendChild(meta);b.addEventListener('click',function(){choose(s.id);});grid.appendChild(b);
+      b.appendChild(meta);
+      b.setAttribute('data-radio-id',s.id);
+      var volumeMark=makeStationSpeaker();
+      b.appendChild(volumeMark);
+      b.addEventListener('click',function(){choose(s.id);});grid.appendChild(b);
     });
     // Les places libérées restent accessibles et ouvrent le gestionnaire.
     for(var missing=fav.length;missing<5;missing++){
@@ -3257,9 +3450,49 @@ html[data-theme="light"] .shower-cancel{color:#335875;border-color:#b8cada}
     displayOtherStations().forEach(function(s){var o=document.createElement('option');o.value=s.id;o.textContent=s.name;select.appendChild(o);});
     var manage=document.createElement('option');manage.value='__manage__';manage.textContent='★ Rechercher et gérer les stations…';select.appendChild(manage);
     select.value=previewStation?'':(otherActive?selected:'');
-    select.addEventListener('change',function(){if(this.value==='__manage__'){openTools('radios');this.value=previewStation?'':(otherActive?selected:'');}else if(this.value)choose(this.value);});tile.appendChild(select);grid.appendChild(tile);
+    select.addEventListener('change',function(){if(this.value==='__manage__'){openTools('radios');this.value=previewStation?'':(otherActive?selected:'');}else if(this.value)choose(this.value);});
+    tile.appendChild(select);
+    tile.appendChild(makeStationSpeaker());
+    grid.appendChild(tile);
     set('selectedName',current().name+(current().region?' · '+current().region:'')+(previewStation?' · Essai':''));
+    updateNowStationLogo();
+    syncStationSpeaker();
   }
+  function makeStationSpeaker(){
+    var mark=document.createElement('span');
+    mark.className='station-speaker';mark.setAttribute('aria-hidden','true');
+    mark.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+    return mark;
+  }
+  function updateNowStationLogo(){
+    var host=el('nowLogo');if(!host)return;
+    host.textContent='';
+    host.appendChild(logo(current()));
+  }
+  function syncStationSpeaker(){
+    var audible=!!playing&&!!audio&&!!audio.getAttribute('src')&&!audio.paused&&audio.readyState>=2;
+    var selectedId=current().id;
+    var inFavorites=!previewStation&&fav.some(function(x){return x.id===selectedId;});
+    var buttons=el('favorites').querySelectorAll('.station[data-radio-id]');
+    for(var i=0;i<buttons.length;i++){
+      var stationButton=buttons[i];
+      stationButton.classList.toggle('is-audible',audible&&inFavorites&&stationButton.getAttribute('data-radio-id')===selectedId);
+    }
+    var more=el('favorites').querySelector('.more-tile');
+    if(more)more.classList.toggle('is-audible',audible&&!inFavorites);
+  }
+  function updatePlaybackBadge(){
+    var status=el('playStatus');if(!status)return;
+    var text=String(status.textContent||'').toLowerCase();
+    var cls=/indisponible|impossible|erreur|échec|échou|aucun flux/.test(text)?
+      'state-error':(/en direct|essai non enregistré/.test(text)?'state-live':
+      (/connexion|attente|chargement/.test(text)?'state-loading':'state-off'));
+    status.classList.remove('state-live','state-error','state-off','state-loading');
+    status.classList.add(cls);
+  }
+  var playStatusObserver=new MutationObserver(updatePlaybackBadge);
+  playStatusObserver.observe(el('playStatus'),{childList:true,characterData:true,subtree:true});
+  updatePlaybackBadge();
   function powerUI(){el('power').classList.toggle('on',playing);el('power').setAttribute('aria-pressed',String(playing));el('power').setAttribute('aria-label',playing?'Éteindre la radio':'Allumer la radio');set('powerLabel',playing?'Éteindre':'Allumer');el('timerButton').classList.toggle('sleep-unavailable',!playing);}
   function choose(id){
     // La station effectivement écoutée et le favori mémorisé peuvent différer
@@ -3294,14 +3527,14 @@ html[data-theme="light"] .shower-cancel{color:#335875;border-color:#b8cada}
     catch(e){if(call===serial){playing=false;powerUI();set('playStatus','Lecture impossible.');fallback();scheduleDim(20000);}}
   }
   function stop(){++serial;audio.pause();audio.removeAttribute('src');audio.load();playing=false;previewStation=null;render();
-    if(typeof refreshSongForStation==='function')refreshSongForStation();if(timerDeadline){timerDeadline=0;updateTimerLabel();}powerUI();set('playStatus','Radio éteinte');el('radioLink').style.display='none';scheduleDim(10000);}
+    if(typeof refreshSongForStation==='function')refreshSongForStation();if(timerDeadline){timerDeadline=0;updateTimerLabel();}powerUI();syncStationSpeaker();set('playStatus','Radio éteinte');el('radioLink').style.display='none';scheduleDim(10000);}
   el('power').addEventListener('click',function(){if(playing)stop();else start();});
   function previewRadio(s){
     previewStation=s;start();render();set('playStatus','Essai non enregistré · appuie sur un favori pour y revenir');
   }
-  audio.addEventListener('playing',function(){playing=true;powerUI();set('playStatus',previewStation?'● En direct · Essai non enregistré':'● En direct');refreshSongForStation();});
-  audio.addEventListener('waiting',function(){if(playing)set('playStatus','Connexion au direct…');});
-  audio.addEventListener('error',function(){if(audio.getAttribute('src')){playing=false;powerUI();set('playStatus','Flux indisponible.');refreshSongForStation();fallback();scheduleDim(20000);}});
+  audio.addEventListener('playing',function(){playing=true;powerUI();set('playStatus',previewStation?'● En direct · Essai non enregistré':'● En direct');syncStationSpeaker();refreshSongForStation();});
+  audio.addEventListener('waiting',function(){if(playing)set('playStatus','Connexion au direct…');syncStationSpeaker();});
+  audio.addEventListener('error',function(){if(audio.getAttribute('src')){playing=false;powerUI();set('playStatus','Flux indisponible.');syncStationSpeaker();refreshSongForStation();fallback();scheduleDim(20000);}});
   render();powerUI();
 
 
@@ -4044,27 +4277,163 @@ html[data-theme="light"] .shower-cancel{color:#335875;border-color:#b8cada}
   }
 
   // Minuteur indépendant de l'arrêt radio : l'alerte visuelle reste visible.
+
+  // V36 — Alerte fiable tant que la webapp reste ouverte au premier plan.
+  // L'utilisateur déverrouille l'audio par son appui sur Démarrer ou Tester.
+  // Une sonnerie WAV intégrée (aucun téléchargement) complète Web Audio.
   var showerDeadline=0,showerToneContext=null,showerNoticeTimeout=null;
+  var showerAlarmAudio=null,showerAlarmSoundReady=false,
+      showerAlarmRepeat=null,showerAlarmCount=0,showerAlarmNotice=null,
+      showerSoundFeedback='';
+  function buildShowerAlarmAudio(){
+    if(showerAlarmAudio)return showerAlarmAudio;
+    try{
+      var rate=22050,duration=3.3,count=Math.floor(rate*duration);
+      var bytes=new ArrayBuffer(44+count*2),view=new DataView(bytes);
+      function tag(at,str){for(var k=0;k<str.length;k++)view.setUint8(at+k,str.charCodeAt(k));}
+      tag(0,'RIFF');view.setUint32(4,36+count*2,true);
+      tag(8,'WAVE');tag(12,'fmt ');
+      view.setUint32(16,16,true);view.setUint16(20,1,true);
+      view.setUint16(22,1,true);view.setUint32(24,rate,true);
+      view.setUint32(28,rate*2,true);view.setUint16(32,2,true);
+      view.setUint16(34,16,true);tag(36,'data');
+      view.setUint32(40,count*2,true);
+      var starts=[.17,.60,1.03,1.60,2.03,2.46];
+      for(var i=0;i<count;i++){
+        var t=i/rate,wave=0;
+        for(var j=0;j<starts.length;j++){
+          var age=t-starts[j];
+          if(age<0||age>.30)continue;
+          var fade=Math.min(1,age/.020,(.30-age)/.065);
+          var freq=j<3?760:920;
+          wave+=(Math.sin(2*Math.PI*freq*age)*.52+
+                 Math.sin(2*Math.PI*freq*1.5*age)*.14)*Math.max(0,fade);
+        }
+        view.setInt16(44+2*i,Math.max(-32767,Math.min(32767,Math.round(wave*32767))),true);
+      }
+      var blob=new Blob([bytes],{type:'audio/wav'});
+      var url=URL.createObjectURL(blob);
+      showerAlarmAudio=new Audio(url);
+      showerAlarmAudio.preload='auto';
+      showerAlarmAudio.setAttribute('playsinline','');
+      showerAlarmAudio.load();
+      return showerAlarmAudio;
+    }catch(e){return null;}
+  }
   function readyShowerTone(){
-    var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
-    try{if(!showerToneContext)showerToneContext=new AC();
-      if(showerToneContext.state==='suspended')showerToneContext.resume().catch(function(){});
+    var AC=window.AudioContext||window.webkitAudioContext;
+    try{
+      if(AC&&!showerToneContext)showerToneContext=new AC();
+      if(showerToneContext&&showerToneContext.state!=='running'){
+        var res=showerToneContext.resume();
+        if(res&&res.catch)res.catch(function(){});
+      }
     }catch(e){}
+    buildShowerAlarmAudio();
+  }
+  function primeShowerAlarm(){
+    // Appelé uniquement depuis un vrai appui sur un bouton.
+    readyShowerTone();
+    var a=showerAlarmAudio;
+    if(!a||showerAlarmSoundReady)return;
+    try{
+      a.volume=.01;a.currentTime=0;
+      var playingPromise=a.play();
+      if(playingPromise&&playingPromise.then){
+        playingPromise.then(function(){
+          showerAlarmSoundReady=true;
+          setTimeout(function(){
+            if(!showerAlarmRepeat&&!showerAlarmNotice?.classList.contains('open')){
+              a.pause();try{a.currentTime=0;}catch(e){}
+              a.volume=1;
+            }
+          },70);
+        }).catch(function(){a.volume=1;});
+      }
+    }catch(e){a.volume=1;}
   }
   function playShowerTone(){
-    if(!showerToneContext)return;
+    var c=showerToneContext;
+    if(!c)return false;
     try{
-      if(showerToneContext.state==='suspended')showerToneContext.resume().catch(function(){});
-      var now=showerToneContext.currentTime;
-      [0,.3,.6].forEach(function(delay){
-        var o=showerToneContext.createOscillator(),g=showerToneContext.createGain();
-        o.type='sine';o.frequency.value=740;
-        g.gain.setValueAtTime(.0001,now+delay);g.gain.exponentialRampToValueAtTime(.12,now+delay+.025);
-        g.gain.exponentialRampToValueAtTime(.0001,now+delay+.19);
-        o.connect(g);g.connect(showerToneContext.destination);
-        o.start(now+delay);o.stop(now+delay+.2);
+      if(c.state!=='running'){
+        var resume=c.resume();if(resume&&resume.catch)resume.catch(function(){});
+        if(c.state!=='running')return false;
+      }
+      var now=c.currentTime;
+      [0,.42,.84,1.4,1.82,2.24].forEach(function(delay,i){
+        var o=c.createOscillator(),g=c.createGain();
+        o.type='triangle';o.frequency.value=i<3?760:920;
+        g.gain.setValueAtTime(.0001,now+delay);
+        g.gain.exponentialRampToValueAtTime(.40,now+delay+.02);
+        g.gain.exponentialRampToValueAtTime(.0001,now+delay+.29);
+        o.connect(g);g.connect(c.destination);
+        o.start(now+delay);o.stop(now+delay+.3);
       });
-    }catch(e){}
+      return true;
+    }catch(e){return false;}
+  }
+  function playShowerAudioCycle(){
+    var a=buildShowerAlarmAudio();
+    if(!a){playShowerTone();return;}
+    try{
+      a.pause();a.currentTime=0;a.volume=1;a.muted=false;
+      var promise=a.play();
+      if(promise&&promise.catch){
+        promise.catch(function(){
+          var fallback=playShowerTone();
+          showerSoundFeedback=fallback?'Lecture audio refusée : tonalité de secours lancée.':'Son bloqué par iPadOS : touche « Tester le son » et garde l’application ouverte.';
+          var state=el('showerSoundState');if(state)state.textContent=showerSoundFeedback;
+        });
+      }
+    }catch(e){playShowerTone();}
+  }
+  function dismissShowerAlarm(){
+    if(showerAlarmRepeat){clearInterval(showerAlarmRepeat);showerAlarmRepeat=null;}
+    if(showerAlarmAudio){showerAlarmAudio.pause();try{showerAlarmAudio.currentTime=0;}catch(e){}}
+    if(showerAlarmNotice)showerAlarmNotice.classList.remove('open');
+    showerAlarmCount=0;
+  }
+  function ensureShowerAlarmNotice(){
+    if(showerAlarmNotice)return showerAlarmNotice;
+    showerAlarmNotice=document.createElement('div');
+    showerAlarmNotice.className='shower-alarm-notice';
+    showerAlarmNotice.setAttribute('role','alertdialog');
+    showerAlarmNotice.setAttribute('aria-label','Minuteur terminé');
+    var headline=document.createElement('strong');
+    headline.textContent='Minuteur terminé !';
+    var message=document.createElement('span');
+    message.textContent='La sonnerie est lancée. La minuterie ne coupe pas la radio.';
+    var stopBtn=document.createElement('button');
+    stopBtn.type='button';stopBtn.className='shower-alarm-stop';
+    stopBtn.textContent='Arrêter la sonnerie';
+    stopBtn.addEventListener('click',dismissShowerAlarm);
+    showerAlarmNotice.appendChild(headline);
+    showerAlarmNotice.appendChild(message);
+    showerAlarmNotice.appendChild(stopBtn);
+    document.body.appendChild(showerAlarmNotice);
+    return showerAlarmNotice;
+  }
+  function triggerShowerAlarm(){
+    dismissShowerAlarm();
+    ensureShowerAlarmNotice().classList.add('open');
+    showerAlarmCount=1;
+    playShowerAudioCycle();
+    showerAlarmRepeat=setInterval(function(){
+      if(!showerAlarmNotice.classList.contains('open')||showerAlarmCount>=5){
+        clearInterval(showerAlarmRepeat);showerAlarmRepeat=null;
+        return;
+      }
+      showerAlarmCount++;
+      playShowerAudioCycle();
+    },3800);
+  }
+  function testShowerTone(){
+    readyShowerTone();
+    playShowerAudioCycle();
+    showToast('Test du son : vérifie le volume de l’iPad. Si tu n’entends rien, le minuteur ne sera pas fiable.',6000);
+    var state=el('showerSoundState');
+    if(state)state.textContent='Tu dois entendre une sonnerie. Augmente le volume si nécessaire.';
   }
   function showToast(message,duration){
     var toast=el('timerToast');toast.textContent=message;toast.classList.add('open');
@@ -4079,7 +4448,7 @@ html[data-theme="light"] .shower-cancel{color:#335875;border-color:#b8cada}
   }
   function updateShowerTimer(){
     if(showerDeadline&&Date.now()>=showerDeadline){
-      showerDeadline=0;playShowerTone();showToast('Minuteur terminé !');
+      showerDeadline=0;triggerShowerAlarm();showToast('Minuteur terminé — touche « Arrêter la sonnerie ».',20000);
       if(activeTool==='shower')renderShowerTool();
     }
     var badge=el('clockTimerBadge');
@@ -4089,7 +4458,9 @@ html[data-theme="light"] .shower-cancel{color:#335875;border-color:#b8cada}
     if(activeTool==='shower'&&el('showerState'))set('showerState',showerDeadline?'Minuteur en cours':'Prêt à démarrer');
   }
   function startShower(minutes){
-    readyShowerTone();showerDeadline=minutes?Date.now()+minutes*60000:0;
+    dismissShowerAlarm();
+    if(minutes)primeShowerAlarm();
+    showerDeadline=minutes?Date.now()+minutes*60000:0;
     updateShowerTimer();
     if(minutes){closeTools();showToast('Minuteur de '+minutes+' min lancé.',4500);}
     else renderShowerTool();
@@ -4138,6 +4509,12 @@ html[data-theme="light"] .shower-cancel{color:#335875;border-color:#b8cada}
     });
     custom.appendChild(hours);custom.appendChild(minutes);custom.appendChild(launch);
     scene.appendChild(custom);
+    var testSound=actionButton('▶ Tester le son',testShowerTone,'shower-test-sound');
+    testSound.setAttribute('aria-label','Écouter un test de la sonnerie du minuteur');
+    scene.appendChild(testSound);
+    var soundState=make('p','shower-sound-state',
+      'Teste le son avant d’utiliser le minuteur. Laisse la webapp ouverte et vérifie le volume.');
+    soundState.id='showerSoundState';scene.appendChild(soundState);
     var cancel=actionButton('Annuler le minuteur',function(){startShower(0);},'shower-cancel');
     cancel.disabled=!showerDeadline;scene.appendChild(cancel);
     scene.appendChild(make('p','shower-note',
