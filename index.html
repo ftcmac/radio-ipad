@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10192a">
-<meta name="radio-app-release" content="2026.11.26.01">
-<meta name="radio-app-release-notes" content="Veille douce : état clairement visible|Croix de fermeture SVG centrée|Recherche des titres en direct et diagnostic des sources">
+<meta name="radio-app-release" content="2026.11.26.02">
+<meta name="radio-app-release-notes" content="Lecture des métadonnées ICY du flux audio|Diagnostic précis des réponses Tuneping|Corrections précédentes conservées">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Ma radio">
@@ -4133,18 +4133,72 @@ html .clock-panel .clock-toolbar #dimButton[aria-pressed="false"]{
     if(/vivacite|sud radio/.test(na))return false;
     return !!(country&&country===ec&&ha&&ha===hb&&na&&na===nb);
   }
-  function searchLiveSong(st){
+  function searchLiveSong(st,debug){
     var q='q='+encodeURIComponent(st.name)+'&classification=song&max_age_seconds=360&limit=60';
     var country=songCountry(st);if(country)q+='&country='+encodeURIComponent(country);
     return fetchSongJSON('https://api.tuneping.com/v1/now-playing/search?'+q,6500).then(function(body){
       var rows=body&&Array.isArray(body.data)?body.data:[];
       var matches=rows.filter(function(row){return liveSongMatch(st,row.station);});
       var tracks=matches.map(function(row){return parseSongResponse(row);}).filter(Boolean);
+      debug.live=rows.length+' résultat(s), '+matches.length+' correspondant(s), '+tracks.length+' titre(s) récent(s)';
+      if(rows.length&&!matches.length)debug.live+=' ; candidats : '+rows.slice(0,4).map(function(row){return row.station&&row.station.name||'?';}).join(', ');
+      if(matches.length&&!tracks.length)debug.live+=' ; premier état : '+String(matches[0].classification||'non classé')+', confirmé '+String(matches[0].confirmed_at||'sans date');
       if(!tracks.length)return null;
       // Multiple streams must agree on the title and artist.
       if(tracks.some(function(t){return t.title!==tracks[0].title||t.artist!==tracks[0].artist;}))return null;
       return tracks[0];
     });
+  }
+  // ICY : lire seulement les quelques premiers blocs du flux. Le lecteur audio
+  // reste indépendant ; aucune seconde lecture audio, aucun changement de volume.
+  // Certains serveurs refusent CORS ou ne transmettent aucun StreamTitle.
+  function fetchIcyStationSong(station){
+    var src=String(station&&station.url||'');
+    if(!/^https:\/\//i.test(src)||typeof AbortController==='undefined')return Promise.reject(new Error('lecture ICY non disponible'));
+    var controller=new AbortController(),reader=null,timedOut=false;
+    var timer=setTimeout(function(){timedOut=true;controller.abort();},9000);
+    function cleanup(){clearTimeout(timer);controller.abort();if(reader){try{reader.cancel().catch(function(){});}catch(e){}}}
+    var result=fetch(src,{headers:{'Icy-MetaData':'1'},cache:'no-store',signal:controller.signal}).then(function(res){
+      if(!res.ok)throw new Error('HTTP '+res.status);
+      var interval=Number(res.headers.get('icy-metaint'));
+      if(!Number.isInteger(interval)||interval<1||interval>262144)throw new Error('intervalle ICY absent ou non accessible (CORS)');
+      if(!res.body||!res.body.getReader)throw new Error('lecture continue indisponible');
+      reader=res.body.getReader();
+      var audioLeft=interval,metaLeft=0,metaBytes=[],blocks=0,total=0,needLength=false;
+      function consume(chunk){
+        var i=0;
+        while(i<chunk.length){
+          if(metaLeft){
+            var count=Math.min(metaLeft,chunk.length-i);
+            for(var j=0;j<count;j++)metaBytes.push(chunk[i+j]);
+            i+=count;metaLeft-=count;
+            if(!metaLeft){
+              var bytes=new Uint8Array(metaBytes),raw='';
+              try{raw=new TextDecoder('utf-8',{fatal:true}).decode(bytes);}catch(e){raw=new TextDecoder('windows-1252').decode(bytes);}
+              var m=raw.match(/StreamTitle='([\s\S]*?)';/i);
+              if(m){var t=streamMetadataTitle(m[1],station);if(t&&t.artist&&t.title)return t;}
+              audioLeft=interval;
+            }
+          }else if(needLength){
+            metaLeft=chunk[i++]*16;metaBytes=[];needLength=false;blocks++;
+            if(!metaLeft)audioLeft=interval;
+          }else{
+            var n=Math.min(audioLeft,chunk.length-i);i+=n;audioLeft-=n;
+            if(!audioLeft)needLength=true;
+          }
+        }
+        return null;
+      }
+      function readNext(){return reader.read().then(function(part){
+        if(part.done)throw new Error('flux terminé sans titre');
+        total+=part.value.length;
+        var track=consume(part.value);if(track)return track;
+        if(total>=524288||(blocks>=5&&!metaLeft))throw new Error('aucun titre artiste – morceau dans les blocs ICY');
+        return readNext();
+      });}
+      return readNext();
+    });
+    return result.then(function(track){cleanup();return track;},function(err){cleanup();if(timedOut)throw new Error('délai ICY dépassé (9 s)');throw err;});
   }
   var songDiagnostic='';
   function reportSongDiagnostic(message){
@@ -4162,20 +4216,20 @@ html .clock-panel .clock-toolbar #dimButton[aria-pressed="false"]{
       songMetadataStation=identity;showSongInfo('Recherche du morceau…','',false);
     }
     songRefreshBusy=true;
-    var tunepingError=null,tunepingAbsent=false,streamError=null,liveError=null;
+    var tunepingError=null,tunepingAbsent=false,streamError=null,liveError=null,icyError=null,debug={live:"",uuid:"",station:""};
     resolveSongStation(station).then(function(uuid){
       if(requestId!==songRequestSerial||current().url!==station.url)return null;
       if(!uuid){tunepingAbsent=true;return null;}
-      songMetadataUUID=uuid;
+      songMetadataUUID=uuid;debug.uuid=uuid;
       return fetchSongJSON('https://api.tuneping.com/v1/stations/'+encodeURIComponent(uuid)+'/now-playing',6500)
-        .then(function(body){return parseSongResponse(body);})
+        .then(function(body){var row=body&&(body.data||body.now_playing||body);if(Array.isArray(row))row=row[0];debug.station=row?String(row.classification||"non classé")+", confirmé "+String(row.confirmed_at||"sans date")+(row.is_stale?" (périmé)":""):"réponse vide";return parseSongResponse(body);})
         .catch(function(err){tunepingError=err;return null;});
     }).catch(function(err){
       tunepingError=err;return null;
     }).then(function(track){
       if(requestId!==songRequestSerial||current().url!==station.url)return null;
       if(track)return {track:track,fromTuneping:true};
-      return searchLiveSong(station).then(function(candidate){return candidate?{track:candidate,fromTuneping:true}:null;})
+      return searchLiveSong(station,debug).then(function(candidate){return candidate?{track:candidate,fromTuneping:true}:null;})
         .catch(function(err){liveError=err;return null;});
     }).then(function(found){
       if(requestId!==songRequestSerial||current().url!==station.url)return null;
@@ -4185,6 +4239,11 @@ html .clock-panel .clock-toolbar #dimButton[aria-pressed="false"]{
       return fetchDirectStationSong(station).then(function(candidate){
         return candidate?{track:candidate,fromTuneping:false}:null;
       }).catch(function(err){streamError=err;return null;});
+    }).then(function(found){
+      if(requestId!==songRequestSerial||!playing||current().url!==station.url)return null;
+      if(found)return found;
+      return fetchIcyStationSong(station).then(function(track){return {track:track,fromTuneping:false};})
+        .catch(function(err){icyError=err;return null;});
     }).then(function(result){
       if(requestId!==songRequestSerial||!playing||current().url!==station.url)return;
       if(result&&result.track&&result.track.title){
@@ -4193,7 +4252,7 @@ html .clock-panel .clock-toolbar #dimButton[aria-pressed="false"]{
         return;
       }
       function detail(err){return err?String(err.message||err):'accessible, aucun titre validé';}
-      var diagnostic='Station : '+station.name+'\nAnnuaire / titre : '+(tunepingAbsent?'station non identifiée':detail(tunepingError))+'\nRecherche en direct : '+detail(liveError)+'\nIcecast : '+detail(streamError)+'\nUn échec réseau peut venir du serveur, de la connexion ou des restrictions CORS.';
+      var diagnostic='Station : '+station.name+'\nFlux : '+station.url+'\nAnnuaire / titre : '+(tunepingAbsent?'station non identifiée':detail(tunepingError))+(debug.uuid?'\nUUID : '+debug.uuid:'')+(debug.station?'\nRéponse titre : '+debug.station:'')+'\nRecherche en direct : '+(liveError?detail(liveError):debug.live||detail(null))+'\nIcecast JSON : '+detail(streamError)+'\nICY dans le flux : '+detail(icyError);
       showSongInfo(tunepingError&&liveError&&streamError?'Titres non accessibles':'Titre non confirmé','Toucher pour le diagnostic',false);
       reportSongDiagnostic(diagnostic);
     }).catch(function(){
